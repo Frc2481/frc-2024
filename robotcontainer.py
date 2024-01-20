@@ -9,6 +9,7 @@ from subsystems.intake import IntakeSubsystem
 from subsystems.shooter import ShooterSubsystem
 from subsystems.gripper import GripperSubsystem
 from subsystems.arm import ArmSubsystem
+from subsystems.drivetrain import DriveSubsystem
 
 
 class RobotContainer(object):
@@ -22,6 +23,7 @@ class RobotContainer(object):
         self.shooter = ShooterSubsystem()
         self.gripper = GripperSubsystem()
         self.arm = ArmSubsystem()
+        self.drivetrain = DriveSubsystem()
 
         self.driver_controller = CommandXboxController(
             constants.kDriverControllerPort)

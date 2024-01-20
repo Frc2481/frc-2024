@@ -7,6 +7,15 @@ from wpimath.geometry import Rotation2d, Translation2d, Pose2d
 import commands2
 import commands2.cmd
 
+from phoenix6.controls import VelocityVoltage
+
+from phoenix6.configs import TalonFXConfiguration
+from phoenix6.configs.cancoder_configs import CANcoderConfiguration 
+
+from phoenix6.hardware.cancoder import CANcoder
+from phoenix6.hardware import TalonFX
+from phoenix6.hardware import Pigeon2
+
 import constants
 
 import phoenix6
@@ -17,21 +26,21 @@ class SwerveModule(object):
 
     def __init__(self, driveCANID, steerCANID, steerCANCoderID):
 
-        self.driveMotor = phoenix6.TalonFX(driveCANID)
-        self.steerMotor = phoenix6.TalonFX(steerCANID)
-        self.steerEncoder = phoenix6.Cancoder(steerCANCoderID)
+        self.driveMotor = TalonFX(driveCANID)
+        self.steerMotor = TalonFX(steerCANID)
+        self.steerEncoder = CANcoder(steerCANCoderID)
 
-        self.driveMotorConfig = phoenix6.TalonFXConfiguration()
+        self.driveMotorConfig = TalonFXConfiguration()
         self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.driveMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.driveMotorConfig.slot0.k_p = constants.kdriveP
         self.driveMotorConfig.slot0.k_i = constants.kdriveI 
         self.driveMotorConfig.slot0.k_d = constants.kdriveD
-        self.driveMotorConfig.slot0.k_f = constants.kDriveMotorF 
+        self.driveMotorConfig.slot0.k_f = constants.kdriveF 
         self.driveMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kSwerveReductionDrive
-        self.driveMotor.configuration.apply(self.driveMotorConfig)
+        self.driveMotor.configurator.apply(self.driveMotorConfig)
         
-        self.steerMotorConfig = phoenix6.TalonFXConfiguration()
+        self.steerMotorConfig = TalonFXConfiguration()
         self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.steerMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.steerMotorConfig.slot0.k_p = constants.ksteerP
@@ -41,26 +50,26 @@ class SwerveModule(object):
 
         self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.Fused_CANCODER
         self.steerMotorConfig.feedback.feedback_remote_sensor_id = steerCANCoderID 
-        self.steerMotorConfig.feedback.sensor_to_mechanism_ration = 1.0
+        self.steerMotorConfig.feedback.sensor_to_mechanism_ratio = 1.0
         self.steerMotorConfig.feedback.rotor_to_sensor_ratio = constants.kSwerveReductionSteer
         self.steerMotor.configurator.apply(self.steerMotorConfig)
 
-        self.canCoderConfig = phoenix6.CANcoderConfiguration()
+        self.canCoderConfig = CANcoderConfiguration()
         self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.SIGNED_PLUS_MINUS_HALF
         self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.COUNTER_CLOCKWISE_POSITIVE
         self.canCoderConfig.magnet_sensor.magnet_offset = 0.4
-        self.steerEncoder.configuration.apply(self.canCoderConfig)
+        self.steerEncoder.configurator.apply(self.canCoderConfig)
 
     def distance(self):
-        return self.driveMotor.getposition().value
+        return self.driveMotor.get_position().value
     
     def angle(self):
         return Rotation2d(self.steerEncoder.get_position().value * 2 * math.pi)
     
     def set_state(self, state):
         state = SwerveModuleState.optimize(state, self.angle())
-        self.driveMotor.set_control(phoenix6.VelocityVoltage(state.speed))
-        self.steerMotor.set_control(phoenix6.VelocityVoltage(state.angle))
+        self.driveMotor.set_control(VelocityVoltage(state.speed))
+        self.steerMotor.set_control(VelocityVoltage(state.angle))
     
     def get_state(self):
         return SwerveModulePosition(
@@ -87,7 +96,7 @@ class DriveSubsystem(commands2.SubsystemBase):
                                  constants.kSwerveBackRightSteerMotorCANID, 
                                  constants.kSwerveBackrightSteerEncoderCANID) 
 
-        self.__gyro = phoenix6.Pigeon2(constants.kPigeonCANID)
+        self.__gyro = Pigeon2(constants.kPigeonCANID)
 
         self.__kinematics = SwerveDrive4Kinematics(
             Translation2d(-constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
@@ -96,7 +105,7 @@ class DriveSubsystem(commands2.SubsystemBase):
              Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
                                                                                     
         )      
-        self.odometry = SwerveDrive4Odometry(
+        self.__odometry = SwerveDrive4Odometry(
             self.__kinematics,
             self.__gyro.get_yaw().value,
             (

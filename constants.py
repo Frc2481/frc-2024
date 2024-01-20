@@ -24,3 +24,6 @@ kOperatorControllerPort = 1
 
 kShooterSpeed = .60
 kFeederSpeed = .70
+
+kIntakeBeambreakPort = 8
+#kFeederBeambreakPort = 9

@@ -1,8 +1,8 @@
 import math
-import wpilib
 
-import commands2
-import commands2.cmd
+import wpilib
+from commands2 import *
+from commands2.cmd import * 
 
 import constants
 
@@ -25,6 +25,12 @@ class ShooterSubsystem(object):
         self.shooterMotor.configurator.apply(self.shooterMotorConfig)
 
     def shooter_on_cmd(self):
-        self.shooterMotor.set_control(VoltageOut(constants.kShooterSpeed * 12))
+        return runOnce(
+            lambda: self.shooterMotor.set_control(VoltageOut(constants.kShooterSpeed * 12))
+        )
+        
     def shooter_off_cmd(self):
-        self.shooterMotor.set_control(VoltageOut(0))  
+        return runOnce(
+            lambda: self.shooterMotor.set_control(VoltageOut(0))
+        )
+          

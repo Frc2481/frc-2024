@@ -11,10 +11,14 @@ from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration 
 from phoenix6.signals.spn_enums import *
 
+from wpilib import DigitalInput
+
 class IntakeSubsystem(object):
 
     def __init__(self):
         super().__init__()
+        
+        self.intakeBeambreak = DigitalInput(constants.kIntakeBeambreakPort)
 
         self.horizontalMotor = TalonFX(constants.kIntakeHorizontalMotorCANID)
         self.verticalMotor = TalonFX(constants.kIntakeVerticalMotorCANID)
@@ -37,6 +41,15 @@ class IntakeSubsystem(object):
 
     def set_intake_cmd(self, horizontal=None, vertical=None):
         
-        return runOnce(
-            lambda: self.set_rollers(horizontal, vertical)
+        return commands2.cmd.runOnce(
+            lambda: self.set_intake(horizontal, vertical)
         )
+    
+    def has_game_piece(self) -> bool:
+        # TODO beam break
+        return self.intakeBeambreak.get()
+    
+    def game_piece_ejected(self) -> bool:
+        # TODO beam break
+        return not self.intakeBeambreak.get()
+    

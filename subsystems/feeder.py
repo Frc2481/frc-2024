@@ -1,8 +1,8 @@
 import math
 import wpilib
 
-import commands2
-import commands2.cmd
+from commands2 import *
+from commands2.cmd import *
 
 import constants
 
@@ -25,9 +25,15 @@ class FeederSubsystem(object):
         self.feederMotor.configurator.apply(self.feederMotorConfig)
 
     def feeder_on_cmd (self):
-        self.feederMotor.set_control(VoltageOut(constants.kFeederSpeed * 12))
+        return runOnce(
+            lambda:  self.feederMotor.set_control(VoltageOut(constants.kFeederSpeed * 12))
+        )
+       
 
     def feeder_off_cmd (self):
-        self.feederMotor.set_control(VoltageOut(0))
+        return runOnce(
+           lambda: self.feederMotor.set_control(VoltageOut(0))
+        )
+        
   
 

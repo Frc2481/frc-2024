@@ -26,12 +26,13 @@ class MyRobot(wpilib.TimedRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        self.autonomousCommand = self.container.get_autonomous_command()
+        #self.autonomousCommand = self.container.get_autonomous_command()
 
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
 
     def autonomousPeriodic(self) -> None:
+        NetworkTables.getTable("limelight").getNumber('tv');
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:

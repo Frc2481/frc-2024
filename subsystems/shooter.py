@@ -9,7 +9,7 @@ import constants
 import phoenix6
 from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.controls import VoltageOut
+from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut
 from phoenix6.signals.spn_enums import *
 
 class ShooterSubsystem(object):
@@ -24,9 +24,15 @@ class ShooterSubsystem(object):
         self.shooterMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.shooterMotor.configurator.apply(self.shooterMotorConfig)
 
-    def shooter_on_cmd(self):
+        self.shooterMotorConfig.slot0.k_p = constants.kShooterP
+        self.shooterMotorConfig.slot0.k_i = constants.kShooterI
+        self.shooterMotorConfig.slot0.k_d = constants.kShooterD
+        self.shooterMotorConfig.slot0.k_f = constants.kShooterF
+        self.shooterMotorConfig.torque_current.peak_forward_torque_current
+
+    def shooter_on_cmd(self, shooter_speed_rps = constants.kShooterSpeedRPS):
         return runOnce(
-            lambda: self.shooterMotor.set_control(VoltageOut(constants.kShooterSpeed * 12))
+            lambda: self.shooterMotor.set_control(VelocityTorqueCurrentFOC(shooter_speed_rps))
         )
         
     def shooter_off_cmd(self):

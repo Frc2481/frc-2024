@@ -22,8 +22,28 @@ kSwerveReductionDrive = 4.31
 kDriverControllerPort = 0
 kOperatorControllerPort = 1
 
-kShooterSpeed = .60
+
 kFeederSpeed = .70
 
 kIntakeBeambreakPort = 8
 #kFeederBeambreakPort = 9
+
+#ShooterFocCurrentGains
+kShooterSpeedRPS = 50
+kShooterP = 0
+kShooterI = 0
+kShooterD = 0
+kShooterF = 0
+kShooterPeakCurrent = 0
+
+#Gripper
+kGripperSolenoidModule = 1
+kGripperSolenoidModuleType = 2
+kGripperDoubleSolenoidReversePort = 1
+kGripperDoubleSolenoidForwardPort = 0
+
+#Arm
+kArmSolenoidModule = 4
+kArmSolenoidModuleType = 5
+kArmDoubleSolenoidForwardPort = 6
+kArmDoubleSolenoidReversePort = 7

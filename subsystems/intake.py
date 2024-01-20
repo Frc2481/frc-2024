@@ -8,7 +8,8 @@ import constants
 
 import phoenix6
 from phoenix6.hardware import TalonFX
-from phoenix6.configs import TalonFXConfiguration 
+from phoenix6.configs import TalonFXConfiguration
+from phoenix6.controls import VoltageOut
 from phoenix6.signals.spn_enums import *
 
 from wpilib import DigitalInput
@@ -35,9 +36,9 @@ class IntakeSubsystem(object):
     def set_intake(self, horizontal=None, vertical=None):
         
         if horizontal is not None:
-            self.horizontalMotor.set_control(phoenix6.VoltageOut(horizontal * 12.0))
+            self.horizontalMotor.set_control(VoltageOut(horizontal * 12.0))
         if vertical is not None:
-            self.verticalMotor.set_control(phoenix6.VoltageOut(vertical * 12.0))
+            self.verticalMotor.set_control(VoltageOut(vertical * 12.0))
 
     def set_intake_cmd(self, horizontal=None, vertical=None):
         

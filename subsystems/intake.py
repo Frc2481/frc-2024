@@ -7,6 +7,8 @@ import commands2.cmd
 import constants
 
 import phoenix6
+from phoenix6.hardware import TalonFX
+from phoenix6.configs import TalonFXConfiguration 
 from phoenix6.signals.spn_enums import *
 
 class IntakeSubsystem(object):
@@ -14,15 +16,14 @@ class IntakeSubsystem(object):
     def __init__(self):
         super().__init__()
 
-        self.horizontalMotor = phoenix6.TalonFX(constants.kIntakeHorizontalMotorCANID)
-        self.verticalMotor = phoenix6.TalonFX(constants.kIntakeVerticalMotorCANID)
-
-        self.horizontalMotorConfig = phoenix6.TalonFXConfiguration()
+        self.horizontalMotor = TalonFX(constants.kIntakeHorizontalMotorCANID)
+        self.verticalMotor = TalonFX(constants.kIntakeVerticalMotorCANID)
+        self.horizontalMotorConfig = TalonFXConfiguration()
         self.horizontalMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.horizontalMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.horizontalMotor.configurator.apply(self.horizontalMotorConfig)
 
-        self.verticalMotorConfig = phoenix6.TalonFXConfiguration()
+        self.verticalMotorConfig = TalonFXConfiguration()
         self.verticalMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.verticalMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.verticalMotor.configurator.apply(self.verticalMotorConfig)

@@ -28,7 +28,7 @@ class SwerveModule(object):
         self.driveMotorConfig.slot0.k_i = constants.kdriveI 
         self.driveMotorConfig.slot0.k_d = constants.kdriveD
         self.driveMotorConfig.slot0.k_f = constants.kDriveMotorF 
-        self.driveMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kDriveDriveReduction
+        self.driveMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kSwerveReductionDrive
         self.driveMotor.configuration.apply(self.driveMotorConfig)
         
         self.steerMotorConfig = phoenix6.TalonFXConfiguration()
@@ -42,7 +42,7 @@ class SwerveModule(object):
         self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.Fused_CANCODER
         self.steerMotorConfig.feedback.feedback_remote_sensor_id = steerCANCoderID 
         self.steerMotorConfig.feedback.sensor_to_mechanism_ration = 1.0
-        self.steerMotorConfig.feedback.rotor_to_sensor_ratio = constants.kDriveSteerReduction
+        self.steerMotorConfig.feedback.rotor_to_sensor_ratio = constants.kSwerveReductionSteer
         self.steerMotor.configurator.apply(self.steerMotorConfig)
 
         self.canCoderConfig = phoenix6.CANcoderConfiguration()
@@ -74,20 +74,20 @@ class DriveSubsystem(commands2.SubsystemBase):
     def __init__(self):
         super().__init__()
 
-        self.__fl = SwerveModule(constants.kDriveMotorFrontLeftCANID, 
-                                 constants.kSteerMotorFrontLeftCANID, 
-                                 constants.kSteerEncoderFrontLeftCANID)  
-        self.__fr = SwerveModule(constants.kDriveMotorFrontRightCANID, 
-                                 constants.kSteerMotorFrontRightCANID,
-                                 constants.kSteerEncoderFrontRightCANID)
-        self.__bl = SwerveModule(constants.kDriveMotorBackLeftCANID,
-                                 constants.kSteerMotorBackLeftCANID, 
-                                 constants.kSteerEncoderBackLeftCANID)
-        self.__br = SwerveModule(constants.kDriveMotorBackRightCANID,
-                                 constants.kSteerMotorBackRightCANID, 
-                                 constants.kSteerEncoderBackrightCANID) 
+        self.__fl = SwerveModule(constants.kSwerveFrontLeftDriveMotorCANID, 
+                                 constants.kSwerveFrontLeftSteerMotorCANID, 
+                                 constants.kSwerveFrontLeftSteerEncoderCANID)  
+        self.__fr = SwerveModule(constants.kSwerveFrontRightDriveMotorCANID, 
+                                 constants.kSwerveFrontRightSteerMotorCANID,
+                                 constants.kSwerveFrontRightSteerEncoderCANID)
+        self.__bl = SwerveModule(constants.kSwerveBackLeftDriveMotorCANID,
+                                 constants.kSwerveBackLeftSteerMotorCANID, 
+                                 constants.kSwerveBackLeftSteerEncoderCANID)
+        self.__br = SwerveModule(constants.kSwerveBackRightDriveMotorCANID,
+                                 constants.kSwerveBackRightSteerMotorCANID, 
+                                 constants.kSwerveBackrightSteerEncoderCANID) 
 
-        self.__gyro = phoenix6.Pigeon2(constants.kPigeonCANId)
+        self.__gyro = phoenix6.Pigeon2(constants.kPigeonCANID)
 
         self.__kinematics = SwerveDrive4Kinematics(
             Translation2d(-constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),

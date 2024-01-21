@@ -118,13 +118,15 @@ class DriveSubsystem(commands2.SubsystemBase):
         )
     def periodic(self):
 
-        self.__odometry.update(
-            self.__gyro.get_yaw().value,
-            self.__fl.get_state(),
-            self.__fr.get_state(),
-            self.__bl.get_state(),
-            self.__br.get_state(),
-        )
+        # FIXME: Crashes currently.
+        # self.__odometry.update(
+        #     self.__gyro.get_yaw().value,
+        #     self.__fl.get_state(),
+        #     self.__fr.get_state(),
+        #     self.__bl.get_state(),
+        #     self.__br.get_state(),
+        # )
+        pass
 
     def get_pose(self):
         return self.__odometry.getPose()

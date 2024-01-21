@@ -14,7 +14,7 @@ from phoenix6.signals.spn_enums import *
 
 from wpilib import DigitalInput
 
-class IntakeSubsystem(object):
+class IntakeSubsystem(commands2.SubsystemBase):
 
     def __init__(self):
         super().__init__()
@@ -34,14 +34,14 @@ class IntakeSubsystem(object):
         self.verticalMotor.configurator.apply(self.verticalMotorConfig)
 
     def set_intake(self, horizontal=None, vertical=None):
-        
+
         if horizontal is not None:
             self.horizontalMotor.set_control(VoltageOut(horizontal * 12.0))
         if vertical is not None:
             self.verticalMotor.set_control(VoltageOut(vertical * 12.0))
 
     def set_intake_cmd(self, horizontal=None, vertical=None):
-        
+
         return commands2.cmd.runOnce(
             lambda: self.set_intake(horizontal, vertical)
         )

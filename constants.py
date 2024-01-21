@@ -41,7 +41,7 @@ kOperatorControllerPort = 1
 kFeederSpeed = .70
 
 #BeamBrake
-kIntakeBeambreakPort = 8
+kIntakeBeambreakPort = 0
 #kFeederBeambreakPort = 9
 
 #ShooterFocCurrentGains
@@ -53,14 +53,13 @@ kShooterF = 0
 kShooterPeakCurrent = 0
 
 #Gripper
-kGripperSolenoidModule = 1
-kGripperSolenoidModuleType = 2
-kGripperDoubleSolenoidReversePort = 1
-kGripperDoubleSolenoidForwardPort = 0
+kGripperSolenoidModule = 0
+kGripperDoubleSolenoidForwardPort = 1
+kGripperDoubleSolenoidReversePort = 2
+
 
 #Arm
-kArmSolenoidModule = 4
-kArmSolenoidModuleType = 5
-kArmDoubleSolenoidForwardPort = 6
-kArmDoubleSolenoidReversePort = 7
+kArmSolenoidModule = 0
+kArmDoubleSolenoidForwardPort = 3
+kArmDoubleSolenoidReversePort = 4
 

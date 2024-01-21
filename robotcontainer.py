@@ -13,9 +13,6 @@ from subsystems.drivetrain import DriveSubsystem
 
 
 class RobotContainer(object):
-    
-    def __init__(self) -> None:
-        self.button_bindings_configure()
 
     def __init__(self):
         self.feeder = FeederSubsystem()
@@ -27,9 +24,7 @@ class RobotContainer(object):
 
         self.driver_controller = CommandXboxController(
             constants.kDriverControllerPort)
-            
-        
-                            
+
         self.operator_controller = CommandXboxController(            
             constants.kOperatorControllerPort)
         
@@ -41,12 +36,12 @@ class RobotContainer(object):
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         self.operator_controller.x().onTrue(self.amp_extend_cmd())
         self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
-        
 
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd())
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
-                                          .until(self.intake.has_game_piece))
+                                            .andThen(WaitUntilCommand(self.intake.has_game_piece))
+                                            .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
             

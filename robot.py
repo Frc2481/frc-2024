@@ -7,7 +7,7 @@ import commands2
 from robotcontainer import RobotContainer
 
 
-class MyRobot(wpilib.TimedRobot):
+class MyRobot(commands2.TimedCommandRobot):
 
     def robotInit(self) -> None:
         """
@@ -32,7 +32,6 @@ class MyRobot(wpilib.TimedRobot):
             self.autonomousCommand.schedule()
 
     def autonomousPeriodic(self) -> None:
-        NetworkTables.getTable("limelight").getNumber('tv');
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:
@@ -45,7 +44,3 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
-
-
-if __name__ == "__main__":
-    wpilib.run(MyRobot)

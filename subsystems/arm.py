@@ -13,10 +13,10 @@ class ArmSubsystem(object):
         super().__init__()
 
         self.armSolenoid = DoubleSolenoid(
-            constants.kArmSolenoidModule,
+            constants.ARM_SOLENOID_MODULE,
             moduleType = wpilib.PneumaticsModuleType.REVPH,
-            forwardChannel = constants.kArmDoubleSolenoidForwardPort,
-            reverseChannel = constants.kArmDoubleSolenoidReversePort
+            forwardChannel = constants.ARM_DOUBLE_SOLENOID_FORWARD_PORT,
+            reverseChannel = constants.ARM_DOUBLE_SOLENOID_REVERSE_PORT
         )
 
     def arm_extend_cmd(self):

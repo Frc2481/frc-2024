@@ -17,7 +17,7 @@ class FeederSubsystem(object):
     def __init__(self):
         super().__init__()
 
-        self.feederMotor = TalonFX(constants.kFeederMotorCANID)
+        self.feederMotor = TalonFX(constants.FEEDER_MOTOR_CAN_ID)
 
         self.feederMotorConfig = TalonFXConfiguration()
         self.feederMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -26,7 +26,7 @@ class FeederSubsystem(object):
 
     def feeder_on_cmd (self):
         return runOnce(
-            lambda:  self.feederMotor.set_control(VoltageOut(constants.kFeederSpeed * 12))
+            lambda:  self.feederMotor.set_control(VoltageOut(constants.FEEDER_SPEED * 12))
         )
        
 

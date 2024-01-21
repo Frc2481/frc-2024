@@ -1,11 +1,10 @@
+"""Robot Physics Module"""
+import typing
 import wpilib
 import wpilib.simulation
 
-import wpimath.system.plant
 from pyfrc.physics.core import PhysicsInterface
 
-import math
-import typing
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
@@ -17,19 +16,14 @@ class PhysicsEngine:
     """
 
     def __init__(self, physics_controller: PhysicsInterface, robot: "MyRobot"):
-        pass
-        # self.robot = robot
+        self.robot = robot
 
-        # # Create a Mechanism2d display of an Arm
-        # self.mech2d = wpilib.Mechanism2d(90, 90)
+        self.mech2d = wpilib.Mechanism2d(90, 90)
+        self.physics_controller = physics_controller
 
-        # self.platform = self.mech2d.getRoot("Platform Base", 20, 30)
-        # self.platform_horizontal = self.platform.appendLigament(
-        #     "Platform Horizontal", 15, -15, 6, wpilib.Color8Bit(wpilib.Color.kWhite)
-        # )
-        # self.platform_vertical = self.platform_horizontal.appendLigament(
-        #     "Platform Vertical", 15, -75, 6, wpilib.Color8Bit(wpilib.Color.kWhite)
-        # )
+        self.platform = self.mech2d.getRoot("Platform Base", 20, 30)
+        wpilib.SmartDashboard.putData("Robot Sim", self.mech2d)
+
 
         # # self.gripperBase = self.mech2d.getRoot("GripperBase", 20, 50)
         # self.gripperFixed = self.platform.appendLigament(
@@ -89,4 +83,3 @@ class PhysicsEngine:
         :param tm_diff: The amount of time that has passed since the last
                         time that this function was called
         """
-        pass

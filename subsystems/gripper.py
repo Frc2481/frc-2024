@@ -16,10 +16,10 @@ class GripperSubsystem(object):
         super().__init__()
 
         self.gripperSolenoid = DoubleSolenoid(
-            constants.kGripperSolenoidModule,
+            constants.GRIPPER_SOLENOID_MODULE,
             moduleType = wpilib.PneumaticsModuleType.REVPH,
-            forwardChannel = constants.kGripperDoubleSolenoidForwardPort,
-            reverseChannel = constants.kGripperDoubleSolenoidReversePort
+            forwardChannel = constants.GRIPPER_DOUBLE_SOLENOID_FORWARD_PORT,
+            reverseChannel = constants.GRIPPER_DOUBLE_SOLENOID_REVERSE_PORT
         )
         
         self.game_piece = self.Game_Piece_None

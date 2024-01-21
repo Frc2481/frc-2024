@@ -15,7 +15,7 @@ class ElevatorSubsystem():
     def __init__(self):
         super().__init__()
 
-        self.elevatorMotor = TalonFX(constants.kElevatorMotorCANID)
+        self.elevatorMotor = TalonFX(constants.ELEVATOR_MOTOR_CAN_ID)
 
         self.elevatorMotorConfig = TalonFXConfiguration()
         self.elevatorMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE

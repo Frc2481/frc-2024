@@ -26,17 +26,17 @@ class RobotContainer(object):
         self.drivetrain = DriveSubsystem()
 
         self.driver_controller = CommandXboxController(
-            constants.kDriverControllerPort)
+            constants.DRIVER_CONTROLLER_PORT)
             
         
                             
         self.operator_controller = CommandXboxController(            
-            constants.kOperatorControllerPort)
+            constants.OPERATOR_CONTROLLER_PORT)
         
         self.button_bindings_configure()
 
     def button_bindings_configure(self):
-        self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
+        self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.SHOOTER_SPEED_RPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         self.operator_controller.x().onTrue(self.amp_extend_cmd())

@@ -1,66 +1,68 @@
-kSwerveFrontLeftDriveMotorCANID = 1
-kSwerveFrontLeftSteerMotorCANID = 2
-kSwerveFrontRightDriveMotorCANID = 3
-kSwerveFrontRightSteerMotorCANID = 4
-kSwerveBackLeftDriveMotorCANID =5
-kSwerveBackLeftSteerMotorCANID = 6
-kSwerveBackRightDriveMotorCANID = 7
-kSwerveBackRightSteerMotorCANID = 8
-kShooterMotorCANID = 9
-kIntakeVerticalMotorCANID = 10
-kIntakeHorizontalMotorCANID = 11
-kFeederMotorCANID = 12
-kElevatorMotorCANID = 13
-kSwerveFrontLeftSteerEncoderCANID = 2
-kSwerveFrontRightSteerEncoderCANID = 4
-kSwerveBackLeftSteerEncoderCANID = 6
-kSwerveBackrightSteerEncoderCANID = 8
-kPigeonCANID = 1
+"""Constant for use throught FRC2481 2024 Robot"""
+SWERVE_FRONT_LEFT_DRIVE_MOTOR_CAN_ID = 1
+SWERVE_FRONT_LEFT_STEER_MOTOR_CAN_ID = 2
+SWERVE_FRONT_RIGHT_DRIVE_MOTOR_CAN_ID = 3
+SWERVE_FRONT_RIGHT_STEER_MOTOR_CAN_ID = 4
+SWERVE_BACK_LEFT_DRIVE_MOTOR_CAN_ID =5
+SWERVE_BACK_LEFT_STEER_MOTOR_CAN_ID = 6
+SWERVE_BACK_RIGHT_DRIVE_MOTOR_CAN_ID = 7
+SWERVE_BACK_RIGHT_STEER_MOTOR_CAN_ID = 8
+SHOOTER_MOTOR_CAN_ID = 9
+INTAKE_VERTICAL_MOTOR_CAN_ID = 10
+INTAKE_HORIZONTAL_MOTOR_CAN_ID = 11
+FEEDER_MOTOR_CAN_ID = 12
+ELEVATOR_MOTOR_CAN_ID = 13
+SWERVE_FRONT_LEFT_STEER_ENCODER_CAN_ID = 2
+SWERVE_FRONT_RIGHT_STEER_ENCODER_CAN_ID = 4
+SWERVE_BACK_LEFT_STEER_ENCODER_CAN_ID = 6
+SWERVE_BACK_RIGHT_STEER_ENCODER_CAN_ID = 8
+PIGEON_GYRO_CAN_ID = 1
 
 #drivetrain
-kWheelTrack = 0
-kWheelBase = 0
-kdriveP = 0
-kdriveI = 0
-kdriveD = 0
-kdriveF = 0
+DRIVE_WHEEL_TRACK = 0
+DRIVE_WHEEL_BASE = 0
+DRIVE_P = 0
+DRIVE_I = 0
+DRIVE_D = 0
+DRIVE_F = 0
+DRIVE_PERIOD = 20 # milliseconds?
+DRIVE_MAX_SPEED = 60
 
 #steer
-ksteerP = 0
-ksteerI = 0
-ksteerD = 0
-ksteerF = 0
+STEER_P = 0
+STEER_I = 0
+STEER_D = 0
+STEER_F = 0
 
-kSwerveReductionSteer = 40
-kSwerveReductionDrive = 4.31
+SWERVE_REDUCTION_STEER = 40
+SWERVE_REDUCTION_DRIVE = 4.31
 
-kDriverControllerPort = 0
-kOperatorControllerPort = 1
+DRIVER_CONTROLLER_PORT = 0
+OPERATOR_CONTROLLER_PORT = 1
 
 #Feeder
-kFeederSpeed = .70
+FEEDER_SPEED = .70
 
 #BeamBrake
-kIntakeBeambreakPort = 8
-#kFeederBeambreakPort = 9
+INTAKE_BEAM_BREAK_PORT = 8
+#FEEDER_BEAM_BREAK_PORT = 9
 
 #ShooterFocCurrentGains
-kShooterSpeedRPS = 50
-kShooterP = 0
-kShooterI = 0
-kShooterD = 0
-kShooterF = 0
-kShooterPeakCurrent = 0
+SHOOTER_SPEED_RPS = 50
+SHOOTER_P = 0
+SHOOTER_I = 0
+SHOOTER_D = 0
+SHOOTER_F = 0
+SHOOTER_PEAK_CURRENT = 0
 
 #Gripper
-kGripperSolenoidModule = 1
-kGripperSolenoidModuleType = 2
-kGripperDoubleSolenoidReversePort = 1
-kGripperDoubleSolenoidForwardPort = 0
+GRIPPER_SOLENOID_MODULE = 1
+GRIPPER_SOLENOID_MODULE_TYPE = 2
+GRIPPER_DOUBLE_SOLENOID_REVERSE_PORT = 1
+GRIPPER_DOUBLE_SOLENOID_FORWARD_PORT = 0
 
 #Arm
-kArmSolenoidModule = 4
-kArmSolenoidModuleType = 5
-kArmDoubleSolenoidForwardPort = 6
-kArmDoubleSolenoidReversePort = 7
-
+ARM_SOLENOID_MODULE = 4
+ARM_SOLENOID_MODULE_TYPE = 5
+ARM_DOUBLE_SOLENOID_FORWARD_PORT = 6
+ARM_DOUBLE_SOLENOID_REVERSE_PORT = 7

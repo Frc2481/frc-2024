@@ -13,6 +13,16 @@
             "args": [
                 "sim",
             ]
+        },
+        {
+            "name": "robotpy test",
+            "type": "python",
+            "request": "launch",
+            "module": "robotpy",
+            "justMyCode": true,
+            "args": [
+                "test",
+            ]
         }
     ]
 }

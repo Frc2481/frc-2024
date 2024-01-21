@@ -48,7 +48,7 @@ class SwerveModule(object):
         self.steerMotorConfig.slot0.k_d = constants.ksteerD
         self.steerMotorConfig.slot0.k_f = constants.ksteerF
 
-        self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.Fused_CANCODER
+        self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.FUSED_CANCODER
         self.steerMotorConfig.feedback.feedback_remote_sensor_id = steerCANCoderID 
         self.steerMotorConfig.feedback.sensor_to_mechanism_ratio = 1.0
         self.steerMotorConfig.feedback.rotor_to_sensor_ratio = constants.kSwerveReductionSteer
@@ -71,7 +71,7 @@ class SwerveModule(object):
         self.driveMotor.set_control(VelocityVoltage(state.speed))
         self.steerMotor.set_control(VelocityVoltage(state.angle))
     
-    def get_state(self):
+    def get_state(self) -> SwerveModulePosition:
         return SwerveModulePosition(
             distance=self.distance(),
             angle=self.angle()
@@ -106,15 +106,15 @@ class DriveSubsystem(commands2.SubsystemBase):
                                                                                     
         )      
         self.__odometry = SwerveDrive4Odometry(
-            self.__kinematics,
-            self.__gyro.get_yaw().value,
-            (
+            kinematics = self.__kinematics,
+            gyroAngle = Rotation2d(),
+            modulePositions=(
                 self.__fl.get_state(),
                 self.__fr.get_state(),
                 self.__bl.get_state(),
                 self.__br.get_state()
             ),
-            Pose2d()
+            initialPose=Pose2d()
         )
     def periodic(self):
 

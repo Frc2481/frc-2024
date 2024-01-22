@@ -7,7 +7,8 @@ import constants
 import commands2
 import commands2.cmd
 
-class GripperSubsystem(object):
+
+class GripperSubsystem(commands2.SubsystemBase):
 
     Game_Piece_None = 0
     Game_Piece_Note = 1
@@ -17,7 +18,7 @@ class GripperSubsystem(object):
 
         self.gripperSolenoid = DoubleSolenoid(
             constants.kGripperSolenoidModule,
-            moduleType = wpilib.PneumaticsModuleType.REVPH,
+            moduleType = wpilib.PneumaticsModuleType.CTREPCM,
             forwardChannel = constants.kGripperDoubleSolenoidForwardPort,
             reverseChannel = constants.kGripperDoubleSolenoidReversePort
         )

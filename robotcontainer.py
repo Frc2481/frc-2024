@@ -33,17 +33,17 @@ class RobotContainer(object):
     def button_bindings_configure(self):
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
-        self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
+        # self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         self.operator_controller.x().onTrue(self.amp_extend_cmd())
-        self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
+        # self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
 
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd())
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
-        self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
-        self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+        # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
+        # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
             
     def speaker_score_cmd(self):
         return ((self.feeder.feeder_on_cmd().until(self.intake.game_piece_ejected))

@@ -7,6 +7,7 @@ import constants
 import commands2
 import commands2.cmd
 
+
 class ArmSubsystem(object):
 
     def __init__(self):
@@ -14,7 +15,7 @@ class ArmSubsystem(object):
 
         self.armSolenoid = DoubleSolenoid(
             constants.kArmSolenoidModule,
-            moduleType = wpilib.PneumaticsModuleType.REVPH,
+            moduleType = wpilib.PneumaticsModuleType.CTREPCM,
             forwardChannel = constants.kArmDoubleSolenoidForwardPort,
             reverseChannel = constants.kArmDoubleSolenoidReversePort
         )

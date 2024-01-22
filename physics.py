@@ -13,6 +13,30 @@ if typing.TYPE_CHECKING:
     from robot import MyRobot
 
 
+class MechanismSpinner(object):
+
+    def __init__(self, name, parent, length, color):
+        self.__pos = 0
+        self.__state = False
+
+        self.spokes = []
+        for i in range(6):
+            self.spokes.append(
+                parent.appendLigament(name + " Spoke %d" % i, length, 0, 6, wpilib.Color8Bit(color))
+            )
+
+    def update(self, state):
+        self.__state = state
+
+        if self.__state:
+            self.__pos += 10
+            if self.__pos == 360:
+                self.__pos = 0
+
+        for i, spoke in enumerate(self.spokes):
+            spoke.setAngle(self.__pos + i * 60)
+
+
 class PhysicsEngine:
     """
     Simulates a 4-wheel robot using Tank Drive joystick control
@@ -22,20 +46,22 @@ class PhysicsEngine:
         self.robot = robot
 
         # # Create a Mechanism2d display of intake
-        self.mech2d = wpilib.Mechanism2d(90, 90)
+        self.mech2d = wpilib.Mechanism2d(80, 80)
 
         self.platform = self.mech2d.getRoot("Platform Base", 20, 30)
 
-        self.intake_pos = 0
-        self.intake_roller_1 = self.platform.appendLigament(
-            "IntakeRoller1", 15, 0, 6, wpilib.Color8Bit(wpilib.Color.kWhite)
-        )
-        self.intake_roller_2 = self.platform.appendLigament(
-            "IntakeRoller2", 15, 120, 6, wpilib.Color8Bit(wpilib.Color.kWhite)
-        )
-        self.intake_roller_3 = self.platform.appendLigament(
-            "IntakeRoller3", 15, 240, 6, wpilib.Color8Bit(wpilib.Color.kWhite)
-        )
+        # Chasis
+        self.chassis = self.mech2d.getRoot("ChassisBase", 5, 30)
+        self.chassis_horiz = self.chassis.appendLigament("Chassis Horizontal", 60, 0, 6,  wpilib.Color8Bit(wpilib.Color.kGray))
+
+        # Shooter Pivot
+        self.shooter_base = self.mech2d.getRoot("ShooterBase", 15, 30)
+        self.shooter_adjust = self.shooter_base.appendLigament("Shooter Adjust", 40, 15, 6, wpilib.Color8Bit(wpilib.Color.kGray))
+
+        self.intake_base = self.mech2d.getRoot("IntakeBase", 5, 25)
+        self.intake_roller = MechanismSpinner("Intake", self.intake_base, 5, wpilib.Color.kWhite)
+        # self.feeder_roller = MechanismSpinner("Feeder", self.platform, 10, wpilib.Color.kOrange)
+        self.shooter_roller = MechanismSpinner("Shooter", self.shooter_adjust, 5, wpilib.Color.kGreen)
 
         # # self.gripperBase = self.mech2d.getRoot("GripperBase", 20, 50)
         # self.gripperFixed = self.platform.appendLigament(
@@ -95,22 +121,15 @@ class PhysicsEngine:
         :param tm_diff: The amount of time that has passed since the last
                         time that this function was called
         """
-
-        # Intake Roller
-        self.intake_roller_1.setAngle(self.intake_pos)
-        self.intake_roller_2.setAngle(self.intake_pos+120)
-        self.intake_roller_3.setAngle(self.intake_pos+240)
-
         if wpilib.DriverStation.isEnabled():
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(12.0)
+            self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(12.0)
         else:
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(0.0)
+            self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(0.0)
 
-        # Check for if the motor is being commanded.
-        if self.robot.container.intake.horizontalMotor.sim_state.motor_voltage > 0:
-            self.intake_pos += 25
-            if self.intake_pos == 360:
-                self.intake_pos = 0
+        self.intake_roller.update(self.robot.container.intake.horizontalMotor.sim_state.motor_voltage > 0)
+        self.shooter_roller.update(self.robot.container.shooter.shooterMotor.sim_state.motor_voltage > 0)
 
         # Feed the enable signal to all motors.  No motors will turn in simulation without this.
         if wpilib.DriverStation.isEnabled():

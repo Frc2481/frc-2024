@@ -38,7 +38,11 @@ kDriverControllerPort = 0
 kOperatorControllerPort = 1
 
 #Feeder
-kFeederSpeed = .70
+kFeederSpeedRPS = 20
+kFeederP = 0
+kFeederI = 0
+kFeederD = 0
+kFeederF = 0
 
 #BeamBrake
 kIntakeBeambreakPort = 0

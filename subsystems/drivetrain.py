@@ -3,6 +3,11 @@ import wpilib
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry, \
 ChassisSpeeds
 from wpimath.geometry import Rotation2d, Translation2d, Pose2d
+#Pathplanner stuff
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
+from wpilib import DriverStation
+from pathplannerlib.auto import PathPlannerAuto
 
 import commands2
 import commands2.cmd
@@ -76,7 +81,31 @@ class SwerveModule(object):
             distance=self.distance(),
             angle=self.angle()
         )
+    
+    AutoBuilder.configureHolonomic(
+            self.getPose, # Robot pose supplier
+            self.resetPose, # Method to reset odometry (will be called if your auto has a starting pose)
+            self.getRobotRelativeSpeeds, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            self.driveRobotRelative, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
+                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(5.0, 0.0, 0.0), # Rotation PID constants
+                4.5, # Max module speed, in m/s
+                0.4, # Drive base radius in meters. Distance from robot center to furthest module.
+                ReplanningConfig() # Default path replanning config. See the API for the options here
+            ),
+            self.shouldFlipPath, # Supplier to control path flipping based on alliance color
+            self 
+        )
+    def shouldFlipPath():
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # This will flip the path being followed to the red side of the field.
+        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
+class RobotContainer:
+    def getAutonomousCommand():
+        return PathPlannerAuto('Bottom Auto')
 
 class DriveSubsystem(commands2.SubsystemBase):
 

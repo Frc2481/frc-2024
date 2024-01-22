@@ -9,7 +9,7 @@ import constants
 import phoenix6
 from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.controls import VoltageOut
+from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut
 from phoenix6.signals.spn_enums import *
 
 class FeederSubsystem(object):
@@ -22,13 +22,19 @@ class FeederSubsystem(object):
         self.feederMotorConfig = TalonFXConfiguration()
         self.feederMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.feederMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+
+        self.feederMotorConfig.slot0.k_p = constants.kFeederP
+        self.feederMotorConfig.slot0.k_i = constants.kFeederI
+        self.feederMotorConfig.slot0.k_d = constants.kFeederD
+        self.feederMotorConfig.slot0.k_f = constants.kFeederF
+        self.feederMotorConfig.torque_current.peak_forward_torque_current
         self.feederMotor.configurator.apply(self.feederMotorConfig)
 
-    def feeder_on_cmd (self):
+
+    def feeder_on_cmd (self, feeder_speed_rps = constants.kFeederSpeedRPS):
         return runOnce(
-            lambda:  self.feederMotor.set_control(VoltageOut(constants.kFeederSpeed * 12))
+            lambda:  self.feederMotor.set_control(VelocityTorqueCurrentFOC(feeder_speed_rps))
         )
-       
 
     def feeder_off_cmd (self):
         return runOnce(

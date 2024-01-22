@@ -11,6 +11,11 @@ from subsystems.gripper import GripperSubsystem
 from subsystems.arm import ArmSubsystem
 from subsystems.drivetrain import DriveSubsystem
 
+from pathplannerlib.auto import NamedCommands
+from pathplannerlib.path import PathPlannerPath
+from pathplannerlib.auto import AutoBuilder
+
+
 
 class RobotContainer(object):
 
@@ -37,7 +42,7 @@ class RobotContainer(object):
         self.operator_controller.x().onTrue(self.amp_extend_cmd())
         # self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
 
-        self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd())
+        self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
@@ -59,4 +64,12 @@ class RobotContainer(object):
         return ((self.arm.arm_extend_cmd())
                 .andThen(self.shooter.shooter_off_cmd)
                     .alongWith(self.feeder.feeder_off_cmd))
+    
+    def getAutonomousCommand():
+    # Load the path you want to follow using its name in the GUI
+    path = PathPlannerPath.fromPathFile(Bottom_Auto)
+
+    # Create a path following command using AutoBuilder. This will also trigger event markers.
+    return AutoBuilder.followPathWithEvents(path);
+
     

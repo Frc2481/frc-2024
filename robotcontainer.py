@@ -10,6 +10,7 @@ from subsystems.shooter import ShooterSubsystem
 from subsystems.gripper import GripperSubsystem
 from subsystems.arm import ArmSubsystem
 from subsystems.drivetrain import DriveSubsystem
+from subsystems.angulator import AngulatorSubsystem
 
 from pathplannerlib.auto import NamedCommands
 from pathplannerlib.path import PathPlannerPath
@@ -26,6 +27,7 @@ class RobotContainer(object):
         self.gripper = GripperSubsystem()
         self.arm = ArmSubsystem()
         self.drivetrain = DriveSubsystem()
+        self.angulator = AngulatorSubsystem()
 
         self.driver_controller = CommandXboxController(
             constants.kDriverControllerPort)
@@ -38,15 +40,20 @@ class RobotContainer(object):
     def button_bindings_configure(self):
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
-        # self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
+        self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         self.operator_controller.x().onTrue(self.amp_extend_cmd())
-        # self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
+        self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
+        self.operator_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
+        self.operator_controller.povUp().onFalse(self.angulator.angulator_off_cmd())
+        self.operator_controller.povDown().onTrue(self.angulator.angulator_down_cmd())
+        self.operator_controller.povDown().onFalse(self.angulator.angulator_off_cmd())
 
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
+        
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
             
@@ -67,9 +74,9 @@ class RobotContainer(object):
     
     def getAutonomousCommand():
     # Load the path you want to follow using its name in the GUI
-    path = PathPlannerPath.fromPathFile(Bottom_Auto)
+        path = PathPlannerPath.fromPathFile('ExampleWow')
+
+        return PathPlannerAuto('Bottom Auto')
 
     # Create a path following command using AutoBuilder. This will also trigger event markers.
-    return AutoBuilder.followPathWithEvents(path);
-
-    
+    #return AutoBuilder.followPathWithEvents(path);

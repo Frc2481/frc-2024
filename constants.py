@@ -1,3 +1,5 @@
+import math
+
 kSwerveFrontLeftDriveMotorCANID = 1
 kSwerveFrontLeftSteerMotorCANID = 2
 kSwerveFrontRightDriveMotorCANID = 3
@@ -10,7 +12,7 @@ kShooterMotorCANID = 9
 kIntakeVerticalMotorCANID = 10
 kIntakeHorizontalMotorCANID = 11
 kFeederMotorCANID = 12
-kElevatorMotorCANID = 13
+kAngulatorMotorCANID = 13
 kSwerveFrontLeftSteerEncoderCANID = 2
 kSwerveFrontRightSteerEncoderCANID = 4
 kSwerveBackLeftSteerEncoderCANID = 6
@@ -18,18 +20,18 @@ kSwerveBackrightSteerEncoderCANID = 8
 kPigeonCANID = 1
 
 #drivetrain
-kWheelTrack = 0
-kWheelBase = 0
+kWheelTrack = 18.5
+kWheelBase = 16.5
 kdriveP = 0
 kdriveI = 0
 kdriveD = 0
-kdriveF = 0
+kdriveV = 0
 
 #steer
 ksteerP = 0
 ksteerI = 0
 ksteerD = 0
-ksteerF = 0
+ksteerV = 0
 
 kSwerveReductionSteer = 40
 kSwerveReductionDrive = 4.31
@@ -39,10 +41,10 @@ kOperatorControllerPort = 1
 
 #Feeder
 kFeederSpeedRPS = 20
-kFeederP = 0
-kFeederI = 0
+kFeederP = 5
+kFeederI = 1
 kFeederD = 0
-kFeederF = 0
+kFeederV = 1.0
 
 #BeamBrake
 kIntakeBeambreakPort = 0
@@ -53,7 +55,7 @@ kShooterSpeedRPS = 50
 kShooterP = 5
 kShooterI = 1
 kShooterD = 0
-kShooterF = 1.0
+kShooterV = 1.0
 kShooterPeakCurrent = 40
 
 #Gripper
@@ -66,4 +68,31 @@ kGripperDoubleSolenoidReversePort = 2
 kArmSolenoidModule = 0
 kArmDoubleSolenoidForwardPort = 3
 kArmDoubleSolenoidReversePort = 4
+
+kDriveMaxSpeed = 16
+kDrivePeriod = 100
+
+#wheeelly wheel
+kDriveWheelRadiusIn = 1.5
+kDistanceTraveledOneRotation = (kDriveWheelRadiusIn * 2 * math.pi) 
+kDriveBaseRadiusIn = (((kWheelTrack**2 + kWheelBase**2)**0.5)/2)
+
+kMaxModuleSpeedFt = 19
+
+kDrivePathTranslationKP = 5.0
+kDrivePathTranslationKI = 0.0
+kDrivePathTranslationKD = 0.0
+
+kDrivePathAngularKP = 5.0
+kDrivePathAngularKI = 0.0
+kDrivePathAngularKD = 0.0
+
+#angulator
+kAngulatorSpeedRPS = 1
+kAngulatorP = 5
+kAngulatorI = 1
+kAngulatorD = 0
+kAngulatorV = 1.0
+
+
 

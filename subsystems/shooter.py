@@ -26,7 +26,7 @@ class ShooterSubsystem(object):
         self.shooterMotorConfig.slot0.k_p = constants.kShooterP
         self.shooterMotorConfig.slot0.k_i = constants.kShooterI
         self.shooterMotorConfig.slot0.k_d = constants.kShooterD
-        self.shooterMotorConfig.slot0.k_v = constants.kShooterF
+        self.shooterMotorConfig.slot0.k_v = constants.kShooterV
         self.shooterMotorConfig.torque_current.peak_forward_torque_current
 
         self.shooterMotor.configurator.apply(self.shooterMotorConfig)

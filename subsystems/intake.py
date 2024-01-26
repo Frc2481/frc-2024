@@ -50,7 +50,7 @@ class IntakeSubsystem(commands2.SubsystemBase):
         # TODO beam break
         return self.intakeBeambreak.get()
     
-    def game_piece_ejected(self) -> bool:
+    def intake_piece_ejected(self) -> bool:
         # TODO beam break
         return not self.intakeBeambreak.get()
     

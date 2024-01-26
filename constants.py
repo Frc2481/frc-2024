@@ -48,7 +48,7 @@ kFeederV = 1.0
 
 #BeamBrake
 kIntakeBeambreakPort = 0
-#kFeederBeambreakPort = 9
+kFeederBeambreakPort = 1
 
 #ShooterFocCurrentGains
 kShooterSpeedRPS = 50
@@ -88,11 +88,16 @@ kDrivePathAngularKI = 0.0
 kDrivePathAngularKD = 0.0
 
 #angulator
-kAngulatorSpeedRPS = 1
+kAngulatorDownPosition = 0
+kAngulatorUpPosition = 30000
 kAngulatorP = 5
 kAngulatorI = 1
 kAngulatorD = 0
 kAngulatorV = 1.0
-
+kAngulatorA = 1.0
+kAngulatorS = 1.0
+kAngulatorJerk = 5000
+kAngulatorAcceleration = 10000
+kAngulatorCruiseVelocity = 5000
 
 

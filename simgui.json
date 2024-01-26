@@ -58,9 +58,17 @@
       "Subscribers": {
         "open": true
       }
-    }
+    },
+    "visible": true
   },
   "NetworkTables View": {
     "visible": false
+  },
+  "windows": {
+    "/SmartDashboard/Robot Sim": {
+      "window": {
+        "visible": true
+      }
+    }
   }
 }

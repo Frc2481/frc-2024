@@ -6,12 +6,19 @@ from pyfrc.physics.core import PhysicsInterface
 
 import math
 import typing
+import phoenix6
+from phoenix6.sim import *
+from phoenix6.hardware.core.core_talon_fx import CoreTalonFX
+from phoenix6.hardware.core import * 
 
 from phoenix6 import unmanaged
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
 
+#class Falcon:
+   # phoenix6.sim.talon_fx_sim_state.TalonFXSimState (CoreTalonFX): phoenix6.hardware.core.core_talon_fx.CoreTalonFX
+    #phoenix6.sim.chassis_reference.ChassisReference = ChassisReference.CounterClockwise_Positive
 
 class MechanismSpinner(object):
 
@@ -56,19 +63,21 @@ class PhysicsEngine:
 
         #Feeder
         self.feeder_base = self.mech2d.getRoot("FeederBase", 15, 30)
-        self.feeder_adjust = self.feeder_base.appendLigament("Shooter Adjust", 20, 30, 6, wpilib.Color8Bit(wpilib.Color.kNavy))
+        self.feeder_adjust = self.feeder_base.appendLigament("Feeder Adjust", 20, 30, 6, wpilib.Color8Bit(wpilib.Color.kNavy))
         
+        
+
 
 
         # Shooter Pivot
         self.shooter_base = self.mech2d.getRoot("ShooterBase", 15, 30)
-        self.shooter_adjust = self.shooter_base.appendLigament("Shooter Adjust", 40, 30, 6, wpilib.Color8Bit(wpilib.Color.kNavy))
+        self.shooter_adjust = self.shooter_base.appendLigament("Shooter Adjust", 45, 30, 6, wpilib.Color8Bit(wpilib.Color.kNavy))
 
         self.intake_base = self.mech2d.getRoot("IntakeBase", 5, 25)
         self.intake_roller = MechanismSpinner("Intake", self.intake_base, 5, wpilib.Color.kWhite)
         self.feeder_roller = MechanismSpinner("Feeder", self.feeder_adjust, 5, wpilib.Color.kOrange)
         self.shooter_roller = MechanismSpinner("Shooter", self.shooter_adjust, 5, wpilib.Color.kGreen)
-
+       
         # self.gripperBase = self.mech2d.getRoot("GripperBase", 20, 50)
         # self.gripperFixed = self.platform.appendLigament(
         #     "Gripper Fixed", 25, 90, 6, wpilib.Color8Bit(wpilib.Color.kBlue)
@@ -110,7 +119,7 @@ class PhysicsEngine:
         # #     "Arm Tower", 30, -90, 6, wpilib.Color8Bit(wpilib.Color.kBlue)
         # # )
         # # self.arm = self.armBase.appendLigament(
-        # #     "Arm", 30, self.armSim.getAngle(), 6, wpilib.Color8Bit(wpilib.Color.kYellow)
+        # "Arm", 30, self.armSim.getAngle(), 6, wpilib.Color8Bit(wpilib.Color.kYellow)
         # # )
 
         # # Put Mechanism to SmartDashboard
@@ -123,18 +132,17 @@ class PhysicsEngine:
         if self.robot.container.angulator.angulatorMotor.sim_state.motor_voltage > 0.0:
             if self.shooter_adjust.getAngle() < 70:
                 self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()+1)
+                self.feeder_adjust.setAngle(self.shooter_adjust.getAngle())
+                self.robot.container.angulator.angulatorMotor.sim_state.set_raw_rotor_position(100)
+                self.robot.container.angulator.angulatorMotor.sim_state.set_rotor_velocity(10000)
         elif self.robot.container.angulator.angulatorMotor.sim_state.motor_voltage < 0.0:
             if self.shooter_adjust.getAngle() > 25:
-                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()-1) > 0.0    
-    
+                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()-1) 
+                self.feeder_adjust.setAngle(self.shooter_adjust.getAngle())
+                self.robot.container.angulator.angulatorMotor.sim_state.set_raw_rotor_position(100)
+                self.robot.container.angulator.angulatorMotor.sim_state.set_rotor_velocity(10000)
 
-        # else if angulator motor is negative voltage 
-        #    Then decrease angle of ligaments.
 
-        # Else 
-        #   Do nothing.
-
-        # Exercise for the studentsand ...limit max angle and min angle. in above if statements.
 
 
     def update_sim(self, now: float, tm_diff: float) -> None:
@@ -150,10 +158,12 @@ class PhysicsEngine:
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(12.0)
             self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(12.0)
             self.robot.container.feeder.feederMotor.sim_state.set_supply_voltage(12.0)
+            self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(12.0)
         else:
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(0.0)
             self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(0.0)
             self.robot.container.feeder.feederMotor.sim_state.set_supply_voltage(0.0)
+            self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(0.0)
 
         self.intake_roller.update(self.robot.container.intake.horizontalMotor.sim_state.motor_voltage > 0)
         self.shooter_roller.update(self.robot.container.shooter.shooterMotor.sim_state.motor_voltage > 0)

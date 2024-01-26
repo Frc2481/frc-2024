@@ -49,6 +49,7 @@ class RobotContainer(object):
         self.operator_controller.povDown().onFalse(self.angulator.angulator_off_cmd())
 
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
+        self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
@@ -58,13 +59,13 @@ class RobotContainer(object):
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
             
     def speaker_score_cmd(self):
-        return ((self.feeder.feeder_on_cmd().until(self.intake.game_piece_ejected))
-                .andThen(self.shooter.shooter_off_cmd())
-                    .alongWith(self.feeder.feeder_off_cmd()))
+        return (self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS).andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
+                .andThen(self.feeder.feeder_off_cmd)
+                .alongWith(self.shooter.shooter_off_cmd))
     
     def amp_handoff_cmd(self):
         return ((self.shooter.shooter_on_cmd().alongWith(self.feeder.feeder_on_cmd)
-                 .until(self.intake.game_piece_ejected)
+                 .until(self.feeder.feeder_piece_ejected)
                     .andThen(self.gripper.close_cmd)))
 
     def amp_extend_cmd(self):

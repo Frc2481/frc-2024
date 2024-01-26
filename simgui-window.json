@@ -9,13 +9,13 @@
   "MainWindow": {
     "GLOBAL": {
       "fps": "120",
-      "height": "795",
-      "maximized": "0",
+      "height": "1012",
+      "maximized": "1",
       "style": "0",
       "userScale": "1",
-      "width": "1413",
-      "xpos": "230",
-      "ypos": "189"
+      "width": "1920",
+      "xpos": "0",
+      "ypos": "25"
     }
   },
   "Table": {
@@ -86,8 +86,8 @@
     },
     "###NetworkTables Info": {
       "Collapsed": "0",
-      "Pos": "217,81",
-      "Size": "912,269"
+      "Pos": "217,79",
+      "Size": "912,271"
     },
     "###Other Devices": {
       "Collapsed": "0",
@@ -101,7 +101,7 @@
     },
     "###System Joysticks": {
       "Collapsed": "0",
-      "Pos": "18,400",
+      "Pos": "42,420",
       "Size": "151,182"
     },
     "###Timing": {

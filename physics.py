@@ -131,16 +131,24 @@ class PhysicsEngine:
         
         if self.robot.container.angulator.angulatorMotor.sim_state.motor_voltage > 0.0:
             if self.shooter_adjust.getAngle() < 70:
-                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()+1)
+                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()+1.5)
                 self.feeder_adjust.setAngle(self.shooter_adjust.getAngle())
                 self.robot.container.angulator.angulatorMotor.sim_state.set_raw_rotor_position(100)
                 self.robot.container.angulator.angulatorMotor.sim_state.set_rotor_velocity(10000)
-        elif self.robot.container.angulator.angulatorMotor.sim_state.motor_voltage < 0.0:
+            if self.shooter_adjust.getAngle() >= 70:
+                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()-1.5)
+            
+        elif self.robot.container.angulator.angulatorMotor.sim_state.motor_voltage < 0.0:            
             if self.shooter_adjust.getAngle() > 25:
-                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()-1) 
+                self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()-1.5) 
                 self.feeder_adjust.setAngle(self.shooter_adjust.getAngle())
                 self.robot.container.angulator.angulatorMotor.sim_state.set_raw_rotor_position(100)
                 self.robot.container.angulator.angulatorMotor.sim_state.set_rotor_velocity(10000)
+            if self.shooter_adjust.getAngle() <= 25:
+                    self.shooter_adjust.setAngle(self.shooter_adjust.getAngle()+1.5)
+          
+     
+                
 
 
 

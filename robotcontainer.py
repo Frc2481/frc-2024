@@ -59,9 +59,11 @@ class RobotContainer(object):
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
             
     def speaker_score_cmd(self):
-        return (self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS).andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
-                .andThen(self.feeder.feeder_off_cmd)
-                .alongWith(self.shooter.shooter_off_cmd))
+        return (self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS)
+                .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
+                .andThen(self.feeder.feeder_off_cmd())
+                .andThen(self.shooter.shooter_off_cmd()))
+                
     
     def amp_handoff_cmd(self):
         return ((self.shooter.shooter_on_cmd().alongWith(self.feeder.feeder_on_cmd)
@@ -70,8 +72,8 @@ class RobotContainer(object):
 
     def amp_extend_cmd(self):
         return ((self.arm.arm_extend_cmd())
-                .andThen(self.shooter.shooter_off_cmd)
-                    .alongWith(self.feeder.feeder_off_cmd))
+                .andThen(self.shooter.shooter_off_cmd())
+                    .alongWith(self.feeder.feeder_off_cmd()))
     
     def getAutonomousCommand():
     # Load the path you want to follow using its name in the GUI

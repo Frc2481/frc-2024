@@ -1,7 +1,10 @@
 {
   "Docking": {
     "Data": [
-      "DockNode    ID=0x00000002 Pos=120,502 Size=1207,504 Split=Y",
+      "DockNode    ID=0x00000001 Pos=1040,73 Size=129,68 Split=Y",
+      "DockNode  ID=0x00000005 Parent=0x00000001 SizeRef=129,34 Selected=0x61571664",
+      "DockNode  ID=0x00000006 Parent=0x00000001 SizeRef=129,32 Selected=0xF5CC1934",
+      "DockNode    ID=0x00000002 Pos=653,500 Size=642,521 Split=Y",
       "DockNode  ID=0x00000003 Parent=0x00000002 SizeRef=796,121 Selected=0x138219D4",
       "DockNode  ID=0x00000004 Parent=0x00000002 SizeRef=796,218 Selected=0x2D9B9756"
     ]
@@ -49,12 +52,13 @@
     },
     "###/SmartDashboard/Robot Sim": {
       "Collapsed": "0",
-      "Pos": "613,102",
-      "Size": "522,470"
+      "Pos": "354,26",
+      "Size": "875,460"
     },
     "###DIO": {
       "Collapsed": "0",
-      "Pos": "640,20",
+      "DockId": "0x00000005,0",
+      "Pos": "1040,73",
       "Size": "129,68"
     },
     "###FMS": {
@@ -65,8 +69,8 @@
     "###Joysticks": {
       "Collapsed": "0",
       "DockId": "0x00000003,0",
-      "Pos": "120,502",
-      "Size": "1207,179"
+      "Pos": "653,500",
+      "Size": "642,185"
     },
     "###Keyboard 0 Settings": {
       "Collapsed": "0",
@@ -81,13 +85,13 @@
     "###NetworkTables": {
       "Collapsed": "0",
       "DockId": "0x00000004,0",
-      "Pos": "120,502",
-      "Size": "1207,504"
+      "Pos": "653,687",
+      "Size": "642,334"
     },
     "###NetworkTables Info": {
       "Collapsed": "0",
-      "Pos": "407,598",
-      "Size": "912,271"
+      "Pos": "290,561",
+      "Size": "341,271"
     },
     "###Other Devices": {
       "Collapsed": "0",
@@ -96,8 +100,19 @@
     },
     "###Plot <0>": {
       "Collapsed": "0",
-      "Pos": "60,60",
-      "Size": "700,400"
+      "Pos": "1333,504",
+      "Size": "507,513"
+    },
+    "###Plot <1>": {
+      "Collapsed": "0",
+      "DockId": "0x00000006,0",
+      "Pos": "640,56",
+      "Size": "129,32"
+    },
+    "###Plot <2>": {
+      "Collapsed": "0",
+      "Pos": "1275,21",
+      "Size": "551,436"
     },
     "###Solenoids": {
       "Collapsed": "0",

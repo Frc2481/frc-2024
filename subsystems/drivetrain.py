@@ -11,8 +11,9 @@ from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig,
 from wpilib import DriverStation
 from pathplannerlib.auto import PathPlannerAuto
 
+from commands2.cmd import *
+
 import commands2
-import commands2.cmd
 from commands2.button import CommandXboxController 
 
 from phoenix6.controls import VelocityVoltage, PositionVoltage
@@ -68,16 +69,35 @@ class SwerveModule(object):
         self.canCoderConfig.magnet_sensor.magnet_offset = 0.4
         self.steerEncoder.configurator.apply(self.canCoderConfig)
 
+        self.wheel_circumference = 0
+
+
+    def zero_steer_encoder(self):
+        #zeros the offset so we dont have to deal with the previous one
+        self.canCoderConfig.magnet_sensor.magnet_offset = 0
+        self.steerEncoder.configurator.apply(self.canCoderConfig)
+        
+        #Wait for fresh data after offset
+        steer_offset = self.steerEncoder.get_absolute_position()
+        steer_offset.wait_for_update(1)
+        self.canCoderConfig.magnet_sensor.magnet_offset = -steer_offset.value
+        self.steerEncoder.configurator.apply(self.canCoderConfig)
+        return -steer_offset.value
+    
+    def set_steer_offset(self, steer_offset:float):
+        self.canCoderConfig.magnet_sensor.magnet_offset = steer_offset
+        self.steerEncoder.configurator.apply(self.canCoderConfig)
        
     def distance(self):
-        return self.driveMotor.get_position().value
+        return self.driveMotor.get_position().value * self.wheel_circumference
+    
     
     def angle(self):
-        return Rotation2d(self.steerEncoder.get_position().value * 2 * math.pi)
+        return Rotation2d(self.steerEncoder.get_absolute_position().value * 2 * math.pi)
     
     def set_state(self, state):
         state = SwerveModuleState.optimize(state, self.angle())
-        self.driveMotor.set_control(VelocityVoltage(state.speed))
+        self.driveMotor.set_control(VelocityVoltage(state.speed))        
         self.steerMotor.set_control(PositionVoltage(state.angle.degrees() / 360))
     
     def get_position(self) -> SwerveModulePosition:
@@ -88,9 +108,12 @@ class SwerveModule(object):
    
     def get_state(self) -> SwerveModuleState:
         return SwerveModuleState(
-            meters_per_second=wpimath.units.feetToMeters(self.driveMotor.get_velocity().value * (constants.kDistanceTraveledOneRotation)),
+            meters_per_second=wpimath.units.feetToMeters(self.driveMotor.get_velocity().value * (self.wheel_circumference)),
             angle=self.angle()
         )
+    
+    def zero_drive_encoder(self):
+       self.driveMotor.set_position(0)
     
    
 
@@ -99,36 +122,46 @@ class DriveSubsystem(commands2.Subsystem):
     def __init__(self):
         super().__init__()
 
-        self.__fl = SwerveModule(constants.kSwerveFrontLeftDriveMotorCANID, 
+        self._fl = SwerveModule(constants.kSwerveFrontLeftDriveMotorCANID, 
                                  constants.kSwerveFrontLeftSteerMotorCANID, 
                                  constants.kSwerveFrontLeftSteerEncoderCANID)  
-        self.__fr = SwerveModule(constants.kSwerveFrontRightDriveMotorCANID, 
+        self._fr = SwerveModule(constants.kSwerveFrontRightDriveMotorCANID, 
                                  constants.kSwerveFrontRightSteerMotorCANID,
                                  constants.kSwerveFrontRightSteerEncoderCANID)
-        self.__bl = SwerveModule(constants.kSwerveBackLeftDriveMotorCANID,
+        self._bl = SwerveModule(constants.kSwerveBackLeftDriveMotorCANID,
                                  constants.kSwerveBackLeftSteerMotorCANID, 
                                  constants.kSwerveBackLeftSteerEncoderCANID)
-        self.__br = SwerveModule(constants.kSwerveBackRightDriveMotorCANID,
+        self._br = SwerveModule(constants.kSwerveBackRightDriveMotorCANID,
                                  constants.kSwerveBackRightSteerMotorCANID, 
                                  constants.kSwerveBackrightSteerEncoderCANID) 
+        self._fl.set_steer_offset(wpilib.Preferences.getDouble("FL_ENCODER_OFFSET"))
+        self._fr.set_steer_offset(wpilib.Preferences.getDouble("FR_ENCODER_OFFSET"))
+        self._bl.set_steer_offset(wpilib.Preferences.getDouble("BL_ENCODER_OFFSET"))
+        self._br.set_steer_offset(wpilib.Preferences.getDouble("BR_ENCODER_OFFSET"))
 
-        self.__gyro = Pigeon2(constants.kPigeonCANID)
+        self._fl.wheel_circumference = wpilib.Preferences.getDouble("FL_WHEEL_CIRCUMFERENCE")
+        self._fr.wheel_circumference = wpilib.Preferences.getDouble("FR_WHEEL_CIRCUMFERENCE")
+        self._bl.wheel_circumference = wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE")
+        self._br.wheel_circumference = wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE")
+
+        self._gyro = Pigeon2(constants.kPigeonCANID)
 
         self.__kinematics = SwerveDrive4Kinematics(
             Translation2d(-constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
             Translation2d(constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
             Translation2d(-constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
-             Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
+            Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
+        
                                                                                     
         )      
         self.__odometry = SwerveDrive4Odometry(
             kinematics = self.__kinematics,
             gyroAngle = Rotation2d(),
             modulePositions=(
-                self.__fl.get_position(),
-                self.__fr.get_position(),
-                self.__bl.get_position(),
-                self.__br.get_position()
+                self._fl.get_position(),
+                self._fr.get_position(),
+                self._bl.get_position(),
+                self._br.get_position()
             ),
             initialPose=Pose2d()
         )
@@ -154,38 +187,48 @@ class DriveSubsystem(commands2.Subsystem):
     def periodic(self):
         
         # FIXME: Crashes currently.
-         self.__odometry.update(
-            Rotation2d.fromDegrees(self.__gyro.get_yaw().value),
+        self.__odometry.update(
+            Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [
-                self.__fl.get_position(),
-                self.__fr.get_position(),
-                self.__bl.get_position(),
-                self.__br.get_position(),
+                self._fl.get_position(),
+                self._fr.get_position(),
+                self._bl.get_position(),
+                self._br.get_position(),
              ]
-         )
-      
+        )
+        
+        self.__sd.putNumber("FLAngleActual", self._fl.get_position().angle.degrees())
+        self.__sd.putNumber("FRAngleActual", self._fr.get_position().angle.degrees())
+        self.__sd.putNumber("BLAngleActual", self._bl.get_position().angle.degrees())
+        self.__sd.putNumber("BRAngleActual", self._br.get_position().angle.degrees())
+        self.__sd.putNumber("GYROFINISHED", self._gyro.get_yaw().value)
+        self.__sd.putNumber("FL_DISTANCE_ACTUAL",self._fl.get_position().distance)
+        self.__sd.putNumber("FR_DISTANCE_ACTUAL",self._fr.get_position().distance)
+        self.__sd.putNumber("BL_DISTANCE_ACTUAL",self._bl.get_position().distance)
+        self.__sd.putNumber("BR_DISTANCE_ACTUAL",self._br.get_position().distance)
+    
 
     def get_pose(self):
         return self.__odometry.getPose()
     
     def reset_pose(self, pose):
             self.__odometry.resetPosition(
-                self.__gyro.get_yaw().value,
-                self.__fl.get_position(),
-                self.__fr.get_position(),
-                self.__bl.get_position(),
-                self.__br.get_position(),
+                self._gyro.get_yaw().value,
+                self._fl.get_position(),
+                self._fr.get_position(),
+                self._bl.get_position(),
+                self._br.get_position(),
                 pose
             )
-    def drive(self, x, y, theta, field_relative):
+    def drive(self, x, y, theta, field_relative, force_angle=False):
         if field_relative:
-            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, self.__gyro.get_yaw().value)
+            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, self._gyro.get_yaw().value)
         else:
             chassis_speed = ChassisSpeeds(x, y, theta)
 
-        self.drive_robot_relative_speed(chassis_speed)
+        self.drive_robot_relative_speed(chassis_speed, force_angle)
 
-    def drive_robot_relative_speed(self, chassis_speed):
+    def drive_robot_relative_speed(self, chassis_speed, force_angle):
 
         chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
 
@@ -193,28 +236,35 @@ class DriveSubsystem(commands2.Subsystem):
 
         module_states = self.__kinematics.desaturateWheelSpeeds(module_states, constants.kDriveMaxSpeed)
 
-        self.__fl.set_state(module_states[0])
-        self.__fr.set_state(module_states[1])
-        self.__bl.set_state(module_states[2])
-        self.__br.set_state(module_states[3])
+        if force_angle:
+            module_states[0].speed = 0
+            module_states[1].speed = 0
+            module_states[2].speed = 0
+            module_states[3].speed = 0
+
+        self._fl.set_state(module_states[0])
+        self._fr.set_state(module_states[1])
+        self._bl.set_state(module_states[2])
+        self._br.set_state(module_states[3])
 
         self.__sd.putNumber("FLAngle", module_states[0].angle.degrees())
         self.__sd.putNumber("FRAngle", module_states[1].angle.degrees())
         self.__sd.putNumber("BLAngle", module_states[2].angle.degrees())
-        self.__sd.putNumber("BRAngle", module_states[3].angle.degrees())
+        self.__sd.putNumber("BRAngle", module_states[3].angle.degrees())        
         self.__sd.putNumber("FLSpeed", module_states[0].speed)
         self.__sd.putNumber("FRSpeed", module_states[1].speed)
         self.__sd.putNumber("BLSpeed", module_states[2].speed)
         self.__sd.putNumber("BRSpeed", module_states[3].speed)
+
         
 
     def get_robot_relative_speed(self):
         return self.__kinematics.toChassisSpeeds(
             (
-                self.__fl.get_state(),
-                self.__fr.get_state(),
-                self.__bl.get_state(),
-                self.__br.get_state() 
+                self._fl.get_state(),
+                self._fr.get_state(),
+                self._bl.get_state(),
+                self._br.get_state() 
             )
         )
     
@@ -225,7 +275,7 @@ class DriveSubsystem(commands2.Subsystem):
         return DriverStation.getAlliance() == DriverStation.Alliance.kRed
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
-        return commands2.cmd.runEnd(
+        return runEnd(
             lambda: self.drive(joystick.getLeftX(),
                                joystick.getLeftY(),
                                joystick.getRightX(),
@@ -234,26 +284,65 @@ class DriveSubsystem(commands2.Subsystem):
             lambda: self.drive(0, 0, 0, False), 
             self
         )
+    def zero_drive_encoder(self):
+        self._fl.zero_drive_encoder()
+        self._fr.zero_drive_encoder()
+        self._bl.zero_drive_encoder()
+        self._br.zero_drive_encoder()
 
+    def zero_steer_encoder(self):
+        wpilib.Preferences.setDouble("FL_STEER_OFFSET", self._fl.zero_steer_encoder())
+        wpilib.Preferences.setDouble("FR_STEER_OFFSET", self._fr.zero_steer_encoder())
+        wpilib.Preferences.setDouble("BL_STEER_OFFSET", self._bl.zero_steer_encoder())
+        wpilib.Preferences.setDouble("BR_STEER_OFFSET", self._br.zero_steer_encoder())
+        
+    def zero_steer_encoder_cmd(self):
 
-       
-                   
-
-
-
-                                                            
-
-
+                    return runOnce(self.zero_steer_encoder)
     
-                          
-    
+    def finalize_calibrate_wheel_circumfrence(self):
+        distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value + 360)
+        self._fl.wheel_circumference = distance_traveled_in / self._fl.driveMotor.get_rotor_position().value
+        self._fr.wheel_circumference = distance_traveled_in / self._fr.driveMotor.get_rotor_position().value
+        self._bl.wheel_circumference = distance_traveled_in / self._bl.driveMotor.get_rotor_position().value
+        self._br.wheel_circumference = distance_traveled_in / self._br.driveMotor.get_rotor_position().value
+        wpilib.Preferences.setDouble("FL_WHEEL_CIRCUMFERENCE", self._fl.wheel_circumference)
+        wpilib.Preferences.setDouble("FR_WHEEL_CIRCUMFERENCE", self._fr.wheel_circumference)
+        wpilib.Preferences.setDouble("BL_WHEEL_CIRCUMFERENCE", self._bl.wheel_circumference)
+        wpilib.Preferences.setDouble("BR_WHEEL_CIRCUMFERENCE", self._br.wheel_circumference)
 
 
+         
+         
+    def calibrate_wheel_circumference_cmd(self):
+        return sequence(
+            # Keep track of the gyro angle at the beginning of the cal process.
+            InstantCommand(
+                lambda: self._gyro.set_yaw(0)),
+            
+            # Point all wheels at a ~45 deg.
+            InstantCommand(
+                lambda: self.drive(0.0, 0.0, theta=1.0, field_relative=False,force_angle=True)), 
+            WaitCommand(1),
 
+            # Keep track of the wheel distance at the beginning of the cal process.
+            InstantCommand(self.zero_drive_encoder),
+            PrintCommand ("Zero Drive Encoder"),
 
-
-
-
-
-
-
+            FunctionalCommand(
+                lambda: None,
+                lambda: self.drive(0.0, 0.0, theta=0.2, field_relative=False),
+                lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
+                lambda: self._gyro.get_yaw().value + 360 if self._gyro.get_yaw().value else self._gyro.get_yaw().value> 358 * 1
+            ),
+            PrintCommand("Yaw Finished"),
+            
+            InstantCommand(self.finalize_calibrate_wheel_circumfrence)
+        )
+        
+        
+        #zero drive wheels
+        #point wheels to 45 degrees
+        #spin X number of times
+        #figure distance travled woth gyroscope
+        #figure each individual wheels rotations

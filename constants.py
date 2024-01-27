@@ -101,10 +101,10 @@ kAngulatorS = 0
 kAngulatorJerk = 0
 kAngulatorAcceleration = 160
 kAngulatorCruiseVelocity = 80
-
 kMotorResistance = 6
 
 #Metric system units
 kArmMass = 10 / 2.205
 kArmLength = 16 / 39.37 
 
+# https://prod.liveshare.vsengsaas.visualstudio.com/join?A43088F23A8DB725BF103347DA2FBF3ED7C8

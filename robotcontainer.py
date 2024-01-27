@@ -44,6 +44,7 @@ class RobotContainer(object):
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
         self.operator_controller.x().onTrue(self.arm.arm_extend_cmd())
+        self.operator_controller.y().onTrue(self.drivetrain.calibrate_wheel_circumference_cmd())
         self.operator_controller.rightBumper().onTrue(self.amp_score_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         self.operator_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
@@ -57,10 +58,17 @@ class RobotContainer(object):
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
-        
-        # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
-        # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+        self.driver_controller.start().onTrue(self.drivetrain.zero_steer_encoder_cmd())
+        self.operator_controller.povRight().onTrue(            
+            InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
+        .andThen(InstantCommand(lambda: self.drivetrain._fr.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+        .andThen(InstantCommand(lambda: self.drivetrain._bl.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+        .andThen(InstantCommand(lambda: self.drivetrain._br.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+        .andThen(InstantCommand(lambda: self.drivetrain._gyro.sim_state.set_raw_yaw(359))))
+                           
             
+        # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
+        
     def speaker_score_cmd(self):
         return (self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS)
                 .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))

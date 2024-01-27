@@ -1,5 +1,6 @@
 import math
 import wpilib
+import ntcore
 import wpimath.units
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry, \
 ChassisSpeeds
@@ -12,8 +13,9 @@ from pathplannerlib.auto import PathPlannerAuto
 
 import commands2
 import commands2.cmd
+from commands2.button import CommandXboxController 
 
-from phoenix6.controls import VelocityVoltage
+from phoenix6.controls import VelocityVoltage, PositionVoltage
 
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.cancoder_configs import CANcoderConfiguration 
@@ -76,7 +78,7 @@ class SwerveModule(object):
     def set_state(self, state):
         state = SwerveModuleState.optimize(state, self.angle())
         self.driveMotor.set_control(VelocityVoltage(state.speed))
-        self.steerMotor.set_control(VelocityVoltage(state.angle))
+        self.steerMotor.set_control(PositionVoltage(state.angle.degrees() / 360))
     
     def get_position(self) -> SwerveModulePosition:
         return SwerveModulePosition(
@@ -92,7 +94,7 @@ class SwerveModule(object):
     
    
 
-class DriveSubsystem(commands2.SubsystemBase):
+class DriveSubsystem(commands2.Subsystem):
 
     def __init__(self):
         super().__init__()
@@ -146,20 +148,22 @@ class DriveSubsystem(commands2.SubsystemBase):
               self.shouldFlipPath, #starts on blue
               self 
         )
-    def __del__(self):
-        AutoBuilder._configured = False
         
+        self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
+    
     def periodic(self):
-
+        
         # FIXME: Crashes currently.
-        # self.__odometry.update(
-        #     self.__gyro.get_yaw().value,
-        #     self.__fl.get_position(),
-        #     self.__fr.get_position(),
-        #     self.__bl.get_position(),
-        #     self.__br.get_position(),
-        # )
-        pass
+         self.__odometry.update(
+            Rotation2d.fromDegrees(self.__gyro.get_yaw().value),
+             [
+                self.__fl.get_position(),
+                self.__fr.get_position(),
+                self.__bl.get_position(),
+                self.__br.get_position(),
+             ]
+         )
+      
 
     def get_pose(self):
         return self.__odometry.getPose()
@@ -194,6 +198,16 @@ class DriveSubsystem(commands2.SubsystemBase):
         self.__bl.set_state(module_states[2])
         self.__br.set_state(module_states[3])
 
+        self.__sd.putNumber("FLAngle", module_states[0].angle.degrees())
+        self.__sd.putNumber("FRAngle", module_states[1].angle.degrees())
+        self.__sd.putNumber("BLAngle", module_states[2].angle.degrees())
+        self.__sd.putNumber("BRAngle", module_states[3].angle.degrees())
+        self.__sd.putNumber("FLSpeed", module_states[0].speed)
+        self.__sd.putNumber("FRSpeed", module_states[1].speed)
+        self.__sd.putNumber("BLSpeed", module_states[2].speed)
+        self.__sd.putNumber("BRSpeed", module_states[3].speed)
+        
+
     def get_robot_relative_speed(self):
         return self.__kinematics.toChassisSpeeds(
             (
@@ -204,11 +218,24 @@ class DriveSubsystem(commands2.SubsystemBase):
             )
         )
     
-    def shouldFlipPath():
+    def shouldFlipPath(self):
         # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         return DriverStation.getAlliance() == DriverStation.Alliance.kRed
+    
+    def drive_with_joystick_cmd(self, joystick: CommandXboxController):
+        return commands2.cmd.runEnd(
+            lambda: self.drive(joystick.getLeftX(),
+                               joystick.getLeftY(),
+                               joystick.getRightX(),
+                               False
+                                ),
+            lambda: self.drive(0, 0, 0, False), 
+            self
+        )
+
+
        
                    
 

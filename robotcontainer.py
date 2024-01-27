@@ -37,7 +37,10 @@ class RobotContainer(object):
         
         self.button_bindings_configure()
 
+        self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
+
     def button_bindings_configure(self):
+        wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
         self.operator_controller.x().onTrue(self.arm.arm_extend_cmd())

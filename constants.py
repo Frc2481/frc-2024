@@ -89,19 +89,22 @@ kDrivePathAngularKI = 0.0
 kDrivePathAngularKD = 0.0
 
 #angulator
-kAngulatorDownPosition = 25
+kAngulatorGearReduction = 125.0
+kAngulatorDownPosition = 25  
 kAngulatorUpPosition = 70
-kAngulatorGearReduction = 1.0
-kAngulatorP = 0
+kAngulatorP = 5
 kAngulatorI = 0
 kAngulatorD = 0
-kAngulatorV = 1 * kAngulatorGearReduction
-kAngulatorA = 0 * kAngulatorGearReduction
+kAngulatorV = 0.12 
+kAngulatorA = 0.025
 kAngulatorS = 0
 kAngulatorJerk = 0
 kAngulatorAcceleration = 160
 kAngulatorCruiseVelocity = 80
 
 kMotorResistance = 6
- 
+
+#Metric system units
+kArmMass = 10 / 2.205
+kArmLength = 16 / 39.37 
 

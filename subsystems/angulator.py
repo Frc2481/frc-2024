@@ -36,7 +36,7 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         self.angulatorMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kAngulatorCruiseVelocity
         self.angulatorMotorConfig.motion_magic.motion_magic_acceleration = constants.kAngulatorAcceleration
         self.angulatorMotorConfig.motion_magic.motion_magic_jerk = constants.kAngulatorJerk
-        self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kAngulatorGearReduction
+        #self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kAngulatorGearReduction
         self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
 
         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
@@ -67,8 +67,10 @@ class AngulatorSubsystem(commands2.SubsystemBase):
     
     def periodic(self):
        self.__sd.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
-       self.__sd.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
+       self.__sd.putNumber("Angulator Position",self.angulatorMotor.get_position().value / constants.kAngulatorGearReduction)
        self.__sd.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
+       self.__sd.putNumber("Angulator Voltage", self.angulatorMotor.get_motor_voltage().value)
+
 
         
 

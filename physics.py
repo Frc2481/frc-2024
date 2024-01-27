@@ -23,7 +23,7 @@ class MechanismSpinner(object):
 
     def __init__(self, name, parent, length, color):
         self.__pos = 0
-        self.__state = False
+        self.__voltage = False
 
         self.spokes = []
         for i in range(6):
@@ -31,11 +31,15 @@ class MechanismSpinner(object):
                 parent.appendLigament(name + " Spoke %d" % i, length, 0, 6, wpilib.Color8Bit(color))
             )
 
-    def update(self, state):
-        self.__state = state
+    def update(self, voltage):
+        self.__voltage = voltage
 
-        if self.__state:
+        if self.__voltage > 0:
             self.__pos += 10
+            if self.__pos == 360:
+                self.__pos = 0
+        if self.__voltage < 0:
+            self.__pos -= 10
             if self.__pos == 360:
                 self.__pos = 0
 
@@ -117,9 +121,9 @@ class PhysicsEngine:
             self.robot.container.feeder.feederMotor.sim_state.set_supply_voltage(0.0)
             self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(0.0)
 
-        self.intake_roller.update(self.robot.container.intake.horizontalMotor.sim_state.motor_voltage > 0)
-        self.shooter_roller.update(self.robot.container.shooter.shooterMotor.sim_state.motor_voltage > 0)
-        self.feeder_roller.update(self.robot.container.feeder.feederMotor.sim_state.motor_voltage > 0)
+        self.intake_roller.update(self.robot.container.intake.horizontalMotor.sim_state.motor_voltage)
+        self.shooter_roller.update(self.robot.container.shooter.shooterMotor.sim_state.motor_voltage)
+        self.feeder_roller.update(self.robot.container.feeder.feederMotor.sim_state.motor_voltage)
 
         self.update_talonFX(self.robot.container.angulator.angulatorMotor, self.angulator_motor_sim, tm_diff)
         self.shooter_adjust.setAngle(self.angulator_motor_sim.getAngleDegrees())

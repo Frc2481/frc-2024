@@ -60,14 +60,14 @@ class RobotContainer(object):
 
         # shooter reverse
         self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1. * constants.kShooterSpeedRPS))
+        self.operator_controller.y().onFalse(self.shooter.shooter_off_cmd())
 
         # intake reverse
-        self.driver_controller.povLeft().onTrue(
-            self.intake.set_intake(-1 * constants.kIntakeHorizontalSpeedRPS, 
-                                   constants.kIntakeVerticalSpeedRPS))
-
+        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-1 * constants.kIntakeVerticalSpeedRPS, -1 * constants.kIntakeHorizontalSpeedRPS))
+        self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
         # feeder reverse 
         self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1. * constants.kFeederSpeedRPS))
+        self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
         
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())

@@ -40,20 +40,20 @@ class RobotContainer(object):
     def button_bindings_configure(self):
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
+        self.operator_controller.x().onTrue(self.arm.arm_extend_cmd())
+        self.operator_controller.rightBumper().onTrue(self.amp_score_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
-        self.operator_controller.x().onTrue(self.amp_extend_cmd())
-        self.operator_controller.rightBumper().onTrue(self.arm.arm_retract_cmd())
         self.operator_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
-        self.operator_controller.povUp().onFalse(self.angulator.angulator_off_cmd())
+       # self.operator_controller.povUp().onFalse(self.angulator.angulator_off_cmd())
         self.operator_controller.povDown().onTrue(self.angulator.angulator_down_cmd())
-        self.operator_controller.povDown().onFalse(self.angulator.angulator_off_cmd())
+       # self.operator_controller.povDown().onFalse(self.angulator.angulator_off_cmd())
 
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
-        self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
+        self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
@@ -66,14 +66,17 @@ class RobotContainer(object):
                 
     
     def amp_handoff_cmd(self):
-        return ((self.shooter.shooter_on_cmd().alongWith(self.feeder.feeder_on_cmd)
-                 .until(self.feeder.feeder_piece_ejected)
-                    .andThen(self.gripper.close_cmd)))
-
-    def amp_extend_cmd(self):
-        return ((self.arm.arm_extend_cmd())
+        return (self.shooter.shooter_to_arm_cmd().andThen(self.feeder.feeder_on_cmd)
+                .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
+                .andThen(self.gripper.gripper_close_cmd())
                 .andThen(self.shooter.shooter_off_cmd())
-                    .alongWith(self.feeder.feeder_off_cmd()))
+                .andThen(self.feeder.feeder_off_cmd()))
+    
+    def amp_score_cmd(self):
+        return (self.gripper.gripper_open_cmd()
+        .andThen(self.arm.arm_retract_cmd))
+    
+                
     
     def getAutonomousCommand():
     # Load the path you want to follow using its name in the GUI

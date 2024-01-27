@@ -5,6 +5,7 @@ import commands2
 import commands2.cmd
 from commands2 import *
 from commands2.cmd import * 
+import ntcore 
 
 import constants
 
@@ -35,6 +36,8 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         self.angulatorMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kAngulatorCruiseVelocity
         self.angulatorMotorConfig.motion_magic.motion_magic_acceleration = constants.kAngulatorAcceleration
         self.angulatorMotorConfig.motion_magic.motion_magic_jerk = constants.kAngulatorJerk
+        self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kAngulatorGearReduction
+        self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
 
         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
 
@@ -44,7 +47,7 @@ class AngulatorSubsystem(commands2.SubsystemBase):
            # lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
            
            # Using this one so SIM works :(
-            lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(angulator_position))
+            lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(0).with_position(angulator_position))
         )
     
     def angulator_down_cmd (self, angulator_position = constants.kAngulatorDownPosition):
@@ -53,7 +56,7 @@ class AngulatorSubsystem(commands2.SubsystemBase):
            # lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
            
            # Using this one so SIM works :(
-            lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(angulator_position))
+            lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(0).with_position(angulator_position))
         )
 
 
@@ -61,6 +64,12 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         return runOnce(
            lambda: self.angulatorMotor.set_control(VoltageOut(0))
         )
+    
+    def periodic(self):
+       self.__sd.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
+       self.__sd.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
+       self.__sd.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
+
         
 
     

@@ -28,12 +28,12 @@ class GripperSubsystem(commands2.SubsystemBase):
     def setGamePiece(self, game_piece):
         self.game_piece = game_piece
 
-    def open_cmd(self):
+    def gripper_open_cmd(self):
         return commands2.cmd.runOnce(
             lambda: self.gripperSolenoid.set(DoubleSolenoid.Value.kForward)
         )
 
-    def close_cmd(self):
+    def gripper_close_cmd(self):
         return commands2.cmd.runOnce(
             lambda: self.gripperSolenoid.set(DoubleSolenoid.Value.kReverse)
         )

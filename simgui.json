@@ -38,16 +38,10 @@
   },
   "NetworkTables": {
     "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
       "LiveWindow": {
         "open": true
       },
       "SmartDashboard": {
-        "Field": {
-          "open": true
-        },
         "open": true
       }
     }
@@ -56,14 +50,16 @@
     "Clients": {
       "open": true
     },
+    "Connections": {
+      "open": true
+    },
+    "DartClient_44486538@1": {
+      "open": true
+    },
     "Server": {
-      "Publishers": {
-        "open": true
-      },
-      "Subscribers": {
-        "open": true
-      }
-    }
+      "open": true
+    },
+    "visible": true
   },
   "NetworkTables View": {
     "visible": false

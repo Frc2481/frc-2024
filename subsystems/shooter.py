@@ -44,4 +44,9 @@ class ShooterSubsystem(object):
         return runOnce(
             lambda: self.shooterMotor.set_control(VoltageOut(0))
         )
+    
+    def shooter_to_arm_cmd(self, shooter_to_arm_speed_rps = constants.kShooterToArmSpeedRPS):
+        return runOnce(
+            lambda: self.shooterMotor.set_control(VelocityVoltage(shooter_to_arm_speed_rps))
+        )
           

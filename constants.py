@@ -52,6 +52,7 @@ kFeederBeambreakPort = 1
 
 #ShooterFocCurrentGains
 kShooterSpeedRPS = 50
+kShooterToArmSpeedRPS = 10
 kShooterP = 5
 kShooterI = 1
 kShooterD = 0
@@ -88,16 +89,19 @@ kDrivePathAngularKI = 0.0
 kDrivePathAngularKD = 0.0
 
 #angulator
-kAngulatorDownPosition = 0
-kAngulatorUpPosition = 30000
-kAngulatorP = 5
-kAngulatorI = 1
+kAngulatorDownPosition = 25
+kAngulatorUpPosition = 70
+kAngulatorGearReduction = 1.0
+kAngulatorP = 0
+kAngulatorI = 0
 kAngulatorD = 0
-kAngulatorV = 1.0
-kAngulatorA = 1.0
-kAngulatorS = 1.0
-kAngulatorJerk = 5000
-kAngulatorAcceleration = 10000
-kAngulatorCruiseVelocity = 5000
+kAngulatorV = 1 * kAngulatorGearReduction
+kAngulatorA = 0 * kAngulatorGearReduction
+kAngulatorS = 0
+kAngulatorJerk = 0
+kAngulatorAcceleration = 160
+kAngulatorCruiseVelocity = 80
 
+kMotorResistance = 6
+ 
 

@@ -108,3 +108,6 @@ kMotorResistance = 6
 kArmMass = 10 / 2.205
 kArmLength = 16 / 39.37 
 
+#intake
+kIntakeHorizontalSpeedRPS = 0.5
+kIntakeVerticalSpeedRPS = 0.5

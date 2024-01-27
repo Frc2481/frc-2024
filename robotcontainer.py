@@ -57,9 +57,22 @@ class RobotContainer(object):
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+
+        # shooter reverse
+        self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1. * constants.kShooterSpeedRPS))
+
+        # intake reverse
+        self.driver_controller.povLeft().onTrue(
+            self.intake.set_intake(-1 * constants.kIntakeHorizontalSpeedRPS, 
+                                   constants.kIntakeVerticalSpeedRPS))
+
+        # feeder reverse 
+        self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1. * constants.kFeederSpeedRPS))
         
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+
+
             
     def speaker_score_cmd(self):
         return (self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS)

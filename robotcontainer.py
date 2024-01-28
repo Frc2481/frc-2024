@@ -66,6 +66,22 @@ class RobotContainer(object):
         .andThen(InstantCommand(lambda: self.drivetrain._bl.driveMotor.sim_state.set_raw_rotor_position(8.25)))
         .andThen(InstantCommand(lambda: self.drivetrain._br.driveMotor.sim_state.set_raw_rotor_position(8.25)))
         .andThen(InstantCommand(lambda: self.drivetrain._gyro.sim_state.set_raw_yaw(359))))
+
+        # shooter reverse
+        self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1. * constants.kShooterSpeedRPS))
+        self.operator_controller.y().onFalse(self.shooter.shooter_off_cmd())
+
+
+        # intake reverse
+        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-1 * constants.kIntakeVerticalSpeedRPS, -1 * constants.kIntakeHorizontalSpeedRPS))
+        self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
+        # feeder reverse
+        self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1. * constants.kFeederSpeedRPS))
+        self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
+       
+        # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
+        # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+
                            
             
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())

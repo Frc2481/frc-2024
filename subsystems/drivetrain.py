@@ -31,6 +31,7 @@ import phoenix6
 from phoenix6.signals.spn_enums import *
 
 
+
 class SwerveModule(object):
 
     def __init__(self, driveCANID, steerCANID, steerCANCoderID):
@@ -284,6 +285,19 @@ class DriveSubsystem(commands2.Subsystem):
             lambda: self.drive(0, 0, 0, False), 
             self
         )
+    
+    def drive_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
+        return runEnd(
+             
+            lambda: self.drive(joystick.getLeftX(),
+                               joystick.getLeftY(),
+                               ntcore.NetworkTablesInstance.getDefault.getTable("limelight").getNumber('tx'),
+                               False
+                                ),
+            lambda: self.drive(0, 0, 0, False), 
+            self
+        )
+    
     def zero_drive_encoder(self):
         self._fl.zero_drive_encoder()
         self._fr.zero_drive_encoder()
@@ -339,10 +353,3 @@ class DriveSubsystem(commands2.Subsystem):
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
         )
-        
-        
-        #zero drive wheels
-        #point wheels to 45 degrees
-        #spin X number of times
-        #figure distance travled woth gyroscope
-        #figure each individual wheels rotations

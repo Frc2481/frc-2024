@@ -59,6 +59,7 @@ class RobotContainer(object):
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         self.driver_controller.start().onTrue(self.drivetrain.zero_steer_encoder_cmd())
+        self.driver_controller.povUp().onTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd())
         self.operator_controller.povRight().onTrue(            
             InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
         .andThen(InstantCommand(lambda: self.drivetrain._fr.driveMotor.sim_state.set_raw_rotor_position(8.25)))

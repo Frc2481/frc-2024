@@ -291,12 +291,24 @@ class DriveSubsystem(commands2.Subsystem):
              
             lambda: self.drive(joystick.getLeftX(),
                                joystick.getLeftY(),
-                               ntcore.NetworkTablesInstance.getDefault.getTable("limelight").getNumber('tx'),
+                               ntcore.NetworkTableInstance.getDefault.getTable("limelight").getNumber('tx'),
                                False
                                 ),
             lambda: self.drive(0, 0, 0, False), 
             self
         )
+    
+    def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
+        return runEnd(             
+            lambda: self.drive(joystick.getLeftX(),
+                               ntcore.NetworkTableInstance.getDefault.getTable("limelight").getNumber('ty'),
+                               joystick.getRightX(),
+                               False
+                                ),
+            lambda: self.drive(0, 0, 0, False), 
+            self
+            )
+        
     
     def zero_drive_encoder(self):
         self._fl.zero_drive_encoder()

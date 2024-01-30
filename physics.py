@@ -64,14 +64,14 @@ class PhysicsEngine:
         self.feeder_base = self.mech2d.getRoot("FeederBase", 15, 30)
         self.feeder_adjust = self.feeder_base.appendLigament("Feeder Adjust", 20, 30, 6, wpilib.Color8Bit(wpilib.Color.kNavy))     
         
-        self.angulator_motor_sim = SingleJointedArmSim(DCMotor.krakenX60(1), 
-                                                        constants.kAngulatorGearReduction,
-                                                        SingleJointedArmSim.estimateMOI(constants.kArmMass, constants.kArmLength),
-                                                        constants.kArmLength,
-                                                        math.radians(constants.kAngulatorDownPosition),
-                                                        math.radians(constants.kAngulatorUpPosition),
-                                                        False,
-                                                        0)
+        self.angulator_motor_sim = DCMotorSim(DCMotor.krakenX60(1), 
+                                                        1,#constants.kAngulatorGearReduction,
+                                                        .001 #SingleJointedArmSim.estimateMOI(constants.kArmMass, constants.kArmLength),
+                                                        #constants.kArmLength,
+                                                        #math.radians(constants.kAngulatorDownPosition),
+                                                        #math.radians(constants.kAngulatorUpPosition),
+                                                        #False,
+                                                        )
 
         # Shooter Pivot
         self.shooter_base = self.mech2d.getRoot("ShooterBase", 15, 30)
@@ -86,14 +86,14 @@ class PhysicsEngine:
         wpilib.SmartDashboard.putData("Robot Sim", self.mech2d)
 
 
-    def update_talonFX(self, motor:TalonFX, motor_sim:SingleJointedArmSim, tm_diff):
+    def update_talonFX(self, motor:TalonFX, motor_sim:DCMotorSim, tm_diff):
 
         motor_sim.setInputVoltage(motor.sim_state.motor_voltage)
         
         motor_sim.update(tm_diff)
 
-        motor.sim_state.set_raw_rotor_position(motor_sim.getAngleDegrees() / 360 * constants.kAngulatorGearReduction)
-        motor.sim_state.set_rotor_velocity(motor_sim.getVelocityDps() / 360 * constants.kAngulatorGearReduction)
+        motor.sim_state.set_raw_rotor_position(motor_sim.getAngularPosition()/ (2 * math.pi))
+        motor.sim_state.set_rotor_velocity(motor_sim.getAngularVelocity() / (2 * math.pi))
         motor.sim_state.set_supply_voltage(12.0) # - motor.sim_state.supply_current * constants.kMotorResistance)
                      
 
@@ -122,8 +122,8 @@ class PhysicsEngine:
         self.feeder_roller.update(self.robot.container.feeder.feederMotor.sim_state.motor_voltage > 0)
 
         self.update_talonFX(self.robot.container.angulator.angulatorMotor, self.angulator_motor_sim, tm_diff)
-        self.shooter_adjust.setAngle(self.angulator_motor_sim.getAngleDegrees())
-        self.feeder_adjust.setAngle(self.angulator_motor_sim.getAngleDegrees())
+        self.shooter_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)# .getAngularPosition()))
+        self.feeder_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)
 
         # Feed the enable signal to all motors.  No motors will turn in simulation without this.
         if wpilib.DriverStation.isEnabled():

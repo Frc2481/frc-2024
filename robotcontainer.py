@@ -15,6 +15,7 @@ from subsystems.angulator import AngulatorSubsystem
 from pathplannerlib.auto import NamedCommands
 from pathplannerlib.path import PathPlannerPath
 from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.auto import PathPlannerAuto
 
 
 
@@ -68,9 +69,9 @@ class RobotContainer(object):
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         self.driver_controller.start().onTrue(self.drivetrain.zero_steer_encoder_cmd())
-        self.driver_controller.povUp().onTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd())
-        self.driver_controller.povRight().onTrue(self.drivetrain.line_up_with_joystick_limelight_align_cmd())
-        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-1 * constants.kIntakeVerticalSpeedRPS, -1 * constants.kIntakeHorizontalSpeedRPS))
+        self.driver_controller.povUp().onTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd(self.driver_controller))
+        self.driver_controller.povRight().onTrue(self.drivetrain.line_up_with_joystick_limelight_align_cmd(self.driver_controller))
+        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-0.5, -0.5))
         self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
         self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1. * constants.kFeederSpeedRPS))
         self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())

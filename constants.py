@@ -22,16 +22,17 @@ kPigeonCANID = 1
 #drivetrain
 kWheelTrack = 18.5
 kWheelBase = 16.5
-kdriveP = 0
+kdriveP = 2
 kdriveI = 0
-kdriveD = 0
-kdriveV = 0
+kdriveD = 0.1
+kdriveV = 0.02
+kDriveGearReduction = 125
 
 #steer
-ksteerP = 0
+ksteerP = 2
 ksteerI = 0
-ksteerD = 0
-ksteerV = 0
+ksteerD = 0.1
+ksteerV = 0.02
 
 kSwerveReductionSteer = 40
 kSwerveReductionDrive = 4.31
@@ -106,5 +107,8 @@ kMotorResistance = 6
 #Metric system units
 kArmMass = 10 / 2.205
 kArmLength = 16 / 39.37 
+
+#steer
+kSteerGearReduction = 4
 
 # https://prod.liveshare.vsengsaas.visualstudio.com/join?A43088F23A8DB725BF103347DA2FBF3ED7C8

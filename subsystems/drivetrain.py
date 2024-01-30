@@ -151,10 +151,8 @@ class DriveSubsystem(commands2.Subsystem):
             Translation2d(-constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
             Translation2d(constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
             Translation2d(-constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
-            Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
-        
-                                                                                    
-        )      
+            Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0))
+
         self.__odometry = SwerveDrive4Odometry(
             kinematics = self.__kinematics,
             gyroAngle = Rotation2d(),
@@ -187,7 +185,7 @@ class DriveSubsystem(commands2.Subsystem):
     
     def periodic(self):
         
-        # FIXME: Crashes currently.
+
         self.__odometry.update(
             Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [

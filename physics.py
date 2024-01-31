@@ -11,14 +11,33 @@ import phoenix6
 from wpilib.simulation import DCMotorSim
 from wpilib.simulation import SingleJointedArmSim
 from wpimath.system.plant import DCMotor
+from wpimath.geometry import Rotation2d, Translation2d, Pose2d
 
 from phoenix6 import unmanaged
+from phoenix6.sim import ChassisReference
 from phoenix6.hardware import TalonFX
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
-
     
+
+class SimSwerveModule(object):
+    def __init__(self, steer_inverted, drive_inverted):
+        self.steer_sim = DCMotorSim(DCMotor.krakenX60(1), constants.kSteerGearing, constants.kSteerInertia)
+        self.drive_sim = DCMotorSim(DCMotor.krakenX60(1), constants.kDriveGearing, constants.kDriveInertia)
+        self.SteerFrictionVoltage = constants.kSteerFrictionVoltage
+        self.DriveFrictionVoltage = constants.kDriveFrictionVoltage
+        if steer_inverted:
+            self.steer_orientation = ChassisReference.Clockwise_Positive
+        else:
+            self.steer_orientation = ChassisReference.CounterClockwise_Positive
+
+        if drive_inverted:
+            self.drive_orientation = ChassisReference.Clockwise_Positive
+        else:
+            self.drive_orientation = ChassisReference.CounterClockwise_Positive
+
+
 class MechanismSpinner(object):
 
     def __init__(self, name, parent, length, color):
@@ -51,6 +70,12 @@ class PhysicsEngine:
     def __init__(self, physics_controller: PhysicsInterface, robot: "MyRobot"):
         self.robot = robot
 
+        # Create swerve modules sims.
+        self.swerve_fl = SimSwerveModule(False, False) # FL??
+        self.swerve_fr = SimSwerveModule(True, False) # FR ??
+        self.swerve_bl = SimSwerveModule(False, True) # BL ??
+        self.swerve_br = SimSwerveModule(False, True) # BR ??
+
         # # Create a Mechanism2d display of intake
         self.mech2d = wpilib.Mechanism2d(80, 80)
 
@@ -82,8 +107,55 @@ class PhysicsEngine:
         self.feeder_roller = MechanismSpinner("Feeder", self.feeder_adjust, 5, wpilib.Color.kOrange)
         self.shooter_roller = MechanismSpinner("Shooter", self.shooter_adjust, 5, wpilib.Color.kGreen)
        
-
         wpilib.SmartDashboard.putData("Robot Sim", self.mech2d)
+
+
+    def update_swerve_module(self, sim_module, steer_motor, drive_motor, tm_diff):
+        self.update_talonFX(sim_module.steer_sim, steer_motor, tm_diff)
+        self.update_talonFX(sim_module.drive_sim, drive_motor, tm_diff)
+
+
+    def update_swerve(self, tm_diff):
+        self.update_swerve_module(
+            self.swerve_fl,
+            self.robot.robotcontainer.drivetrain._fl.steer_motor,
+            self.robot.robotcontainer.drivetrain._fl.drive_motor,
+            tm_diff)
+        self.robot.robotcontainer.drivetrain._fl.cancoder.set_raw_rotor_position(self.robot.robotcontainer.drivetrain._fl.steer_motor.getAngularPositionRotations())
+        self.robot.robotcontainer.drivetrain._fl.cancoder.set_rotor_velocity(self.robot.robotcontainer.drivetrain._fl.steer_motor.getAngularVelocityRPM / 60.0)
+
+        self.update_swerve_module(
+            self.swerve_fr,
+            self.robot.robotcontainer.drivetrain._fr.steer_motor,
+            self.robot.robotcontainer.drivetrain._fr.drive_motor,
+            tm_diff)
+        self.robot.robotcontainer.drivetrain._fr.cancoder.set_raw_rotor_position(self.robot.robotcontainer.drivetrain._fr.steer_motor.getAngularPositionRotations())
+        self.robot.robotcontainer.drivetrain._fr.cancoder.set_rotor_velocity(self.robot.robotcontainer.drivetrain._fr.steer_motor.getAngularVelocityRPM / 60.0)
+
+        self.update_swerve_module(
+            self.swerve_bl,
+            self.robot.robotcontainer.drivetrain._bl.steer_motor,
+            self.robot.robotcontainer.drivetrain._bl.drive_motor,
+            tm_diff)
+        self.robot.robotcontainer.drivetrain._bl.cancoder.set_raw_rotor_position(self.robot.robotcontainer.drivetrain._bl.steer_motor.getAngularPositionRotations())
+        self.robot.robotcontainer.drivetrain._bl.cancoder.set_rotor_velocity(self.robot.robotcontainer.drivetrain._bl.steer_motor.getAngularVelocityRPM / 60.0)
+
+        self.update_swerve_module(
+            self.swerve_br,
+            self.robot.robotcontainer.drivetrain._br.steer_motor,
+            self.robot.robotcontainer.drivetrain._br.drive_motor,
+            tm_diff)
+        self.robot.robotcontainer.drivetrain._br.cancoder.set_raw_rotor_position(self.robot.robotcontainer.drivetrain._br.steer_motor.getAngularPositionRotations())
+        self.robot.robotcontainer.drivetrain._br.cancoder.set_rotor_velocity(self.robot.robotcontainer.drivetrain._br.steer_motor.getAngularVelocityRPM / 60.0)
+
+        self.states[0] = self.robot.robotcontainer.drivetrain._fl.get_state()
+        self.states[1] = self.robot.robotcontainer.drivetrain._fl.get_state()
+        self.states[2] = self.robot.robotcontainer.drivetrain._fl.get_state()
+        self.states[3] = self.robot.robotcontainer.drivetrain._fl.get_state()
+        angle_change = self.robot.robotcontainer.drivetrain.kinematics.ChassisSpeeds(self.states).omegaRadiansPerSecond * tm_diff 
+        self.robot.robotcontainer.drivetrain.kinematics.toChassisSpeeds()
+        self.last_angle = self.last_angle.plus(Rotation2d.fromRadians(angle_change))
+        self.robot.robotcontainer.drivetrain._gyro.sim_state.set_raw_yaw(self.last_angle.degrees)
 
 
     def update_talonFX(self, motor:TalonFX, motor_sim:DCMotorSim, tm_diff):

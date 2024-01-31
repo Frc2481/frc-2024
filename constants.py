@@ -26,6 +26,12 @@ kdriveP = 0
 kdriveI = 0
 kdriveD = 0
 kdriveV = 0
+kSteerInertia = 1
+kSteerGearing = 16
+kDriveInertia = 1
+kDriveGearing = 16
+kSteerFrictionVoltage = .1  
+kDriveFrictionVoltage = .1 
 
 #steer
 ksteerP = 0

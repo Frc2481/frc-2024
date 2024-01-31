@@ -11,9 +11,10 @@ from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig,
 from wpilib import DriverStation
 from pathplannerlib.auto import PathPlannerAuto
 
-from commands2.cmd import *
-
 import commands2
+from commands2.cmd import *
+from commands2 import InstantCommand, WaitCommand, PrintCommand, FunctionalCommand
+
 from commands2.button import CommandXboxController 
 
 from phoenix6.controls import VelocityVoltage, PositionVoltage
@@ -337,8 +338,6 @@ class DriveSubsystem(commands2.Subsystem):
         wpilib.Preferences.setDouble("BL_WHEEL_CIRCUMFERENCE", self._bl.wheel_circumference)
         wpilib.Preferences.setDouble("BR_WHEEL_CIRCUMFERENCE", self._br.wheel_circumference)
 
-
-         
          
     def calibrate_wheel_circumference_cmd(self):
         return sequence(

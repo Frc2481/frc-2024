@@ -6,6 +6,8 @@ import wpimath.units
 import constants
 import wpilib.simulation
 
+from subsystems.drivetrain import DriveSubsystem
+
 from phoenix6.hardware import Pigeon2, cancoder
 from phoenix6.sim import CANcoderSimState, ChassisReference, Pigeon2SimState, TalonFXSimState 
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry, \
@@ -36,9 +38,11 @@ class SimSwerveModule:
         self.DriveMotorInverted = driveMotorInverted
     
     def update(self):
-        self.SteerMotorSim = modulesToApply().getSteerMotorSim().getSimState()
-        self.DriveMotorSim = modulesToApply().getDriveMotorSim().getSimState()
-        self.CANcoderSim = modulesToApply().getCANcoderSim().getSimState()
+        self.SteerMotorSim = DCMotorSim.getSteerMotorSim().getSimState()
+        self.DriveMotorSim = DCMotorSim.getDriveMotorSim().getSimState()
+        self.CANcoderSim = DCMotorSim.getCANcoderSim().getSimState()
+
+        #switched modulesToApply with 
 
         
         self.SteerMotorSim.Orientaiton = self.SteerMotorInverted(ChassisReference.Clockwise_Positive, ChassisReference.CounterClockwise_Positive)
@@ -65,7 +69,7 @@ class SimSwerveModule:
         
         motor_sim.update(tm_diff)
 
-        self.DriveMotorSim(self.SteerMotor.update(dtSeconds))
+        self.DriveMotorSim(self.SteerMotor.update(1))
         
         self.DriveMotorSim.sim_state.set_raw_rotor_position(motor_sim.getAngularPosition() * constants.kSteerGearReduction)
         self.DriveMotorSim.set_rotor_velocity(motor_sim.getAngularVelocity() * constants.kDriveGearReduction)
@@ -105,7 +109,7 @@ class SimSwerveDrivetrain:
     def update(self, dtSeconds, supplyVoltage, SwerveModule, modulesToApply):
 
 
-        SwerveModuleState states = SwerveModuleState[ModuleCount]
+       # SwerveModuleState states = SwerveModuleState(ModuleCount)
         #/* Update our sim devices */
 
         self._flsim.update()
@@ -113,11 +117,11 @@ class SimSwerveDrivetrain:
         self._blsim.update()
         self._brsim.update()
             
-
-        DoubleAngleChange = Kinem.toChassisSpeeds(states).omegaRadiansPerSecond * dtSeconds
-        LastAngle = LastAngle.plus(Rotation2d.fromRadians(angleChange))
-        self.phoenix6_sim_state.setRawYaw(LastAngle.get_degree)
-    
+#switched "fromRadians" to degrees
+       # DoubleAngleChange = Kinem.toChassisSpeeds(states).RadiansPerSecond * dtSeconds
+        LastAngle = LastAngle.plus(Rotation2d.fromDegrees())
+        self.phoenix6_sim_state.set_yaw(LastAngle.get_degree)
+        self.drivetrain._gyro.sim_state.set_yaw(359)
 
     
      # Applies the effects of friction to dampen the motor voltage.
@@ -126,7 +130,7 @@ class SimSwerveDrivetrain:
      # @return Friction-dampened motor voltage
     
     def  addFriction(self, motorVoltage, frictionVoltage):
-        if (Math.abs(motorVoltage) < frictionVoltage):
+        if (math.abs(motorVoltage) < frictionVoltage):
             motorVoltage = 0.0
         elif (motorVoltage > 0.0):
             motorVoltage -= frictionVoltage
@@ -134,7 +138,6 @@ class SimSwerveDrivetrain:
             motorVoltage += frictionVoltage
 
         return motorVoltage
-
 
 
 

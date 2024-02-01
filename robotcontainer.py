@@ -44,7 +44,7 @@ class RobotContainer(object):
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
-        self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1. * constants.kShooterSpeedRPS))
+        self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1 * constants.kShooterSpeedRPS))
         self.operator_controller.y().onFalse(self.shooter.shooter_off_cmd())
         self.operator_controller.x().onTrue(self.arm.arm_extend_cmd())
         self.operator_controller.povLeft().onTrue(self.drivetrain.calibrate_wheel_circumference_cmd())
@@ -71,9 +71,9 @@ class RobotContainer(object):
         self.driver_controller.start().onTrue(self.drivetrain.zero_steer_encoder_cmd())
         self.driver_controller.povUp().onTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd(self.driver_controller))
         self.driver_controller.povRight().onTrue(self.drivetrain.line_up_with_joystick_limelight_align_cmd(self.driver_controller))
-        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-0.5, -0.5))
-        self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
-        self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1. * constants.kFeederSpeedRPS))
+        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(0.5, 0.5) * -1)
+        #self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
+        self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
         self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
         
      

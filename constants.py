@@ -22,19 +22,24 @@ kPigeonCANID = 1
 #drivetrain
 kWheelTrack = 18.5
 kWheelBase = 16.5
-kdriveP = 2
+kdriveP = 0
 kdriveI = 0
-kdriveD = 0.1
-kdriveV = 0.02
+kdriveD = 0.0
+kdriveV = 0.0
 kDriveGearReduction = 125
 
 #steer
-ksteerP = 2
-ksteerI = 0
-ksteerD = 0.1
-ksteerV = 0.02
+ksteerP = 100
+ksteerI = 0.1
+ksteerD = 0.0
+ksteerV = 3.42
+ksteerA = 0
+ksteerS = 0
+kSwerveSteerCruiseVelocity = 3.5
+kSwerveSteerAcceleration = 24
+kSwerveSteerJerk = 0
 
-kSwerveReductionSteer = 40
+kSwerveReductionSteer = 30
 kSwerveReductionDrive = 4.31
 
 kDriverControllerPort = 0

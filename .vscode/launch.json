@@ -23,6 +23,27 @@
             "args": [
                 "test",
             ]
+        },
+        {
+            "name": "robotpy deploy",
+            "type": "python",
+            "request": "launch",
+            "module": "robotpy",
+            "justMyCode": true,
+            "args": [
+                "deploy",
+                "--skip-tests"
+            ]
+        },
+        {
+            "name": "robotpy sync",
+            "type": "python",
+            "request": "launch",
+            "module": "robotpy",
+            "justMyCode": true,
+            "args": [
+                "sync",
+            ]
         }
     ]
 }

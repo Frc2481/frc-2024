@@ -14,7 +14,9 @@ class MyRobot(commands2.TimedCommandRobot):
         This function is run when the robot is first started up and should be used for any
         initialization code.
         """
+        print("Here 1")
         self.container = RobotContainer()
+        print("Here 2")
 
         self.autonomousCommand = None
 

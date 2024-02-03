@@ -11,12 +11,13 @@ from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig,
 from wpilib import DriverStation
 from pathplannerlib.auto import PathPlannerAuto
 
+from commands2 import WaitCommand, InstantCommand, FunctionalCommand, PrintCommand
+from commands2 import *
 from commands2.cmd import *
 
-import commands2
 from commands2.button import CommandXboxController 
 
-from phoenix6.controls import VelocityVoltage, PositionVoltage
+from phoenix6.controls import VelocityVoltage, MotionMagicVoltage, VoltageOut
 
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.configs.cancoder_configs import CANcoderConfiguration 
@@ -34,11 +35,11 @@ from phoenix6.signals.spn_enums import *
 
 class SwerveModule(object):
 
-    def __init__(self, driveCANID, steerCANID, steerCANCoderID):
+    def __init__(self, driveCANID, steerCANID, steerCANCoderID, steerInverted):
 
-        self.driveMotor = TalonFX(driveCANID)
-        self.steerMotor = TalonFX(steerCANID)
-        self.steerEncoder = CANcoder(steerCANCoderID)
+        self.driveMotor = TalonFX(driveCANID, "2481")
+        self.steerMotor = TalonFX(steerCANID, "2481")
+        self.steerEncoder = CANcoder(steerCANCoderID, "2481")
 
         self.driveMotorConfig = TalonFXConfiguration()
         self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -51,12 +52,20 @@ class SwerveModule(object):
         self.driveMotor.configurator.apply(self.driveMotorConfig)
         
         self.steerMotorConfig = TalonFXConfiguration()
-        self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-        self.steerMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
+        self.steerMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE if steerInverted else InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        self.steerMotorConfig.motor_output.peak_forward_duty_cycle = 0.2
+        self.steerMotorConfig.motor_output.peak_reverse_duty_cycle = -0.2
         self.steerMotorConfig.slot0.k_p = constants.ksteerP
         self.steerMotorConfig.slot0.k_i = constants.ksteerI
         self.steerMotorConfig.slot0.k_d = constants.ksteerD
         self.steerMotorConfig.slot0.k_v = constants.ksteerV
+        self.steerMotorConfig.slot0.k_a = constants.ksteerA
+        self.steerMotorConfig.slot0.k_s = constants.ksteerS
+        self.steerMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kSwerveSteerCruiseVelocity
+        self.steerMotorConfig.motion_magic.motion_magic_acceleration = constants.kSwerveSteerAcceleration
+        self.steerMotorConfig.motion_magic.motion_magic_jerk = constants.kSwerveSteerJerk
+        self.steerMotorConfig.closed_loop_general.continuous_wrap = True
 
         self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.FUSED_CANCODER
         self.steerMotorConfig.feedback.feedback_remote_sensor_id = steerCANCoderID 
@@ -98,8 +107,8 @@ class SwerveModule(object):
     
     def set_state(self, state):
         state = SwerveModuleState.optimize(state, self.angle())
-        self.driveMotor.set_control(VelocityVoltage(state.speed))        
-        self.steerMotor.set_control(PositionVoltage(state.angle.degrees() / 360))
+        self.driveMotor.set_control(VoltageOut(state.speed))        
+        self.steerMotor.set_control(MotionMagicVoltage(state.angle.degrees() / 360))
     
     def get_position(self) -> SwerveModulePosition:
         return SwerveModulePosition(
@@ -118,23 +127,27 @@ class SwerveModule(object):
     
    
 
-class DriveSubsystem(commands2.Subsystem):
+class DriveSubsystem(Subsystem):
 
     def __init__(self):
         super().__init__()
 
         self._fl = SwerveModule(constants.kSwerveFrontLeftDriveMotorCANID, 
                                  constants.kSwerveFrontLeftSteerMotorCANID, 
-                                 constants.kSwerveFrontLeftSteerEncoderCANID)  
+                                 constants.kSwerveFrontLeftSteerEncoderCANID,
+                                 False)  
         self._fr = SwerveModule(constants.kSwerveFrontRightDriveMotorCANID, 
                                  constants.kSwerveFrontRightSteerMotorCANID,
-                                 constants.kSwerveFrontRightSteerEncoderCANID)
+                                 constants.kSwerveFrontRightSteerEncoderCANID,
+                                 False)
         self._bl = SwerveModule(constants.kSwerveBackLeftDriveMotorCANID,
                                  constants.kSwerveBackLeftSteerMotorCANID, 
-                                 constants.kSwerveBackLeftSteerEncoderCANID)
+                                 constants.kSwerveBackLeftSteerEncoderCANID,
+                                 True)
         self._br = SwerveModule(constants.kSwerveBackRightDriveMotorCANID,
                                  constants.kSwerveBackRightSteerMotorCANID, 
-                                 constants.kSwerveBackrightSteerEncoderCANID) 
+                                 constants.kSwerveBackrightSteerEncoderCANID,
+                                 False) 
         self._fl.set_steer_offset(wpilib.Preferences.getDouble("FL_ENCODER_OFFSET"))
         self._fr.set_steer_offset(wpilib.Preferences.getDouble("FR_ENCODER_OFFSET"))
         self._bl.set_steer_offset(wpilib.Preferences.getDouble("BL_ENCODER_OFFSET"))
@@ -145,13 +158,13 @@ class DriveSubsystem(commands2.Subsystem):
         self._bl.wheel_circumference = wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE")
         self._br.wheel_circumference = wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE")
 
-        self._gyro = Pigeon2(constants.kPigeonCANID)
+        self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
 
         self.__kinematics = SwerveDrive4Kinematics(
-            Translation2d(-constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
-            Translation2d(constants.kWheelTrack / 2.0, constants.kWheelBase / 2.0),
-            Translation2d(-constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0),
-            Translation2d(constants.kWheelTrack / 2.0, -constants.kWheelBase / 2.0))
+            Translation2d(constants.kWheelBase / 2.0, constants.kWheelTrack / 2.0),
+            Translation2d(constants.kWheelBase / 2.0, -constants.kWheelTrack / 2.0),
+            Translation2d(-constants.kWheelBase / 2.0, constants.kWheelTrack / 2.0),
+            Translation2d(-constants.kWheelBase / 2.0, -constants.kWheelTrack / 2.0))
 
         self.__odometry = SwerveDrive4Odometry(
             kinematics = self.__kinematics,
@@ -205,6 +218,7 @@ class DriveSubsystem(commands2.Subsystem):
         self.__sd.putNumber("FR_DISTANCE_ACTUAL",self._fr.get_position().distance)
         self.__sd.putNumber("BL_DISTANCE_ACTUAL",self._bl.get_position().distance)
         self.__sd.putNumber("BR_DISTANCE_ACTUAL",self._br.get_position().distance)
+        
     
 
     def get_pose(self):
@@ -321,8 +335,7 @@ class DriveSubsystem(commands2.Subsystem):
         wpilib.Preferences.setDouble("BR_STEER_OFFSET", self._br.zero_steer_encoder())
         
     def zero_steer_encoder_cmd(self):
-
-                    return runOnce(self.zero_steer_encoder)
+        return runOnce(self.zero_steer_encoder).ignoringDisable(True)
     
     def finalize_calibrate_wheel_circumfrence(self):
         distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value + 360)

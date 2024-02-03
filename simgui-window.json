@@ -66,7 +66,7 @@
     "###FMS": {
       "Collapsed": "0",
       "Pos": "-7,725",
-      "Size": "230,128"
+      "Size": "230,122"
     },
     "###Joysticks": {
       "Collapsed": "0",
@@ -160,7 +160,7 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "260,245",
-      "Size": "74,84"
+      "Size": "74,98"
     }
   }
 }

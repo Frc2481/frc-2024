@@ -59,11 +59,14 @@ kFeederBeambreakPort = 1
 #ShooterFocCurrentGains
 kShooterSpeedRPS = 50
 kShooterToArmSpeedRPS = 10
-kShooterP = 5
-kShooterI = 1
+kShooterP = 0
+kShooterI = 0
 kShooterD = 0
-kShooterV = 1.0
+kShooterV = 0
 kShooterPeakCurrent = 40
+kShooterCruiseVelocity = 0
+kShooterAcceleration = 0
+kShooterJerk = 0 
 
 #Gripper
 kGripperSolenoidModule = 0

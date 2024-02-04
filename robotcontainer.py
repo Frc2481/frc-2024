@@ -3,6 +3,7 @@ import wpilib
 from commands2 import *
 from commands2.button import * 
 from commands2.cmd import * 
+import ntcore
 
 from subsystems.feeder import FeederSubsystem
 from subsystems.intake import IntakeSubsystem
@@ -76,6 +77,7 @@ class RobotContainer(object):
         #self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
         self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
         self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
+        #self.driver_controller.povDown().onTrue(self.drivetrain.zero_drive_encoder())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          )
         
      
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
@@ -102,12 +104,13 @@ class RobotContainer(object):
         .andThen(self.arm.arm_retract_cmd))
     
                 
-    
-    def getAutonomousCommand():
+    def getAutonomousCommand(self):
     # Load the path you want to follow using its name in the GUI
-        path = PathPlannerPath.fromPathFile('ExampleWow')
+        self._sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
+        self._sd.put("Run Auto", )
+    
+        path = PathPlannerPath.fromPathFile('Programmers Auto')
 
-        return PathPlannerAuto('Bottom Auto')
-
-    # Create a path following command using AutoBuilder. This will also trigger event markers.
-    #return AutoBuilder.followPathWithEvents(path);
+    
+        return AutoBuilder.followPath(path)
+        

@@ -80,7 +80,7 @@ kArmDoubleSolenoidForwardPort = 3
 kArmDoubleSolenoidReversePort = 4
 
 kDriveMaxSpeed = 16
-kDrivePeriod = 100
+kDrivePeriod = 20
 
 #wheeelly wheel
 kDriveWheelRadiusIn = 1.5

@@ -38,6 +38,11 @@ class RobotContainer(object):
             constants.kOperatorControllerPort)
         
         self.button_bindings_configure()
+        
+        # CommandScheduler.getInstance().onCommandInitialize(lambda x: print("Execute", x))
+        CommandScheduler.getInstance().onCommandExecute(lambda x: print("Execute", x))
+        CommandScheduler.getInstance().onCommandFinish(lambda x: print("Finish", x))
+        CommandScheduler.getInstance().onCommandInterrupt(lambda x: print("Interrupt", x))
 
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
 

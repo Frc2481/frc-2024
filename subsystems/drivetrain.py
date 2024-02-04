@@ -40,13 +40,14 @@ from wpilib import DriverStation
 class SwerveModule(object):
 
     def __init__(self, driveCANID, steerCANID, steerCANCoderID, steerInverted):
+        self.id = driveCANID
 
         self.driveMotor = TalonFX(driveCANID, "2481")
         self.steerMotor = TalonFX(steerCANID, "2481")
         self.steerEncoder = CANcoder(steerCANCoderID, "2481")
 
         self.driveMotorConfig = TalonFXConfiguration()
-        self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
+        self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.driveMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.driveMotorConfig.slot0.k_p = constants.kdriveP
         self.driveMotorConfig.slot0.k_i = constants.kdriveI 
@@ -111,8 +112,13 @@ class SwerveModule(object):
     def angle(self):
         return Rotation2d(self.steerEncoder.get_absolute_position().value * 2 * math.pi)
     
-    def set_state(self, state):
+    def set_state(self, state: SwerveModuleState):
+        if self.id == 1:
+            ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Speed0", state.speed)
+            #ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Angle0", state.angle.degrees())
+            #ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("Self_Angle1", self.angle().degrees())
         state = SwerveModuleState.optimize(state, self.angle())
+        ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Speed1", state.speed)
         self.driveMotor.set_control(VoltageOut(state.speed * 12.0))        
         self.steerMotor.set_control(MotionMagicVoltage(state.angle.degrees() / 360))
     
@@ -159,10 +165,10 @@ class DriveSubsystem(Subsystem):
         self._bl.set_steer_offset(wpilib.Preferences.getDouble("BL_STEER_OFFSET"))
         self._br.set_steer_offset(wpilib.Preferences.getDouble("BR_STEER_OFFSET"))
 
-        self._fl.wheel_circumference = wpilib.Preferences.getDouble("FL_WHEEL_CIRCUMFERENCE", 9.425)
-        self._fr.wheel_circumference = wpilib.Preferences.getDouble("FR_WHEEL_CIRCUMFERENCE", 9.425)
-        self._bl.wheel_circumference = wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE", 9.425)
-        self._br.wheel_circumference = wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425)
+        self._fl.wheel_circumference = abs(wpilib.Preferences.getDouble("FL_WHEEL_CIRCUMFERENCE", 9.425))
+        self._fr.wheel_circumference = abs(wpilib.Preferences.getDouble("FR_WHEEL_CIRCUMFERENCE", 9.425))
+        self._bl.wheel_circumference = abs(wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE", 9.425))
+        self._br.wheel_circumference = abs(wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425))
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
 
@@ -187,10 +193,10 @@ class DriveSubsystem(Subsystem):
         self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
         
         AutoBuilder.configureHolonomic(
-            self.get_pose(), # Robot pose supplier
-            self.reset_pose(), # Method to reset odometry (will be called if your auto has a starting pose)
-            self.get_robot_relative_speed(), # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            self.drive(), # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            self.get_pose, # Robot pose supplier
+            self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
+            self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            self.drive, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
                 PIDConstants(0.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(0.0, 0.0, 0.0), # Rotation PID constants
@@ -198,7 +204,7 @@ class DriveSubsystem(Subsystem):
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig() # Default path replanning config. See the API for the options here
             ),
-            self.shouldFlipPath(), # Supplier to control path flipping based on alliance color
+            self.shouldFlipPath, # Supplier to control path flipping based on alliance color
             self # Reference to this subsystem to set requirements
         )
         
@@ -221,11 +227,13 @@ class DriveSubsystem(Subsystem):
         self.__sd.putNumber("FRAngleActual", self._fr.get_position().angle.degrees())
         self.__sd.putNumber("BLAngleActual", self._bl.get_position().angle.degrees())
         self.__sd.putNumber("BRAngleActual", self._br.get_position().angle.degrees())
-        self.__sd.putNumber("GYROFINISHED", self._gyro.get_yaw().value)
         self.__sd.putNumber("FL_DISTANCE_ACTUAL",self._fl.get_position().distance)
         self.__sd.putNumber("FR_DISTANCE_ACTUAL",self._fr.get_position().distance)
         self.__sd.putNumber("BL_DISTANCE_ACTUAL",self._bl.get_position().distance)
         self.__sd.putNumber("BR_DISTANCE_ACTUAL",self._br.get_position().distance)
+        self.__sd.putNumber("Yaw", self._gyro.get_yaw().value)
+        self.__sd.putNumber("X_POSE", self.get_pose().x)
+        self.__sd.putNumber("Y_POSE", self.get_pose().y)
         
         
 
@@ -257,9 +265,13 @@ class DriveSubsystem(Subsystem):
 
         self.drive_robot_relative_speed(chassis_speed, force_angle)
 
-    def drive_robot_relative_speed(self, chassis_speed, force_angle):
+    def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle):
+        
+        #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
 
         chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
+        
+        #self.__sd.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -344,10 +356,10 @@ class DriveSubsystem(Subsystem):
         
     
     def zero_drive_encoder(self):
-        wpilib.Preferences.setDouble("FL_DRIVE_OFFSET", self._fl.zero_drive_encoder())
-        wpilib.Preferences.setDouble("FR_DRIVE_OFFSET", self._fr.zero_drive_encoder())
-        wpilib.Preferences.setDouble("BL_DRIVE_OFFSET", self._bl.zero_drive_encoder())
-        wpilib.Preferences.setDouble("BR_DRIVE_OFFSET", self._br.zero_drive_encoder())
+        self._fl.zero_drive_encoder()
+        self._fr.zero_drive_encoder()
+        self._bl.zero_drive_encoder()
+        self._br.zero_drive_encoder()
                 
     def zero_drive_encoder_cmd(self):
         return runOnce(self.zero_drive_encoder).ignoringDisable(True)
@@ -362,11 +374,11 @@ class DriveSubsystem(Subsystem):
         return runOnce(self.zero_steer_encoder).ignoringDisable(True)
     
     def finalize_calibrate_wheel_circumfrence(self):
-        distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value + 360)
-        self._fl.wheel_circumference = distance_traveled_in / self._fl.driveMotor.get_rotor_position().value
-        self._fr.wheel_circumference = distance_traveled_in / self._fr.driveMotor.get_rotor_position().value
-        self._bl.wheel_circumference = distance_traveled_in / self._bl.driveMotor.get_rotor_position().value
-        self._br.wheel_circumference = distance_traveled_in / self._br.driveMotor.get_rotor_position().value
+        distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value)
+        self._fl.wheel_circumference = distance_traveled_in / self._fl.driveMotor.get_position().value
+        self._fr.wheel_circumference = distance_traveled_in / self._fr.driveMotor.get_position().value
+        self._bl.wheel_circumference = distance_traveled_in / self._bl.driveMotor.get_position().value
+        self._br.wheel_circumference = distance_traveled_in / self._br.driveMotor.get_position().value
         wpilib.Preferences.setDouble("FL_WHEEL_CIRCUMFERENCE", self._fl.wheel_circumference)
         wpilib.Preferences.setDouble("FR_WHEEL_CIRCUMFERENCE", self._fr.wheel_circumference)
         wpilib.Preferences.setDouble("BL_WHEEL_CIRCUMFERENCE", self._bl.wheel_circumference)
@@ -392,11 +404,13 @@ class DriveSubsystem(Subsystem):
 
             FunctionalCommand(
                 lambda: None,
-                lambda: self.drive(0.0, 0.0, theta=0.2, field_relative=False),
+                lambda: self.drive(0.0, 0.0, theta=0.01, field_relative=False),
                 lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
-                lambda: self._gyro.get_yaw().value + 360 if self._gyro.get_yaw().value else self._gyro.get_yaw().value> 360 * 10
+                lambda: abs(self._gyro.get_yaw().value) > 360 * 10,
+                self
             ),
             PrintCommand("Yaw Finished"),
+            WaitCommand(5),
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
             

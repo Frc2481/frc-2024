@@ -19,6 +19,14 @@ class ArmSubsystem(object):
             forwardChannel = constants.kArmDoubleSolenoidForwardPort,
             reverseChannel = constants.kArmDoubleSolenoidReversePort
         )
+        
+       # self.armSolenoid2 = DoubleSolenoid(
+           # constants.kArmSolenoidModule,
+          #  moduleType = wpilib.PneumaticsModuleType.CTREPCM,
+           # forwardChannel = constants.kArmDoubleSolenoidForwardPort,
+           # reverseChannel = constants.kArmDoubleSolenoidReversePort
+       # )
+        
 
     def arm_extend_cmd(self):
         return commands2.cmd.runOnce(

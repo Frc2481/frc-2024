@@ -1,5 +1,6 @@
 import constants
 import wpilib
+from wpilib import SmartDashboard
 from commands2 import *
 from commands2.button import * 
 from commands2.cmd import * 
@@ -82,11 +83,14 @@ class RobotContainer(object):
         #self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
         self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
         self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
+     
         #self.driver_controller.povDown().onTrue(self.drivetrain.zero_drive_encoder())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          )
         
      
         # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
         # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+        
+        SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
 
                         
        

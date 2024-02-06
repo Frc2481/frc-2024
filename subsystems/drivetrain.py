@@ -35,7 +35,9 @@ from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
 from wpilib import DriverStation
 
+from wpimath.filter import SlewRateLimiter
 
+    
 
 class SwerveModule(object):
 
@@ -87,6 +89,7 @@ class SwerveModule(object):
         self.steerEncoder.configurator.apply(self.canCoderConfig)
 
         self.wheel_circumference = 0
+        
 
 
     def zero_steer_encoder(self):
@@ -124,13 +127,13 @@ class SwerveModule(object):
     
     def get_position(self) -> SwerveModulePosition:
         return SwerveModulePosition(
-            distance=self.distance(),
+            distance=-self.distance(),
             angle=self.angle()
         )
    
     def get_state(self) -> SwerveModuleState:
         return SwerveModuleState(
-            meters_per_second=wpimath.units.feetToMeters(self.driveMotor.get_velocity().value * (self.wheel_circumference)),
+            meters_per_second=wpimath.units.feetToMeters(-self.driveMotor.get_velocity().value * (self.wheel_circumference)),
             angle=self.angle()
         )
     
@@ -169,6 +172,7 @@ class DriveSubsystem(Subsystem):
         self._fr.wheel_circumference = abs(wpilib.Preferences.getDouble("FR_WHEEL_CIRCUMFERENCE", 9.425))
         self._bl.wheel_circumference = abs(wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE", 9.425))
         self._br.wheel_circumference = abs(wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425))
+        
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
 
@@ -208,6 +212,10 @@ class DriveSubsystem(Subsystem):
             self # Reference to this subsystem to set requirements
         )
         
+        self.leftXRateLimiter = SlewRateLimiter(1)
+        self.leftYRateLimiter = SlewRateLimiter(1)
+        self.rightXRateLimiter = SlewRateLimiter(1)
+        
     
     
     def periodic(self):
@@ -240,14 +248,18 @@ class DriveSubsystem(Subsystem):
     def get_pose(self):
         return self.__odometry.getPose()
     
-    def reset_pose(self, pose):
-            self.__odometry.resetPosition(
-                
-                self._gyro.get_yaw().value,
-                self._fl.get_position(),
-                self._fr.get_position(),
-                self._bl.get_position(),
-                self._br.get_position(),
+    def reset_pose(self, pose=Pose2d()):
+            
+            self._gyro.set_yaw(0)
+            
+            self.__odometry.resetPosition(    
+                Rotation2d(),
+                (
+                    self._fl.get_position(),
+                    self._fr.get_position(),
+                    self._bl.get_position(),
+                    self._br.get_position()
+                ),
                 pose
             )
         #self.__sd.putNumber("Odometry X",self.(pose(X)))
@@ -255,11 +267,15 @@ class DriveSubsystem(Subsystem):
     def drive(self, x, y, theta, field_relative, force_angle=False):
         
         # dead zone for joysticks
-        if (abs(x) < .1 and abs(y) < .1 and abs(theta) < .04 * .1):
-            x = y = theta = 0
+        if abs(x) < 0.1:
+            x = 0
+        if abs(y)< 0.1:
+            y = 0 
+        if abs(theta) < 0.1 * 0.04:
+            theta = 0       
         
         if field_relative:
-            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, self._gyro.get_yaw().value)
+            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
         else:
             chassis_speed = ChassisSpeeds(x, y, theta)
 
@@ -322,20 +338,20 @@ class DriveSubsystem(Subsystem):
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
         return runEnd(
-            lambda: self.drive(joystick.getLeftY(),
-                               joystick.getLeftX(),
-                               joystick.getRightX() * .04,
-                               False
+            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
+                            self.leftXRateLimiter.calculate(joystick.getLeftX()),
+                            self.rightXRateLimiter.calculate(joystick.getRightX() * .04),
+                               True
                                 ),
-            lambda: self.drive(0, 0, 0, False), 
+            lambda: self.drive(0, 0, 0, True), 
             self
         )
     
     def drive_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return runEnd(
              
-            lambda: self.drive(joystick.getLeftY(),
-                               joystick.getLeftX(),
+            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
+                               self.leftXRateLimiter.calculate(joystick.getLeftX()),
                                ntcore.NetworkTableInstance.getTable("limelight").getNumber('tx'),
                                False
                                 ),
@@ -345,9 +361,9 @@ class DriveSubsystem(Subsystem):
     
     def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return runEnd(             
-            lambda: self.drive(joystick.getLeftY(),
+            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
                                ntcore.NetworkTableInstance.getTable("limelight").getNumber('ty'),
-                               joystick.getRightY() * .04,
+                               self.rightXRateLimiter.calculate(joystick.getRightX() * .04),
                                False
                                 ),
             lambda: self.drive(0, 0, 0, False), 
@@ -372,6 +388,7 @@ class DriveSubsystem(Subsystem):
         
     def zero_steer_encoder_cmd(self):
         return runOnce(self.zero_steer_encoder).ignoringDisable(True)
+   
     
     def finalize_calibrate_wheel_circumfrence(self):
         distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value)
@@ -406,7 +423,7 @@ class DriveSubsystem(Subsystem):
                 lambda: None,
                 lambda: self.drive(0.0, 0.0, theta=0.01, field_relative=False),
                 lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
-                lambda: abs(self._gyro.get_yaw().value) > 360 * 10,
+                lambda: abs(self._gyro.get_yaw().value) > 360 * 5,
                 self
             ),
             PrintCommand("Yaw Finished"),

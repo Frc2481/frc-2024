@@ -1,6 +1,6 @@
 import constants
 import wpilib
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, DataLogManager
 from commands2 import *
 from commands2.button import * 
 from commands2.cmd import * 
@@ -46,6 +46,7 @@ class RobotContainer(object):
         CommandScheduler.getInstance().onCommandInterrupt(lambda x: print("Interrupt", x))
 
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
+        DataLogManager.start()
 
     def button_bindings_configure(self):
         print("Here 3")
@@ -115,11 +116,13 @@ class RobotContainer(object):
                 
     def getAutonomousCommand(self):
     # Load the path you want to follow using its name in the GUI
-        self._sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
-        self._sd.put("Run Auto", )
+        # self._sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
+        # self._sd.put("Run Auto", )
+        
+        # SmartDashboard.putData(AutoBuilder.bui)
     
-        path = PathPlannerPath.fromPathFile('Programmers Auto')
-
+        # path = PathPlannerPath.fromPathFile('Sample for programmers')
+        return PathPlannerAuto("Programmers Auto")
     
         return AutoBuilder.followPath(path)
         

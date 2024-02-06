@@ -125,22 +125,24 @@ class SwerveModule(object):
         self.driveMotor.set_control(VoltageOut(state.speed * 12.0))        
         self.steerMotor.set_control(MotionMagicVoltage(state.angle.degrees() / 360))
     
-    def get_position(self) -> SwerveModulePosition:
+    def get_position(self):
         return SwerveModulePosition(
             distance=-self.distance(),
             angle=self.angle()
         )
    
-    def get_state(self) -> SwerveModuleState:
+    def get_state(self): 
         return SwerveModuleState(
-            meters_per_second=wpimath.units.feetToMeters(-self.driveMotor.get_velocity().value * (self.wheel_circumference)),
+            speed=wpimath.units.inchesToMeters(-self.driveMotor.get_velocity().value * (self.wheel_circumference)),
             angle=self.angle()
         )
     
     def zero_drive_encoder(self):
        self.driveMotor.set_position(0)
     
-   
+    def get_voltage(self):
+        return self.driveMotor.get_motor_voltage().value
+       
 
 class DriveSubsystem(Subsystem):
 
@@ -200,7 +202,7 @@ class DriveSubsystem(Subsystem):
             self.get_pose, # Robot pose supplier
             self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
             self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            self.drive, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
                 PIDConstants(0.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(0.0, 0.0, 0.0), # Rotation PID constants
@@ -231,18 +233,29 @@ class DriveSubsystem(Subsystem):
              ]
         )
         
-        self.__sd.putNumber("FLAngleActual", self._fl.get_position().angle.degrees())
-        self.__sd.putNumber("FRAngleActual", self._fr.get_position().angle.degrees())
-        self.__sd.putNumber("BLAngleActual", self._bl.get_position().angle.degrees())
-        self.__sd.putNumber("BRAngleActual", self._br.get_position().angle.degrees())
-        self.__sd.putNumber("FL_DISTANCE_ACTUAL",self._fl.get_position().distance)
-        self.__sd.putNumber("FR_DISTANCE_ACTUAL",self._fr.get_position().distance)
-        self.__sd.putNumber("BL_DISTANCE_ACTUAL",self._bl.get_position().distance)
-        self.__sd.putNumber("BR_DISTANCE_ACTUAL",self._br.get_position().distance)
+        self.__sd.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
+        self.__sd.putNumber("FL_Distance",self._fl.get_position().distance)
+        self.__sd.putNumber("FL_Velocity",self._fl.get_state().speed)
+        self.__sd.putNumber("FL_Voltage",self._fl.get_voltage())
+        
+        self.__sd.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
+        self.__sd.putNumber("FR_Distance",self._fr.get_position().distance)
+        self.__sd.putNumber("FR_Velocity",self._fr.get_state().speed)
+        self.__sd.putNumber("FR_Voltage",self._fr.get_voltage())
+        
+        self.__sd.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
+        self.__sd.putNumber("BL_Distance",self._bl.get_position().distance)
+        self.__sd.putNumber("BL_Velocity",self._bl.get_state().speed)
+        self.__sd.putNumber("BL_Voltage",self._bl.get_voltage())
+        
+        self.__sd.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
+        self.__sd.putNumber("BR_Distance",self._br.get_position().distance)
+        self.__sd.putNumber("BR_Velocity",self._br.get_state().speed)
+        self.__sd.putNumber("BR_Voltage",self._br.get_voltage())
+        
         self.__sd.putNumber("Yaw", self._gyro.get_yaw().value)
         self.__sd.putNumber("X_POSE", self.get_pose().x)
-        self.__sd.putNumber("Y_POSE", self.get_pose().y)
-        
+        self.__sd.putNumber("Y_POSE", self.get_pose().y)  
         
 
     def get_pose(self):
@@ -265,7 +278,6 @@ class DriveSubsystem(Subsystem):
         #self.__sd.putNumber("Odometry X",self.(pose(X)))
             
     def drive(self, x, y, theta, field_relative, force_angle=False):
-        
         # dead zone for joysticks
         if abs(x) < 0.1:
             x = 0
@@ -281,8 +293,8 @@ class DriveSubsystem(Subsystem):
 
         self.drive_robot_relative_speed(chassis_speed, force_angle)
 
-    def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle):
-        
+    def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False):
+        return 
         #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
 
         chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)

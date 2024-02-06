@@ -1,0 +1,110 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2998319405277463,
+        "y": 3.9007931884674423
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3015903944476523,
+        "y": 3.399913961507489
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.07,
+        "y": 0.8406067787177834
+      },
+      "prevControl": {
+        "x": 6.931776495807509,
+        "y": 1.3234749026916328
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot at the speaker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "turn shooter on and shoot at the speaker"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "turn intake on",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Turn the intake on"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Turn shooter off",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "turn the shooter off after shooting the note into the speaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.443,
+    "maxAcceleration": 11.83,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 158.3555648592861,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "All Center No Scoring",
+  "previewStartingState": {
+    "rotation": 129.80557109169501,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

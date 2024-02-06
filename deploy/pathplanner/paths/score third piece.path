@@ -1,0 +1,99 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.17,
+        "y": 4.02
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.554048197156006,
+        "y": 3.782458129117907
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.16,
+        "y": 2.9846262694991794
+      },
+      "prevControl": {
+        "x": 4.803433442272965,
+        "y": 3.9385732676001544
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "turn intake off",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Turn off the intake after picking up the note"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "stop, shoot, and turn off the shooter",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 2.22
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot note into speaker"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "turn the shooter off after shooting the note into the speaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.443,
+    "maxAcceleration": 11.83,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 143.3929251873924,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Glucose Bottom Auto",
+  "previewStartingState": {
+    "rotation": -144.78784571741647,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

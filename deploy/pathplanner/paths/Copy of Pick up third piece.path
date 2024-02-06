@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.86,
+        "y": 1.94
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.563052153791599,
+        "y": 2.1534645285795206
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.17,
+        "y": 4.023578445648756
+      },
+      "prevControl": {
+        "x": 6.988519107182193,
+        "y": 3.324646981693587
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Turn off shooter",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "turn the shooter off after shooting the note into the speaker"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Turn intake on",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Turn the intake on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.443,
+    "maxAcceleration": 11.83,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -142.4314079711727,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Glucose Bottom Auto",
+  "previewStartingState": {
+    "rotation": 141.4517167959038,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

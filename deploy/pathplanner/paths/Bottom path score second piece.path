@@ -1,0 +1,93 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.14,
+        "y": 2.41
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.495158157589651,
+        "y": 1.8867840537832485
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.86,
+        "y": 1.94
+      },
+      "prevControl": {
+        "x": 6.408973246158973,
+        "y": 2.2139621097047373
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Turn off intake",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Turn off the intake after picking up the note"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Stop and shoot",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 2.12
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "turn shooter on and shoot at the speaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.443,
+    "maxAcceleration": 11.83,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 142.40541759894154,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Bottom Auto",
+  "previewStartingState": {
+    "rotation": 159.23077725575047,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

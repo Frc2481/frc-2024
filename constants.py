@@ -26,7 +26,11 @@ kdriveP = 0
 kdriveI = 0
 kdriveD = 0.0
 kdriveV = 0.0
+kdriveA = 0.0
+kdriveS = 0.0
 kDriveGearReduction = 125
+
+
 
 #steer
 ksteerP = 100
@@ -78,6 +82,10 @@ kGripperDoubleSolenoidReversePort = 2
 kArmSolenoidModule = 0
 kArmDoubleSolenoidForwardPort = 3
 kArmDoubleSolenoidReversePort = 4
+
+kArmSolenoid2Module = 0
+kArmDoubleSolenoid2ForwardPort = 5
+kArmDoubleSolenoid2ReversePort = 6
 
 kDriveMaxSpeed = 16
 kDrivePeriod = 20

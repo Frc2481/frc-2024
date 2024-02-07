@@ -9,7 +9,7 @@ import ntcore
 from subsystems.feeder import FeederSubsystem
 from subsystems.intake import IntakeSubsystem
 from subsystems.shooter import ShooterSubsystem
-from subsystems.gripper import GripperSubsystem
+
 from subsystems.arm import ArmSubsystem
 from subsystems.drivetrain import DriveSubsystem
 from subsystems.angulator import AngulatorSubsystem
@@ -27,7 +27,6 @@ class RobotContainer(object):
         self.feeder = FeederSubsystem()
         self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()
-        self.gripper = GripperSubsystem()
         self.arm = ArmSubsystem()
         self.drivetrain = DriveSubsystem()
         self.angulator = AngulatorSubsystem()
@@ -53,45 +52,38 @@ class RobotContainer(object):
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
-        self.operator_controller.y().onTrue(self.shooter.shooter_on_cmd(-1 * constants.kShooterSpeedRPS))
-        self.operator_controller.y().onFalse(self.shooter.shooter_off_cmd())
-        self.operator_controller.x().onTrue(self.arm.arm_extend_cmd())
-        self.operator_controller.povLeft().onTrue(self.drivetrain.calibrate_wheel_circumference_cmd())
+        self.operator_controller.y().whileTrue(self.shooter.shooter_on_cmd(-1 * constants.kShooterSpeedRPS))
+        self.operator_controller.x().onTrue(self.arm.arm_score_position_cmd())
         self.operator_controller.rightBumper().onTrue(self.amp_score_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
-        self.operator_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
-       # self.operator_controller.povUp().onFalse(self.angulator.angulator_off_cmd())
-        self.operator_controller.povDown().onTrue(self.angulator.angulator_down_cmd())
-       # self.operator_controller.povDown().onFalse(self.angulator.angulator_off_cmd())
-        self.operator_controller.povRight().onTrue(            
-            InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
-        .andThen(InstantCommand(lambda: self.drivetrain._fr.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-        .andThen(InstantCommand(lambda: self.drivetrain._bl.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-        .andThen(InstantCommand(lambda: self.drivetrain._br.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-        .andThen(InstantCommand(lambda: self.drivetrain._gyro.sim_state.set_raw_yaw(359))))
-        
-
+        #self.operator_controller.povRight().onTrue(self.unimportant_sim_stuff_cmd())
+       
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
                                             .andThen(WaitUntilCommand(self.intake.has_game_piece))
                                             .andThen(self.intake.set_intake_cmd(0.0, 0.0)))
         self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
-        self.driver_controller.start().onTrue(self.drivetrain.zero_steer_encoder_cmd())
         self.driver_controller.povUp().onTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd(self.driver_controller))
         self.driver_controller.povRight().onTrue(self.drivetrain.line_up_with_joystick_limelight_align_cmd(self.driver_controller))
-        self.driver_controller.povLeft().onTrue(self.intake.set_intake_cmd(-0.5, -0.5))
-        #self.driver_controller.povLeft().onFalse(self.intake.set_intake_cmd(0,0))
-        self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
-        self.driver_controller.b().onFalse(self.feeder.feeder_off_cmd())
-     
-        #self.driver_controller.povDown().onTrue(self.drivetrain.zero_drive_encoder())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          )
+        self.driver_controller.povLeft().whileTrue(self.intake.set_intake_cmd(-0.5, -0.5))
+        self.driver_controller.b().whileTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
         
-     
-        # self.driver_controller.leftBumper().onTrue(self.gripper.open_cmd())
-        # self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
+        #self.driver_controller.leftBumper().whileTrue(
+        #    InstantCommand(self.drivetrain.topSysIdQuasistatic(self.SysIdRoutine.Direction.kForward))
+#.andThen(WaitCommand(4))
+#.andThen(self.drivetrain.topSysIdQuasistatic(self.SysIdRoutine.Direction.kReverse))
+#.andThen(WaitCommand(4))
+#.andThen(self.drivetrain.topSysIdDynamic(self.SysIdRoutine.Direction.kForward))
+#.andThen(WaitCommand(4))
+#.andThen(self.drivetrain.topSysIdDynamic(self.SysIdRoutine.Direction.kReverse)));
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
+        SmartDashboard.putData("Zero Steer Encoder", InstantCommand(lambda: self.drivetrain.zero_steer_encoder_cmd(True)))
+        SmartDashboard.putData("Angulator Up", InstantCommand(lambda: self.angulator.angulator_up_cmd(False)))
+        SmartDashboard.putData("Angulator Down", InstantCommand(lambda: self.angulator.angulator_down_cmd(False)))
+        SmartDashboard.putData("Calibrate Wheel Circumference", InstantCommand(lambda: self.drivetrain.calibrate_wheel_circumference_cmd(True)))
+        
 
                         
        
@@ -105,13 +97,20 @@ class RobotContainer(object):
     def amp_handoff_cmd(self):
         return (self.shooter.shooter_to_arm_cmd().andThen(self.feeder.feeder_on_cmd)
                 .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
-                .andThen(self.gripper.gripper_close_cmd())
+                .andThen(self.arm.gripper_close_cmd())
                 .andThen(self.shooter.shooter_off_cmd())
                 .andThen(self.feeder.feeder_off_cmd()))
     
     def amp_score_cmd(self):
-        return (self.gripper.gripper_open_cmd()
-        .andThen(self.arm.arm_retract_cmd))
+        return (self.arm.gripper_open_cmd()
+        .andThen(self.arm.arm_stow_position_cmd))
+        
+    #def unimportant_sim_stuff_cmd(self):
+        #return (InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
+        #.andThen(InstantCommand(lambda: self.drivetrain._fr.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+       # .andThen(InstantCommand(lambda: self.drivetrain._bl.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+        #.andThen(InstantCommand(lambda: self.drivetrain._br.driveMotor.sim_state.set_raw_rotor_position(8.25)))
+        #.andThen(InstantCommand(lambda: self.drivetrain._gyro.sim_state.set_raw_yaw(359))))  
     
                 
     def getAutonomousCommand(self):
@@ -125,4 +124,3 @@ class RobotContainer(object):
         return PathPlannerAuto("Programmers Auto")
     
         return AutoBuilder.followPath(path)
-        

@@ -49,7 +49,7 @@ class SwerveModule(object):
         self.steerEncoder = CANcoder(steerCANCoderID, "2481")
 
         self.driveMotorConfig = TalonFXConfiguration()
-        self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
+        self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.driveMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.driveMotorConfig.slot0.k_p = constants.kdriveP
         self.driveMotorConfig.slot0.k_i = constants.kdriveI 
@@ -177,7 +177,8 @@ class DriveSubsystem(Subsystem):
         
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
-
+        
+        
         self.__kinematics = SwerveDrive4Kinematics(
             Translation2d(constants.kWheelBase / 2.0, constants.kWheelTrack / 2.0),
             Translation2d(constants.kWheelBase / 2.0, -constants.kWheelTrack / 2.0),
@@ -261,6 +262,7 @@ class DriveSubsystem(Subsystem):
     def get_pose(self):
         return self.__odometry.getPose()
     
+        
     def reset_pose(self, pose=Pose2d()):
             
             self._gyro.set_yaw(0)
@@ -294,7 +296,7 @@ class DriveSubsystem(Subsystem):
         self.drive_robot_relative_speed(chassis_speed, force_angle)
 
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False):
-        return 
+       #return 
         #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
 
         chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
@@ -411,10 +413,7 @@ class DriveSubsystem(Subsystem):
         wpilib.Preferences.setDouble("FL_WHEEL_CIRCUMFERENCE", self._fl.wheel_circumference)
         wpilib.Preferences.setDouble("FR_WHEEL_CIRCUMFERENCE", self._fr.wheel_circumference)
         wpilib.Preferences.setDouble("BL_WHEEL_CIRCUMFERENCE", self._bl.wheel_circumference)
-        wpilib.Preferences.setDouble("BR_WHEEL_CIRCUMFERENCE", self._br.wheel_circumference)
-
-
-         
+        wpilib.Preferences.setDouble("BR_WHEEL_CIRCUMFERENCE", self._br.wheel_circumference)         
          
     def calibrate_wheel_circumference_cmd(self):
         return sequence(
@@ -442,9 +441,4 @@ class DriveSubsystem(Subsystem):
             WaitCommand(5),
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
-            
-        
-        )
-        
-
-        
+            )

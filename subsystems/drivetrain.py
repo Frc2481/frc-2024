@@ -5,11 +5,13 @@ import wpimath.units
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry, \
 ChassisSpeeds
 from wpimath.geometry import Rotation2d, Translation2d, Pose2d
+from wpimath.estimator import SwerveDrive4PoseEstimator
 #Pathplanner stuff
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
 from wpilib import DriverStation
 from pathplannerlib.auto import PathPlannerAuto
+
 
 from commands2 import WaitCommand, InstantCommand, FunctionalCommand, PrintCommand
 from commands2 import *
@@ -17,6 +19,8 @@ from commands2 import sysid
 from commands2.cmd import *
 
 from commands2.button import CommandXboxController 
+
+from ntcore import NetworkTable, NetworkTableInstance
 
 from phoenix6.controls import VelocityVoltage, MotionMagicVoltage, VoltageOut
 
@@ -188,7 +192,7 @@ class DriveSubsystem(Subsystem):
             Translation2d(-constants.kWheelBase / 2.0, constants.kWheelTrack / 2.0),
             Translation2d(-constants.kWheelBase / 2.0, -constants.kWheelTrack / 2.0))
 
-        self.__odometry = SwerveDrive4Odometry(
+        self.__odometry = SwerveDrive4PoseEstimator(
             kinematics = self.__kinematics,
             gyroAngle = Rotation2d(),
             modulePositions=(
@@ -228,6 +232,8 @@ class DriveSubsystem(Subsystem):
         self.leftXRateLimiter = SlewRateLimiter(1)
         self.leftYRateLimiter = SlewRateLimiter(1)
         self.rightXRateLimiter = SlewRateLimiter(1)
+        
+        self.__ll_table = NetworkTableInstance.getDefault().getTable("limelight")
         
     def logState(self, state):
         if not self.__loggerState:
@@ -279,6 +285,19 @@ class DriveSubsystem(Subsystem):
                 self._br.get_position(),
              ]
         )
+         
+        #checks if april tag is visible
+        if self.__ll_table.getNumber("tv",0) > 0:
+            bot_pose = self.__ll_table.getEntry("botpose").getDoubleArray([0,0,0,0,0,0])
+            total_latency_ms = self.__ll_table.getNumber("cl",0) + \
+                               self.__ll_table.getNumber("tl",0) 
+            capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
+            vision_pose = Pose2d(x=bot_pose[0],
+                                 y=bot_pose[1],
+                                 rotation=Rotation2d.fromDegrees(bot_pose[3]))
+            # ensures vision pose is within 1 meter of encoder pose
+            if self.get_pose().relativeTo(vision_pose).translation().distance() < 1.0:
+                self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
         
         self.__sd.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         self.__sd.putNumber("FL_Distance",self._fl.get_position().distance)
@@ -305,8 +324,8 @@ class DriveSubsystem(Subsystem):
         self.__sd.putNumber("Y_POSE", self.get_pose().y)  
         
 
-    def get_pose(self):
-        return self.__odometry.getPose()
+    def get_pose(self) -> Pose2d:
+        return self.__odometry.getEstimatedPosition()
     
         
     def reset_pose(self, pose=Pose2d()):

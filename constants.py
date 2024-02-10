@@ -1,4 +1,5 @@
 import math
+import wpimath.units
 
 kSwerveFrontLeftDriveMotorCANID = 1
 kSwerveFrontLeftSteerMotorCANID = 2
@@ -19,15 +20,35 @@ kSwerveBackLeftSteerEncoderCANID = 6
 kSwerveBackrightSteerEncoderCANID = 8
 kPigeonCANID = 1
 
-#drivetrain
+kDriveMaxSpeed = 16
+kDrivePeriod = 20
+
 kWheelTrack = 18.5
 kWheelBase = 16.5
+
+#wheeelly wheel
+kDriveWheelRadiusIn = 1.5
+kDistanceTraveledOneRotation = (kDriveWheelRadiusIn * 2 * math.pi) 
+kDriveBaseRadiusIn = (((kWheelTrack**2 + kWheelBase**2)**0.5)/2)
+
+kMaxModuleSpeedFt = 19
+
+kDrivePathTranslationKP = 5.0
+kDrivePathTranslationKI = 0.0
+kDrivePathTranslationKD = 0.0
+
+kDrivePathAngularKP = 5.0
+kDrivePathAngularKI = 0.0
+kDrivePathAngularKD = 0.0
+
+#drivetrain
+
 kdriveP = 0
 kdriveI = 0
 kdriveD = 0.0
-kdriveV = 0.0
-kdriveA = 0.0
-kdriveS = 0.0
+kdriveV = 1.985 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveA = 0.132 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveS = 0.12
 kDriveGearReduction = 125
 
 
@@ -78,6 +99,7 @@ kGripperDoubleSolenoidForwardPort = 1
 kGripperDoubleSolenoidReversePort = 2
 
 
+
 #Arm
 kArmSolenoidModule = 0
 kArmDoubleSolenoidForwardPort = 3
@@ -86,24 +108,6 @@ kArmDoubleSolenoidReversePort = 4
 kArmSolenoid2Module = 0
 kArmDoubleSolenoid2ForwardPort = 5
 kArmDoubleSolenoid2ReversePort = 6
-
-kDriveMaxSpeed = 16
-kDrivePeriod = 20
-
-#wheeelly wheel
-kDriveWheelRadiusIn = 1.5
-kDistanceTraveledOneRotation = (kDriveWheelRadiusIn * 2 * math.pi) 
-kDriveBaseRadiusIn = (((kWheelTrack**2 + kWheelBase**2)**0.5)/2)
-
-kMaxModuleSpeedFt = 19
-
-kDrivePathTranslationKP = 5.0
-kDrivePathTranslationKI = 0.0
-kDrivePathTranslationKD = 0.0
-
-kDrivePathAngularKP = 5.0
-kDrivePathAngularKI = 0.0
-kDrivePathAngularKD = 0.0
 
 #angulator
 kAngulatorGearReduction = 125.0

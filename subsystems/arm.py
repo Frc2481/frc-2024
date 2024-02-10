@@ -40,22 +40,23 @@ class ArmSubsystem(object):
 
     def arm_score_position_cmd(self):
         return commands2.cmd.runOnce(
-            InstantCommand(lambda: self.armSolenoid.set(DoubleSolenoid.Value.kForward))
-            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kForward)))
+            lambda: self.armSolenoid.set(DoubleSolenoid.Value.kForward)) \
+            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kForward))
                     
         )
         
     def arm_pickup_position_cmd(self):
         return commands2.cmd.runOnce(
-            InstantCommand(lambda: self.armSolenoid.set(DoubleSolenoid.Value.kForward))
-            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kReverse)))
+            lambda: self.armSolenoid.set(DoubleSolenoid.Value.kForward)) \
+            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kReverse))
         )   
     
     def arm_stow_position_cmd(self):
         return commands2.cmd.runOnce(
-            InstantCommand(lambda: self.armSolenoid.set(DoubleSolenoid.Value.kReverse))
-            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kReverse)))
+            lambda: self.armSolenoid.set(DoubleSolenoid.Value.kReverse))\
+            .andThen(InstantCommand(lambda: self.armSolenoid2.set(DoubleSolenoid.Value.kReverse))
         )
+        
         
     def gripper_open_cmd(self):
         return commands2.cmd.runOnce(

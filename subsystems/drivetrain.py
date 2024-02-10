@@ -13,6 +13,7 @@ from pathplannerlib.auto import PathPlannerAuto
 
 from commands2 import WaitCommand, InstantCommand, FunctionalCommand, PrintCommand
 from commands2 import *
+from commands2 import sysid
 from commands2.cmd import *
 
 from commands2.button import CommandXboxController 
@@ -37,7 +38,11 @@ from wpilib import DriverStation
 
 from wpimath.filter import SlewRateLimiter
 
-    
+from wpilib.sysid import SysIdRoutineLog
+from wpiutil.log import StringLogEntry
+from wpilib import DataLogManager
+
+   # hi from 2024 
 
 class SwerveModule(object):
 
@@ -50,11 +55,13 @@ class SwerveModule(object):
 
         self.driveMotorConfig = TalonFXConfiguration()
         self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-        self.driveMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        self.driveMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
         self.driveMotorConfig.slot0.k_p = constants.kdriveP
         self.driveMotorConfig.slot0.k_i = constants.kdriveI 
         self.driveMotorConfig.slot0.k_d = constants.kdriveD
         self.driveMotorConfig.slot0.k_v = constants.kdriveV
+        self.driveMotorConfig.slot0.k_a = constants.kdriveA
+        self.driveMotorConfig.slot0.k_s = constants.kdriveS
         self.driveMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kSwerveSteerCruiseVelocity
         self.driveMotorConfig.motion_magic.motion_magic_acceleration = constants.kSwerveSteerAcceleration 
         self.driveMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kSwerveReductionDrive
@@ -109,31 +116,27 @@ class SwerveModule(object):
         self.steerEncoder.configurator.apply(self.canCoderConfig)
        
     def distance(self):
-        return self.driveMotor.get_position().value * self.wheel_circumference
+        return wpimath.units.inchesToMeters(self.driveMotor.get_position().value * self.wheel_circumference)
     
     
     def angle(self):
         return Rotation2d(self.steerEncoder.get_absolute_position().value * 2 * math.pi)
     
     def set_state(self, state: SwerveModuleState):
-        if self.id == 1:
-            ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Speed0", state.speed)
-            #ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Angle0", state.angle.degrees())
-            #ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("Self_Angle1", self.angle().degrees())
         state = SwerveModuleState.optimize(state, self.angle())
-        ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard").putNumber("State_Speed1", state.speed)
-        self.driveMotor.set_control(VoltageOut(state.speed * 12.0))        
+        self.driveMotor.set_control(VelocityVoltage(wpimath.units.metersToInches(state.speed) / self.wheel_circumference))       
         self.steerMotor.set_control(MotionMagicVoltage(state.angle.degrees() / 360))
     
     def get_position(self):
         return SwerveModulePosition(
-            distance=-self.distance(),
+            #negative sign is to fix inverted Odometry
+            distance=self.distance(),
             angle=self.angle()
         )
    
     def get_state(self): 
         return SwerveModuleState(
-            speed=wpimath.units.inchesToMeters(-self.driveMotor.get_velocity().value * (self.wheel_circumference)),
+            speed=wpimath.units.inchesToMeters(self.driveMotor.get_velocity().value * (self.wheel_circumference)),
             angle=self.angle()
         )
     
@@ -205,9 +208,9 @@ class DriveSubsystem(Subsystem):
             self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
-                PIDConstants(0.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(0.0, 0.0, 0.0), # Rotation PID constants
-                5.5, # Max module speed, in m/s
+                5.5 / 2, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig() # Default path replanning config. See the API for the options here
             ),
@@ -215,11 +218,54 @@ class DriveSubsystem(Subsystem):
             self # Reference to this subsystem to set requirements
         )
         
+        self.__loggerState = None
+        
+        self.__sysid_config = sysid.SysIdRoutine.Config(recordState=self.logState)
+        self.__sysid_mechanism = sysid.SysIdRoutine.Mechanism(self.driveVoltage, self.driveLog, self, "drive")
+        
+        self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
+        
         self.leftXRateLimiter = SlewRateLimiter(1)
         self.leftYRateLimiter = SlewRateLimiter(1)
         self.rightXRateLimiter = SlewRateLimiter(1)
         
+    def logState(self, state):
+        if not self.__loggerState:
+            self.__loggerState = StringLogEntry(DataLogManager.getLog(),
+                                                "sysid-test-state-drive")
+        self.__loggerState.append(sysid.SysIdRoutine.stateEnumToString(state))    
+                  
+    def driveVoltage(self, v):
+        self._fl.driveMotor.set_control(VoltageOut(v, enable_foc=False)) 
+        self._fr.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+        self._bl.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+        self._br.driveMotor.set_control(VoltageOut(v, enable_foc=False))
     
+    def sysid_quasistatic_cmd(self, direction):
+        return self.__sysid.quasistatic(direction)
+        
+    
+    def sysid_dynamic_cmd(self, direction):
+        return self.__sysid.dynamic(direction)
+    
+    
+    def driveLog(self, log: SysIdRoutineLog):
+        log.motor("fl") \
+            .voltage(self._fl.driveMotor.get_motor_voltage().value) \
+            .velocity(self._fl.get_state().speed) \
+            .position(self._fl.get_position().distance)
+        log.motor("fr") \
+            .voltage(self._fr.driveMotor.get_motor_voltage().value) \
+            .velocity(self._fr.get_state().speed) \
+            .position(self._fr.get_position().distance)
+        log.motor("bl") \
+            .voltage(self._bl.driveMotor.get_motor_voltage().value) \
+            .velocity(self._bl.get_state().speed) \
+            .position(self._bl.get_position().distance)
+        log.motor("br") \
+            .voltage(self._br.driveMotor.get_motor_voltage().value) \
+            .velocity(self._br.get_state().speed) \
+            .position(self._br.get_position().distance)
     
     def periodic(self):
         
@@ -352,9 +398,10 @@ class DriveSubsystem(Subsystem):
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
         return runEnd(
-            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
-                            self.leftXRateLimiter.calculate(joystick.getLeftX()),
-                            self.rightXRateLimiter.calculate(joystick.getRightX() * .04),
+            lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
+                            self.leftXRateLimiter.calculate(-joystick.getLeftX()),
+                            self.rightXRateLimiter.calculate(-joystick.getRightX() * .04),
+                            
                                True
                                 ),
             lambda: self.drive(0, 0, 0, True), 
@@ -364,8 +411,8 @@ class DriveSubsystem(Subsystem):
     def drive_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return runEnd(
              
-            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
-                               self.leftXRateLimiter.calculate(joystick.getLeftX()),
+            lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
+                               self.leftXRateLimiter.calculate(-joystick.getLeftX()),
                                ntcore.NetworkTableInstance.getTable("limelight").getNumber('tx'),
                                False
                                 ),
@@ -375,9 +422,9 @@ class DriveSubsystem(Subsystem):
     
     def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return runEnd(             
-            lambda: self.drive(self.leftYRateLimiter.calculate(joystick.getLeftY()),
+            lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
                                ntcore.NetworkTableInstance.getTable("limelight").getNumber('ty'),
-                               self.rightXRateLimiter.calculate(joystick.getRightX() * .04),
+                               self.rightXRateLimiter.calculate(-joystick.getRightX() * .04),
                                False
                                 ),
             lambda: self.drive(0, 0, 0, False), 
@@ -442,3 +489,6 @@ class DriveSubsystem(Subsystem):
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
             )
+
+            
+        

@@ -19,6 +19,8 @@ from pathplannerlib.path import PathPlannerPath
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.auto import PathPlannerAuto
 
+from commands2 import sysid
+from wpilib.sysid import SysIdRoutineLog
 
 
 class RobotContainer(object):
@@ -40,9 +42,9 @@ class RobotContainer(object):
         self.button_bindings_configure()
         
         # CommandScheduler.getInstance().onCommandInitialize(lambda x: print("Execute", x))
-        CommandScheduler.getInstance().onCommandExecute(lambda x: print("Execute", x))
-        CommandScheduler.getInstance().onCommandFinish(lambda x: print("Finish", x))
-        CommandScheduler.getInstance().onCommandInterrupt(lambda x: print("Interrupt", x))
+        #CommandScheduler.getInstance().onCommandExecute(lambda x: print("Execute", x))
+        #CommandScheduler.getInstance().onCommandFinish(lambda x: print("Finish", x))
+        #CommandScheduler.getInstance().onCommandInterrupt(lambda x: print("Interrupt", x))
 
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
         DataLogManager.start()
@@ -57,7 +59,11 @@ class RobotContainer(object):
         self.operator_controller.rightBumper().onTrue(self.amp_score_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         #self.operator_controller.povRight().onTrue(self.unimportant_sim_stuff_cmd())
-       
+        self.operator_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.operator_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.operator_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.operator_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())
         self.driver_controller.a().onTrue(self.intake.set_intake_cmd(0.5, 0.5)
@@ -80,8 +86,8 @@ class RobotContainer(object):
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
         SmartDashboard.putData("Zero Steer Encoder", InstantCommand(lambda: self.drivetrain.zero_steer_encoder_cmd(True)))
-        SmartDashboard.putData("Angulator Up", InstantCommand(lambda: self.angulator.angulator_up_cmd(False)))
-        SmartDashboard.putData("Angulator Down", InstantCommand(lambda: self.angulator.angulator_down_cmd(False)))
+        #SmartDashboard.putData("Angulator Up", InstantCommand(lambda: self.angulator.angulator_up_cmd(False)))
+        #SmartDashboard.putData("Angulator Down", InstantCommand(lambda: self.angulator.angulator_down_cmd(False)))
         SmartDashboard.putData("Calibrate Wheel Circumference", InstantCommand(lambda: self.drivetrain.calibrate_wheel_circumference_cmd(True)))
         
 

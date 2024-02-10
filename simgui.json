@@ -24,9 +24,14 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Angulator Down": "Command",
+      "/SmartDashboard/Angulator Up": "Command",
+      "/SmartDashboard/Calibrate Wheel Circumference": "Command",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Gripper Sim": "Mechanism2d",
-      "/SmartDashboard/Robot Sim": "Mechanism2d"
+      "/SmartDashboard/Reset Odom": "Command",
+      "/SmartDashboard/Robot Sim": "Mechanism2d",
+      "/SmartDashboard/Zero Steer Encoder": "Command"
     },
     "windows": {
       "/SmartDashboard/Robot Sim": {
@@ -223,4 +228,3 @@
     }
   }
 }
-

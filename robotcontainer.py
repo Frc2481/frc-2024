@@ -75,20 +75,12 @@ class RobotContainer(object):
         self.driver_controller.povLeft().whileTrue(self.intake.set_intake_cmd(-0.5, -0.5))
         self.driver_controller.b().whileTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))
         
-        #self.driver_controller.leftBumper().whileTrue(
-        #    InstantCommand(self.drivetrain.topSysIdQuasistatic(self.SysIdRoutine.Direction.kForward))
-#.andThen(WaitCommand(4))
-#.andThen(self.drivetrain.topSysIdQuasistatic(self.SysIdRoutine.Direction.kReverse))
-#.andThen(WaitCommand(4))
-#.andThen(self.drivetrain.topSysIdDynamic(self.SysIdRoutine.Direction.kForward))
-#.andThen(WaitCommand(4))
-#.andThen(self.drivetrain.topSysIdDynamic(self.SysIdRoutine.Direction.kReverse)));
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
-        SmartDashboard.putData("Zero Steer Encoder", InstantCommand(lambda: self.drivetrain.zero_steer_encoder_cmd(True)))
+        SmartDashboard.putData("Zero Steer Encoder", InstantCommand(lambda: self.drivetrain.zero_steer_encoder_cmd().ignoringDisable(True)))
         #SmartDashboard.putData("Angulator Up", InstantCommand(lambda: self.angulator.angulator_up_cmd(False)))
         #SmartDashboard.putData("Angulator Down", InstantCommand(lambda: self.angulator.angulator_down_cmd(False)))
-        SmartDashboard.putData("Calibrate Wheel Circumference", InstantCommand(lambda: self.drivetrain.calibrate_wheel_circumference_cmd(True)))
+        SmartDashboard.putData("Calibrate Wheel Circumference", InstantCommand(lambda: self.drivetrain.calibrate_wheel_circumference_cmd().ignoringDisable(True)))
         
 
                         

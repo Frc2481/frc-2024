@@ -20,7 +20,7 @@ kSwerveBackLeftSteerEncoderCANID = 6
 kSwerveBackrightSteerEncoderCANID = 8
 kPigeonCANID = 1
 
-kDriveMaxSpeed = 16
+kDriveMaxSpeed = 6.01
 kDrivePeriod = 20
 
 kWheelTrack = 18.5

@@ -45,6 +45,7 @@ from wpimath.filter import SlewRateLimiter
 from wpilib.sysid import SysIdRoutineLog
 from wpiutil.log import StringLogEntry
 from wpilib import DataLogManager
+from wpilib import SmartDashboard, Field2d
 
    # hi from 2024 
 
@@ -182,6 +183,8 @@ class DriveSubsystem(Subsystem):
         self._bl.wheel_circumference = abs(wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE", 9.425))
         self._br.wheel_circumference = abs(wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425))
         
+        self.field = Field2d()
+        SmartDashboard.putData("Field", self.field) 
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
         
@@ -212,9 +215,9 @@ class DriveSubsystem(Subsystem):
             self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
-                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(0.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(0.0, 0.0, 0.0), # Rotation PID constants
-                5.5 / 2, # Max module speed, in m/s
+                6.01, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig() # Default path replanning config. See the API for the options here
             ),
@@ -234,6 +237,8 @@ class DriveSubsystem(Subsystem):
         self.rightXRateLimiter = SlewRateLimiter(1)
         
         self.__ll_table = NetworkTableInstance.getDefault().getTable("limelight")
+        
+        
         
     def logState(self, state):
         if not self.__loggerState:
@@ -321,7 +326,9 @@ class DriveSubsystem(Subsystem):
         
         self.__sd.putNumber("Yaw", self._gyro.get_yaw().value)
         self.__sd.putNumber("X_POSE", self.get_pose().x)
-        self.__sd.putNumber("Y_POSE", self.get_pose().y)  
+        self.__sd.putNumber("Y_POSE", self.get_pose().y)
+        
+        self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
 
     def get_pose(self) -> Pose2d:
@@ -363,6 +370,13 @@ class DriveSubsystem(Subsystem):
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False):
        #return 
         #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
+        
+        # FIXME: Testing path following
+        # chassis_speed.omega *= -1
+        
+        SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
+        SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
+        SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
 
         chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
         
@@ -396,11 +410,12 @@ class DriveSubsystem(Subsystem):
         #self.__sd.putNumber("BL Distance", module_states[2].distance)
         #self.__sd.putNumber("BR Distance", module_states[3].distance)
         
+        
 
         
 
     def get_robot_relative_speed(self):
-        return self.__kinematics.toChassisSpeeds(
+        cs = self.__kinematics.toChassisSpeeds(
             (
                 self._fl.get_state(),
                 self._fr.get_state(),
@@ -408,12 +423,19 @@ class DriveSubsystem(Subsystem):
                 self._br.get_state() 
             )
         )
+        
+        SmartDashboard.putNumber("Actual Omega", cs.omega)
+        SmartDashboard.putNumber("Actual Vx", cs.vx)
+        SmartDashboard.putNumber("Actual Vy", cs.vy)
+        
+        return cs
+        
     
     def shouldFlipPath(self):
         # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
+        return DriverStation.getAlliance() == DriverStation.Alliance.kBlue
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
         return runEnd(

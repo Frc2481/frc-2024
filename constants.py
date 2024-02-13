@@ -20,11 +20,11 @@ kSwerveBackLeftSteerEncoderCANID = 6
 kSwerveBackrightSteerEncoderCANID = 8
 kPigeonCANID = 1
 
-kDriveMaxSpeed = 6.01
+kDriveMaxSpeed = 6.01 
 kDrivePeriod = 20
 
-kWheelTrack = 18.5
-kWheelBase = 16.5
+kWheelTrack = wpimath.units.inchesToMeters(18.5)
+kWheelBase = wpimath.units.inchesToMeters(16.5)
 
 #wheeelly wheel
 kDriveWheelRadiusIn = 1.5
@@ -43,12 +43,12 @@ kDrivePathAngularKD = 0.0
 
 #drivetrain
 
-kdriveP = 0
+kdriveP = 1.5
 kdriveI = 0
 kdriveD = 0.0
-kdriveV = 1.985 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
-kdriveA = 0.132 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
-kdriveS = 0.12
+kdriveV = 2.0825 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveA = 0.24925 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveS = 0.04225
 kDriveGearReduction = 125
 
 

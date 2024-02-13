@@ -119,6 +119,6 @@ class RobotContainer(object):
         # SmartDashboard.putData(AutoBuilder.bui)
     
         # path = PathPlannerPath.fromPathFile('Sample for programmers')
-        return PathPlannerAuto("Programmers Auto")
+        return PathPlannerAuto("Gluke's Bottom Auto pt 2")
     
         return AutoBuilder.followPath(path)

@@ -215,8 +215,8 @@ class DriveSubsystem(Subsystem):
             self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
-                PIDConstants(0.0, 0.0, 0.0), # Translation PID constants
-                PIDConstants(0.0, 0.0, 0.0), # Rotation PID constants
+                PIDConstants(2.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(2.0, 0.0, 0.0), # Rotation PID constants
                 6.01, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig() # Default path replanning config. See the API for the options here
@@ -357,7 +357,7 @@ class DriveSubsystem(Subsystem):
             x = 0
         if abs(y)< 0.1:
             y = 0 
-        if abs(theta) < 0.1 * 0.04:
+        if abs(theta) < 0.1:
             theta = 0       
         
         if field_relative:
@@ -372,13 +372,15 @@ class DriveSubsystem(Subsystem):
         #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
         
         # FIXME: Testing path following
-        # chassis_speed.omega *= -1
+        #chassis_speed.omega = 0
+        #chassis_speed.vx = 0
+        #chassis_speed.vy = 0
         
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
 
-        chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
+        #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
         
         #self.__sd.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
 
@@ -441,7 +443,7 @@ class DriveSubsystem(Subsystem):
         return runEnd(
             lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
                             self.leftXRateLimiter.calculate(-joystick.getLeftX()),
-                            self.rightXRateLimiter.calculate(-joystick.getRightX() * .04),
+                            self.rightXRateLimiter.calculate(-joystick.getRightX()),
                             
                                True
                                 ),
@@ -465,7 +467,7 @@ class DriveSubsystem(Subsystem):
         return runEnd(             
             lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
                                ntcore.NetworkTableInstance.getTable("limelight").getNumber('ty'),
-                               self.rightXRateLimiter.calculate(-joystick.getRightX() * .04),
+                               self.rightXRateLimiter.calculate(-joystick.getRightX()),
                                False
                                 ),
             lambda: self.drive(0, 0, 0, False), 

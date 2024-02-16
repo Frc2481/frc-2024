@@ -55,7 +55,8 @@ class RobotContainer(object):
         self.operator_controller.a().onTrue(self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
         self.operator_controller.b().onTrue(self.shooter.shooter_off_cmd())
         self.operator_controller.y().whileTrue(self.shooter.shooter_on_cmd(-1 * constants.kShooterSpeedRPS))
-        self.operator_controller.x().onTrue(self.arm.arm_score_position_cmd())
+        self.operator_controller.x().onTrue(self.arm.arm_up_cmd())
+        self.operator_controller.start().onTrue(self.arm.arm_down_cmd())
         self.operator_controller.rightBumper().onTrue(self.amp_score_cmd())
         self.operator_controller.leftBumper().onTrue(self.amp_handoff_cmd())
         #self.operator_controller.povRight().onTrue(self.unimportant_sim_stuff_cmd())
@@ -101,7 +102,7 @@ class RobotContainer(object):
     
     def amp_score_cmd(self):
         return (self.arm.gripper_open_cmd()
-        .andThen(self.arm.arm_stow_position_cmd))
+        .andThen(self.arm.arm_stow_cmd))
         
     #def unimportant_sim_stuff_cmd(self):
         #return (InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))

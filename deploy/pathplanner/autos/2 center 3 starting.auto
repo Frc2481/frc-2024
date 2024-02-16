@@ -5,7 +5,7 @@
       "x": 1.2998319405277463,
       "y": 3.9007931884674423
     },
-    "rotation": 125.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom path first piece pick up"
+            "pathName": "Bottom path first piece pick up1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom path score second piece"
+            "pathName": "score 2nd piece"
           }
         },
         {
@@ -50,13 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pick up third piece"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "score third piece"
+            "pathName": "pickup and score 3rd piece"
           }
         },
         {
@@ -68,7 +62,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4th piece question mark"
+            "pathName": "pickup 4th piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score 4th piece, score 5th piece"
           }
         }
       ]

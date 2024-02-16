@@ -6,15 +6,13 @@ import commands2.cmd
 from commands2 import *
 from commands2.cmd import * 
 import ntcore 
-
 import constants
-
-import phoenix6
 from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, MotionMagicVoltage
 from phoenix6.signals.spn_enums import *
 from talonfxextended import TalonFXExtended
+
 
 
 
@@ -45,7 +43,7 @@ class AngulatorSubsystem(commands2.SubsystemBase):
     def angulator_up_cmd (self, angulator_position = constants.kAngulatorUpPosition):
        return runOnce(
            # Use this one on the robot.
-           # lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
+           #lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
            
            # Using this one so SIM works :(
             lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(0).with_position(angulator_position / 360.0 * 125))

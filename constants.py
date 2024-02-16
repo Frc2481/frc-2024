@@ -14,6 +14,8 @@ kIntakeVerticalMotorCANID = 10
 kIntakeHorizontalMotorCANID = 11
 kFeederMotorCANID = 12
 kAngulatorMotorCANID = 13
+kArmMotorCANID = 14
+kArmMotorFollowerCANID = 15
 kSwerveFrontLeftSteerEncoderCANID = 2
 kSwerveFrontRightSteerEncoderCANID = 4
 kSwerveBackLeftSteerEncoderCANID = 6
@@ -108,6 +110,24 @@ kArmDoubleSolenoidReversePort = 4
 kArmSolenoid2Module = 0
 kArmDoubleSolenoid2ForwardPort = 5
 kArmDoubleSolenoid2ReversePort = 6
+
+#Arm Motor
+kArmP = 2
+kArmI = 0.0
+kArmD = 0.1
+kArmV = 0.02
+kArmA = 0.0
+kArmS = 0.0
+kArmAcceleration = 160
+kArmCruiseVelocity = 80
+kArmGearReduction = 125
+
+# FIND ARM POSITION
+kArmUpPosition = 50
+kArmStowPosition = 25
+kArmDownPosition = 0
+
+
 
 #angulator
 kAngulatorGearReduction = 125.0

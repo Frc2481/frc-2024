@@ -56,12 +56,6 @@
         "data": {
           "commands": [
             {
-              "type": "wait",
-              "data": {
-                "waitTime": 2.22
-              }
-            },
-            {
               "type": "named",
               "data": {
                 "name": "Shoot note into speaker"
@@ -79,7 +73,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 11.83,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0

@@ -36,9 +36,9 @@ import constants
 import phoenix6
 from phoenix6.signals.spn_enums import *
 
+
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
-from wpilib import DriverStation
 
 from wpimath.filter import SlewRateLimiter
 
@@ -225,6 +225,7 @@ class DriveSubsystem(Subsystem):
             self # Reference to this subsystem to set requirements
         )
         
+        
         self.__loggerState = None
         
         self.__sysid_config = sysid.SysIdRoutine.Config(recordState=self.logState)
@@ -351,6 +352,16 @@ class DriveSubsystem(Subsystem):
             )
         #self.__sd.putNumber("Odometry X",self.(pose(X)))
             
+    #def correct_alliance_vision(self):
+          # self.ally = DriverStation.getAlliance()
+          # if self.ally:
+           # if self.ally.value() == DriverStation.Alliance.kRed:
+           #    self.invert = -1
+           # if self.ally.value() == DriverStation.Alliance.kBlue:
+           #    self.invert = 1
+           # else:
+            #   self.invert = 1
+           
     def drive(self, x, y, theta, field_relative, force_angle=False):
         # dead zone for joysticks
         if abs(x) < 0.1:
@@ -456,7 +467,7 @@ class DriveSubsystem(Subsystem):
              
             lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
                                self.leftXRateLimiter.calculate(-joystick.getLeftX()),
-                               ntcore.NetworkTableInstance.getTable("limelight").getNumber('tx'),
+                               NetworkTableInstance.getTable("limelight").getNumber('tx'),
                                False
                                 ),
             lambda: self.drive(0, 0, 0, False), 
@@ -466,7 +477,7 @@ class DriveSubsystem(Subsystem):
     def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return runEnd(             
             lambda: self.drive(self.leftYRateLimiter.calculate(-joystick.getLeftY()),
-                               ntcore.NetworkTableInstance.getTable("limelight").getNumber('ty'),
+                               NetworkTableInstance.getTable("limelight").getNumber('ty'),
                                self.rightXRateLimiter.calculate(-joystick.getRightX()),
                                False
                                 ),
@@ -532,6 +543,10 @@ class DriveSubsystem(Subsystem):
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
             )
+
+    
+  
+   
 
             
         

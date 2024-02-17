@@ -44,6 +44,15 @@
             "args": [
                 "sync",
             ]
+        },
+        {
+            "name": "Python (Xfrozen=off)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "pythonArgs": ["-Xfrozen_modules=off"]
         }
     ]
 }

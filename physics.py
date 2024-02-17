@@ -110,20 +110,20 @@ class PhysicsEngine:
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(12.0)
             self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(12.0)
             self.robot.container.feeder.feederMotor.sim_state.set_supply_voltage(12.0)
-            self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(12.0)
+            #self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(12.0)
         else:
             self.robot.container.intake.horizontalMotor.sim_state.set_supply_voltage(0.0)
             self.robot.container.shooter.shooterMotor.sim_state.set_supply_voltage(0.0)
             self.robot.container.feeder.feederMotor.sim_state.set_supply_voltage(0.0)
-            self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(0.0)
+            #self.robot.container.angulator.angulatorMotor.sim_state.set_supply_voltage(0.0)
 
         self.intake_roller.update(self.robot.container.intake.horizontalMotor.sim_state.motor_voltage > 0)
         self.shooter_roller.update(self.robot.container.shooter.shooterMotor.sim_state.motor_voltage > 0)
         self.feeder_roller.update(self.robot.container.feeder.feederMotor.sim_state.motor_voltage > 0)
 
-        self.update_talonFX(self.robot.container.angulator.angulatorMotor, self.angulator_motor_sim, tm_diff)
-        self.shooter_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)# .getAngularPosition()))
-        self.feeder_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)
+        #self.update_talonFX(self.robot.container.angulator.angulatorMotor, self.angulator_motor_sim, tm_diff)
+        #self.shooter_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)# .getAngularPosition()))
+        #self.feeder_adjust.setAngle(self.robot.container.angulator.angulatorMotor.get_position().value / 125 * 360)
 
         # Feed the enable signal to all motors.  No motors will turn in simulation without this.
         if wpilib.DriverStation.isEnabled():

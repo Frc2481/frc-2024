@@ -17,7 +17,7 @@ class ShooterSubsystem(object):
     def __init__(self):
         super().__init__()
 
-        self.shooterMotor = TalonFX(constants.kShooterMotorCANID)
+        self.shooterMotor = TalonFX(constants.kShooterMotorCANID, "2481")
 
         self.shooterMotorConfig = TalonFXConfiguration()
         self.shooterMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST

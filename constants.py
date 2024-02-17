@@ -5,7 +5,7 @@ kSwerveFrontLeftDriveMotorCANID = 1
 kSwerveFrontLeftSteerMotorCANID = 2
 kSwerveFrontRightDriveMotorCANID = 3
 kSwerveFrontRightSteerMotorCANID = 4
-kSwerveBackLeftDriveMotorCANID =5
+kSwerveBackLeftDriveMotorCANID = 5
 kSwerveBackLeftSteerMotorCANID = 6
 kSwerveBackRightDriveMotorCANID = 7
 kSwerveBackRightSteerMotorCANID = 8
@@ -13,16 +13,15 @@ kShooterMotorCANID = 9
 kIntakeVerticalMotorCANID = 10
 kIntakeHorizontalMotorCANID = 11
 kFeederMotorCANID = 12
-kAngulatorMotorCANID = 13
+#kAngulatorMotorCANID = 13
 kArmMotorCANID = 14
-kArmMotorFollowerCANID = 15
 kSwerveFrontLeftSteerEncoderCANID = 2
 kSwerveFrontRightSteerEncoderCANID = 4
 kSwerveBackLeftSteerEncoderCANID = 6
 kSwerveBackrightSteerEncoderCANID = 8
 kPigeonCANID = 1
 
-kDriveMaxSpeed = 6.01 
+kDriveMaxSpeed = 6.4 
 kDrivePeriod = 20
 
 kWheelTrack = wpimath.units.inchesToMeters(18.5)
@@ -112,19 +111,19 @@ kArmDoubleSolenoid2ForwardPort = 5
 kArmDoubleSolenoid2ReversePort = 6
 
 #Arm Motor
-kArmP = 2
+kArmP = 1
 kArmI = 0.0
-kArmD = 0.1
-kArmV = 0.02
+kArmD = 0
+kArmV = 0.133
 kArmA = 0.0
 kArmS = 0.0
-kArmAcceleration = 160
-kArmCruiseVelocity = 80
-kArmGearReduction = 125
+kArmAcceleration =800
+kArmCruiseVelocity = 90
+
 
 # FIND ARM POSITION
-kArmUpPosition = 50
-kArmStowPosition = 25
+kArmUpPosition = 35.44
+kArmStowPosition = 15.716
 kArmDownPosition = 0
 
 

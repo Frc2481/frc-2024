@@ -1,4 +1,5 @@
 import math
+import json
 import wpilib
 import ntcore
 import wpimath.units
@@ -12,7 +13,6 @@ from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig,
 from wpilib import DriverStation
 from pathplannerlib.auto import PathPlannerAuto
 from wpilib import DriverStation
-
 
 from commands2 import WaitCommand, InstantCommand, FunctionalCommand, PrintCommand
 from commands2 import *
@@ -40,8 +40,6 @@ from phoenix6.signals.spn_enums import *
 
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
-
-from wpimath.filter import SlewRateLimiter
 
 from wpilib.sysid import SysIdRoutineLog
 from wpiutil.log import StringLogEntry
@@ -196,6 +194,7 @@ class DriveSubsystem(Subsystem):
         self._br.wheel_circumference = abs(wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425))
         
         self.field = Field2d()
+        
         SmartDashboard.putData("Field", self.field) 
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
@@ -219,9 +218,7 @@ class DriveSubsystem(Subsystem):
             initialPose=Pose2d()
         )
 
-        self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
         SmartDashboard.putNumber("limelight gain", 0.2)
-        
         
         AutoBuilder.configureHolonomic(
             self.get_pose, # Robot pose supplier
@@ -247,9 +244,6 @@ class DriveSubsystem(Subsystem):
         
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
-        self.leftXRateLimiter = SlewRateLimiter(constants.kDriveMaxSpeed * 2)
-        self.leftYRateLimiter = SlewRateLimiter(constants.kDriveMaxSpeed * 2)
-        self.rightXRateLimiter = SlewRateLimiter(12) # radians per second so 4pi
         
         self.__ll_table = NetworkTableInstance.getDefault().getTable("limelight")
         
@@ -294,8 +288,6 @@ class DriveSubsystem(Subsystem):
             .position(self._br.get_position().distance)
     
     def periodic(self):
-        
-
         self.__odometry.update(
             Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [
@@ -306,42 +298,52 @@ class DriveSubsystem(Subsystem):
              ]
         )
          
+        ll_json = json.loads(NetworkTableInstance.getDefault().getTable("limelight-rear").getString("json", "{}"))
+        # print(ll_json)
+        
+        # for tag in ll_json["Results"]["Fiducial"]:
+        #     print(tag)
+            
+        # print(len(ll_json["Results"]["Fiducial"]))
+         
         #checks if april tag is visible
         if self.__ll_table.getNumber("tv",0) > 0:
-            bot_pose = self.__ll_table.getEntry("botpose").getDoubleArray([0,0,0,0,0,0])
+            bot_pose = self.__ll_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
             total_latency_ms = self.__ll_table.getNumber("cl",0) + \
                                self.__ll_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[3]))
+            
+    
             # ensures vision pose is within 1 meter of encoder pose
             if self.get_pose().relativeTo(vision_pose).translation().distance() < 1.0:
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
         
-        self.__sd.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
-        self.__sd.putNumber("FL_Distance",self._fl.get_position().distance)
-        self.__sd.putNumber("FL_Velocity",self._fl.get_state().speed)
-        self.__sd.putNumber("FL_Voltage",self._fl.get_voltage())
+        SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
+        SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
+        SmartDashboard.putNumber("FL_Velocity",self._fl.get_state().speed)
+        SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
         
-        self.__sd.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
-        self.__sd.putNumber("FR_Distance",self._fr.get_position().distance)
-        self.__sd.putNumber("FR_Velocity",self._fr.get_state().speed)
-        self.__sd.putNumber("FR_Voltage",self._fr.get_voltage())
+        SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
+        SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
+        SmartDashboard.putNumber("FR_Velocity",self._fr.get_state().speed)
+        SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
         
-        self.__sd.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
-        self.__sd.putNumber("BL_Distance",self._bl.get_position().distance)
-        self.__sd.putNumber("BL_Velocity",self._bl.get_state().speed)
-        self.__sd.putNumber("BL_Voltage",self._bl.get_voltage())
+        SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
+        SmartDashboard.putNumber("BL_Distance",self._bl.get_position().distance)
+        SmartDashboard.putNumber("BL_Velocity",self._bl.get_state().speed)
+        SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
         
-        self.__sd.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
-        self.__sd.putNumber("BR_Distance",self._br.get_position().distance)
-        self.__sd.putNumber("BR_Velocity",self._br.get_state().speed)
-        self.__sd.putNumber("BR_Voltage",self._br.get_voltage())
+        SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
+        SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
+        SmartDashboard.putNumber("BR_Velocity",self._br.get_state().speed)
+        SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
         
-        self.__sd.putNumber("Yaw", self._gyro.get_yaw().value)
-        self.__sd.putNumber("X_POSE", self.get_pose().x)
-        self.__sd.putNumber("Y_POSE", self.get_pose().y)
+        SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
+        SmartDashboard.putNumber("X_POSE", self.get_pose().x)
+        SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
         SmartDashboard.putNumber("FL Rps", self._fl.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("FR Rps", self._fr.driveMotor.get_duty_cycle().value)
@@ -369,7 +371,7 @@ class DriveSubsystem(Subsystem):
                 ),
                 pose
             )
-        #self.__sd.putNumber("Odometry X",self.(pose(X)))
+        #SmartDashboard.putNumber("Odometry X",self.(pose(X)))
             
     #def correct_alliance_vision(self):
           # self.ally = DriverStation.getAlliance()
@@ -394,7 +396,7 @@ class DriveSubsystem(Subsystem):
 
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
        #return 
-        #self.__sd.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
+        #SmartDashboard.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
         
         # FIXME: Testing path following
         #chassis_speed.omega = 0
@@ -407,7 +409,7 @@ class DriveSubsystem(Subsystem):
 
         #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
         
-        #self.__sd.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
+        #SmartDashboard.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -424,18 +426,18 @@ class DriveSubsystem(Subsystem):
         self._bl.set_state(module_states[2], voltage_only)
         self._br.set_state(module_states[3], voltage_only)
 
-        self.__sd.putNumber("FLAngle", module_states[0].angle.degrees())
-        self.__sd.putNumber("FRAngle", module_states[1].angle.degrees())
-        self.__sd.putNumber("BLAngle", module_states[2].angle.degrees())
-        self.__sd.putNumber("BRAngle", module_states[3].angle.degrees())        
-        self.__sd.putNumber("FLSpeed", module_states[0].speed)
-        self.__sd.putNumber("FRSpeed", module_states[1].speed)
-        self.__sd.putNumber("BLSpeed", module_states[2].speed)
-        self.__sd.putNumber("BRSpeed", module_states[3].speed)
-        #self.__sd.putNumber("FL Distance", module_states[0].distance)
-        #self.__sd.putNumber("FR Distance", module_states[1].distance)
-        #self.__sd.putNumber("BL Distance", module_states[2].distance)
-        #self.__sd.putNumber("BR Distance", module_states[3].distance)
+        SmartDashboard.putNumber("FLAngle", module_states[0].angle.degrees())
+        SmartDashboard.putNumber("FRAngle", module_states[1].angle.degrees())
+        SmartDashboard.putNumber("BLAngle", module_states[2].angle.degrees())
+        SmartDashboard.putNumber("BRAngle", module_states[3].angle.degrees())        
+        SmartDashboard.putNumber("FLSpeed", module_states[0].speed)
+        SmartDashboard.putNumber("FRSpeed", module_states[1].speed)
+        SmartDashboard.putNumber("BLSpeed", module_states[2].speed)
+        SmartDashboard.putNumber("BRSpeed", module_states[3].speed)
+        #SmartDashboard.putNumber("FL Distance", module_states[0].distance)
+        #SmartDashboard.putNumber("FR Distance", module_states[1].distance)
+        #SmartDashboard.putNumber("BL Distance", module_states[2].distance)
+        #SmartDashboard.putNumber("BR Distance", module_states[3].distance)
         
         
 
@@ -479,40 +481,73 @@ class DriveSubsystem(Subsystem):
     def drive_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(
                 SequentialCommandGroup(
+                    self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
+                    self.drive_towards_note_command(joystick).raceWith(self.wait_for_no_note_visible())          
+            )   
+        )
+        
+    def drive_with_joystick_limelight_target_align_cmd(self, joystick: CommandXboxController):
+        return RepeatCommand(
+                SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_target_visible()),
-                    self.drive_towards_note_command(joystick).raceWith(self.wait_for_no_target_visible())
-                       
-            )
+                    self.drive_towards_target_command(joystick).raceWith(self.wait_for_no_target_visible())          
+            )   
         )
     
     def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
-        return runEnd(             
-            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
-                               -NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0),
-                               scale_axis(-joystick.getRightX() * 6),
-                               True
-                                ),
-            lambda: None, #self.drive(0, 0, 0, False), 
-            self
-            )
+        return RepeatCommand(             
+                SequentialCommandGroup(
+                    self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
+                    self.amp_lineup_cmd(joystick).raceWith(self.wait_for_no_note_visible())                               
+            )              
+        )
         
-    def wait_for_target_visible(self):
+    def wait_for_note_visible(self):
         return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tv', 0) == 1)
     
-    def wait_for_no_target_visible(self):
+    def wait_for_no_note_visible(self):
         return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tv', 0) == 0)
         
     def drive_towards_note_command(self, joystick: CommandXboxController):
         return runEnd( 
-            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
-                                scale_axis(-joystick.getLeftX() * constants.kDriveMaxSpeed),
-                                -NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) *
-                                SmartDashboard.getNumber("limelight gain", 0),
+            lambda: self.drive(scale_axis(math.hypot(joystick.getLeftY(), joystick.getLeftX()) * constants.kDriveMaxSpeed),
+                                0,
+                                scale_axis(-NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) *
+                                SmartDashboard.getNumber("limelight gain", 0)),
                                 False
-                    ),
-            lambda: self.drive(0, 0, 0, False), 
+                    ), 
+            lambda: None,
             self
         )
+        
+    def wait_for_target_visible(self):
+        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 1)
+    
+    def wait_for_no_target_visible(self):
+        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 0)
+        
+    def drive_towards_target_command(self, joystick: CommandXboxController):
+        return runEnd( 
+            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
+                            scale_axis(-joystick.getLeftX() * constants.kDriveMaxSpeed),
+                                -NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
+                                SmartDashboard.getNumber("limelight gain", 0),
+                                True
+                    ), 
+            lambda: None,
+            self
+        )
+    
+    def amp_lineup_cmd(self, joystick: CommandXboxController):
+        return runEnd(
+            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
+                               -NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) * 
+                                   SmartDashboard.getNumber("limelight gain", 0),
+                               scale_axis(-joystick.getRightX() * 6),
+                               True
+                               ),
+                self
+        )    
     
     def zero_drive_encoder(self):
         self._fl.zero_drive_encoder()

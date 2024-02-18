@@ -1,79 +1,78 @@
-# import math
+import math
 
-# import wpilib
-# import commands2
-# import commands2.cmd
-# from commands2 import *
-# from commands2.cmd import * 
-# import ntcore 
-# import constants
-# from phoenix6.hardware import TalonFX
-# from phoenix6.configs import TalonFXConfiguration
-# from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, MotionMagicVoltage
-# from phoenix6.signals.spn_enums import *
-# from talonfxextended import TalonFXExtended
+from wpilib import SmartDashboard
+import wpilib
+import commands2
+import commands2.cmd
+from commands2 import *
+from commands2.cmd import * 
+import ntcore 
+import constants
+import phoenix5 #robotpy_ctre
+from phoenix5 import *
 
 
-
-
-# class AngulatorSubsystem(commands2.SubsystemBase):
+class AngulatorSubsystem(commands2.SubsystemBase):
+    def enc_ticks_to_rot(self, ticks):
+        return ticks / 4096
     
-#     def __init__(self):
-#         super().__init__()
-
-#         self.angulatorMotor = TalonFXExtended(constants.kAngulatorMotorCANID, "2481")
-
-#         self.angulatorMotorConfig = TalonFXConfiguration()
-#         self.angulatorMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-#         self.angulatorMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
-#         self.angulatorMotorConfig.slot0.k_p = constants.kAngulatorP
-#         self.angulatorMotorConfig.slot0.k_i = constants.kAngulatorI
-#         self.angulatorMotorConfig.slot0.k_d = constants.kAngulatorD
-#         self.angulatorMotorConfig.slot0.k_v = constants.kAngulatorV
-#         self.angulatorMotorConfig.slot0.k_a = constants.kAngulatorA
-#         self.angulatorMotorConfig.slot0.k_s = constants.kAngulatorS
-#         self.angulatorMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kAngulatorCruiseVelocity
-#         self.angulatorMotorConfig.motion_magic.motion_magic_acceleration = constants.kAngulatorAcceleration
-#         self.angulatorMotorConfig.motion_magic.motion_magic_jerk = constants.kAngulatorJerk
-#         #self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = 1 / constants.kAngulatorGearReduction
-#         self.__sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
-
-#         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
-
-#     def angulator_up_cmd (self, angulator_position = constants.kAngulatorUpPosition):
-#        return runOnce(
-#            # Use this one on the robot.
-#            #lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
-           
-#            # Using this one so SIM works :(
-#             lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(0).with_position(angulator_position / 360.0 * 125))
-#         )
+    def rot_to_enc_ticks(self, rotations):
+        return rotations * 4096
     
-#     def angulator_down_cmd (self, angulator_position = constants.kAngulatorDownPosition):
-#        return runOnce(
-#            # Use this one on the robot.
-#            # lambda:  self.angulatorMotor.set_control(VelocityTorqueCurrentFOC(angulator_speed_rps))
-           
-#            # Using this one so SIM works :(
-#             lambda:  self.angulatorMotor.set_control(MotionMagicVoltage(0).with_position(angulator_position  / 360.0 * 125))
-#         )
-
-
-#     def angulator_off_cmd (self):
-#         return runOnce(
-#            lambda: self.angulatorMotor.set_control(VoltageOut(0))
-#         )
-    
-#     def periodic(self):
-#        self.__sd.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
-#        self.__sd.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
-#        self.__sd.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
-#        self.__sd.putNumber("Angulator Voltage", self.angulatorMotor.get_motor_voltage().value)
-#        self.__sd.putNumber("Angulator Reference Position", self.angulatorMotor.get_closedloop_reference_position().value)
-#        self.__sd.putNumber("Angulator Reference Velocity", self.angulatorMotor.get_closedloop_reference_slope_position().value)
-
-
+    def enc_ticks_per_100_ms_to_rps(self, ticks):
+        return (ticks / 4096) * 10
         
+    def rps_to_enc_ticks_per_100_ms(self, rotations):
+        return (rotations / 10) * 4096
+ 
+    def __init__(self):
+        super().__init__()
+
+        self.angulatorMotor = VictorSPX(constants.kAngulatorMotorCANID)
+        self.angulatorMotor.configFactoryDefault()
+        self.angulatorMotor.setNeutralMode(NeutralMode.Brake)
+        self.angulatorMotor.setInverted(InvertType.InvertMotorOutput)
+        self.angulatorMotor.config_kP(0,constants.kAngulatorP)
+        self.angulatorMotor.config_kI(0,constants.kAngulatorI)
+        self.angulatorMotor.config_kD(0,constants.kAngulatorD)
+        self.angulatorMotor.config_kF(0,constants.kAngulatorV)
+        self.angulatorMotor.configMotionCruiseVelocity(self.rps_to_enc_ticks_per_100_ms(constants.kAngulatorCruiseVelocity))
+        self.angulatorMotor.configMotionAcceleration(self.rps_to_enc_ticks_per_100_ms(constants.kAngulatorAcceleration))
+        self.angulatorMotor.configMotionSCurveStrength(constants.kAngulatorJerk)
+        self.angulatorMotor.configForwardSoftLimitThreshold(constants.kAngulatorForwardSoftLimit)
+        self.angulatorMotor.configReverseSoftLimitThreshold(constants.kAngulatorReverseSoftLimit)
+        self.angulatorMotor.configForwardSoftLimitEnable(True)
+        self.angulatorMotor.configReverseSoftLimitEnable(True)
+               
+
+    def angulator_move_velocity_cmd (self, angulator_velocity):
+       return runOnce(
+           lambda:  self.angulatorMotor.set(ControlMode.Velocity(self.rps_to_enc_ticks_per_100_ms(angulator_velocity)))
+        )
+       
+    def angulator_set_position_cmd (self, angulator_position):
+           return runOnce(
+           lambda:  self.angulatorMotor.set(ControlMode.MotionMagic.Position(self.rot_to_enc_ticks(angulator_position / 360.0)))
+        )   
+
+    def angulator_off_cmd (self):
+        return runOnce(
+           lambda: self.angulatorMotor.set(ControlMode.Disabled())
+        )
+    
+    def anglator_set_position_from_range(self, range):
+        self.angulatorMotor.set(ControlMode.MotionMagic.Position(self.rot_to_enc_ticks(math.atan(78/range))))
+
+    def periodic(self):
+        # Get the X and Y from the dashboard so we can set angulator to correct angle for this range.
+        #pose_x = SmartDashboard.getNumber("X_POSE")
+        #pose_y = SmartDashboard.getNumber("Y_POSE")
+        
+        SmartDashboard.putNumber("Angulator Position", self.enc_ticks_to_rot(self.angulatorMotor.getSelectedSensorPosition()))
+        SmartDashboard.putNumber("Angulator Velocity", self. enc_ticks_per_100_ms_to_rps(self.angulatorMotor.getSelectedSensorVelocity()))
+        SmartDashboard.putNumber("Angulator Voltage", self.angulatorMotor.getBusVoltage())
+        SmartDashboard.putNumber("Angulator Active Trajectory Position", self.enc_ticks_to_rot(self.angulatorMotor.getActiveTrajectoryPosition()))
+        SmartDashboard.putNumber("Angulator Active Trajectory Velocity", self.enc_ticks_per_100_ms_to_rps(self.angulatorMotor.getActiveTrajectoryVelocity()))
 
     
 

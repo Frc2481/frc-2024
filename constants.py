@@ -13,7 +13,7 @@ kShooterMotorCANID = 9
 kIntakeVerticalMotorCANID = 10
 kIntakeHorizontalMotorCANID = 11
 kFeederMotorCANID = 12
-#kAngulatorMotorCANID = 13
+kAngulatorMotorCANID = 13
 kArmMotorCANID = 14
 kSwerveFrontLeftSteerEncoderCANID = 2
 kSwerveFrontRightSteerEncoderCANID = 4
@@ -130,8 +130,8 @@ kArmDownPosition = 0
 
 #angulator
 kAngulatorGearReduction = 125.0
-kAngulatorDownPosition = 25  
-kAngulatorUpPosition = 70
+kAngulatorDownPosition = 0   
+kAngulatorUpPosition = 47.5 
 kAngulatorP = 2
 kAngulatorI = 0# .01
 kAngulatorD = 0.1
@@ -140,8 +140,10 @@ kAngulatorA = 0 # 0.0025
 kAngulatorS = 0
 kAngulatorJerk = 0
 kAngulatorAcceleration = 160
-kAngulatorCruiseVelocity = 80
+kAngulatorCruiseVelocity = 3
 kMotorResistance = 6
+kAngulatorForwardSoftLimit = 11946
+kAngulatorReverseSoftLimit = 0
 
 #Metric system units
 kArmMass = 10 / 2.205

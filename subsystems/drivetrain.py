@@ -245,8 +245,7 @@ class DriveSubsystem(Subsystem):
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
         
-        self.__ll_table = NetworkTableInstance.getDefault().getTable("limelight")
-        
+        self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
         
         
     def logState(self, state):
@@ -298,29 +297,54 @@ class DriveSubsystem(Subsystem):
              ]
         )
          
-        ll_json = json.loads(NetworkTableInstance.getDefault().getTable("limelight-rear").getString("json", "{}"))
+        
+        ll_json = json.loads(self.ll_rear_table.getString("json", "{}"))
         # print(ll_json)
         
         # for tag in ll_json["Results"]["Fiducial"]:
         #     print(tag)
             
-        # print(len(ll_json["Results"]["Fiducial"]))
+        num_targets = len(ll_json["Results"]["Fiducial"])
          
         #checks if april tag is visible
-        if self.__ll_table.getNumber("tv",0) > 0:
-            bot_pose = self.__ll_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
-            total_latency_ms = self.__ll_table.getNumber("cl",0) + \
-                               self.__ll_table.getNumber("tl",0) 
+        if self.ll_rear_table.getNumber("tv",0) > 0:
+            bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
+            total_latency_ms = self.ll_rear_table.getNumber("cl",0) + \
+                               self.ll_rear_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[3]))
             
-    
-            # ensures vision pose is within 1 meter of encoder pose
-            if self.get_pose().relativeTo(vision_pose).translation().distance() < 1.0:
-                self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
         
+
+
+            if (vision_pose.X() == 0.0): 
+                return
+        
+            distance_to_pose = self.get_pose().relativeTo(vision_pose).translation().norm()
+
+            if num_targets:
+                xyStds = 0
+                degStds = 0
+     
+                if (num_targets >= 2): 
+                    xyStds = 0.5
+                    degStds = 6
+      
+      
+                elif self.ll_rear_table.getNumber("ta",0) > 0.8 and distance_to_pose < 0.5:
+                    xyStds = 1.0;
+                    degStds = 12;
+                    
+                elif self.ll_rear_table.getNumber("ta",0) > 0.1 and distance_to_pose < 0.3:
+                    xyStds = 2.0;
+                    degStds = 30;           
+                
+                if xyStds > 0:
+                    self.__odometry.setVisionMeasurementStdDevs(xyStds, xyStds, math.radians(degStds))
+                    self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
+                                                             
         SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
         SmartDashboard.putNumber("FL_Velocity",self._fl.get_state().speed)
@@ -349,7 +373,7 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("FR Rps", self._fr.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("BL Rps", self._bl.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("BR Rps", self._br.driveMotor.get_duty_cycle().value)
-        
+                
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
 
@@ -384,8 +408,16 @@ class DriveSubsystem(Subsystem):
             #   self.invert = 1
            
     def drive(self, x, y, theta, field_relative, force_angle=False):
-        if abs(theta) < 0.1:
-            theta = 0  
+        # if abs(theta) < 0.1:
+        #     theta = 0  
+        
+        # if abs(x) < 0.3:
+        #    x = 0
+              
+        # if abs(y) < 0.3:
+        #    y = 0
+            
+            
         
         if field_relative:
             chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
@@ -408,7 +440,6 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
 
         #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
-        
         #SmartDashboard.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
@@ -468,9 +499,9 @@ class DriveSubsystem(Subsystem):
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
         return runEnd(
-            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
-                            scale_axis(-joystick.getLeftX() * constants.kDriveMaxSpeed),
-                            scale_axis(-joystick.getRightX() * 6),
+            lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
+                            scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
+                            scale_axis(-joystick.getRightX()) * 6,
                             
                                True
                                 ),
@@ -510,7 +541,7 @@ class DriveSubsystem(Subsystem):
         
     def drive_towards_note_command(self, joystick: CommandXboxController):
         return runEnd( 
-            lambda: self.drive(scale_axis(math.hypot(joystick.getLeftY(), joystick.getLeftX()) * constants.kDriveMaxSpeed),
+            lambda: self.drive(scale_axis(math.hypot(joystick.getLeftY(), joystick.getLeftX())) * constants.kDriveMaxSpeed,
                                 0,
                                 scale_axis(-NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) *
                                 SmartDashboard.getNumber("limelight gain", 0)),
@@ -528,8 +559,8 @@ class DriveSubsystem(Subsystem):
         
     def drive_towards_target_command(self, joystick: CommandXboxController):
         return runEnd( 
-            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
-                            scale_axis(-joystick.getLeftX() * constants.kDriveMaxSpeed),
+            lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
+                            scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
                                 -NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
                                 SmartDashboard.getNumber("limelight gain", 0),
                                 True
@@ -584,11 +615,12 @@ class DriveSubsystem(Subsystem):
             # Keep track of the gyro angle at the beginning of the cal process.
             InstantCommand(
                 lambda: self._gyro.set_yaw(0)),
-            
+            PrintCommand("Set Yaw"),
             # Point all wheels at a ~45 deg.
             InstantCommand(
-                lambda: self.drive(0.0, 0.0, theta=1.0, field_relative=False,force_angle=True)), 
+                lambda: self.drive(0.0, 0.0, theta=2.0, field_relative=False, force_angle=True)), 
             WaitCommand(1),
+            PrintCommand("Wheels to a 45"),
 
             # Keep track of the wheel distance at the beginning of the cal process.
             InstantCommand(self.zero_drive_encoder),
@@ -596,7 +628,7 @@ class DriveSubsystem(Subsystem):
 
             FunctionalCommand(
                 lambda: None,
-                lambda: self.drive(0.0, 0.0, theta=0.01, field_relative=False),
+                lambda: self.drive(0.0, 0.0, theta=2, field_relative=False),
                 lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
                 lambda: abs(self._gyro.get_yaw().value) > 360 * 5,
                 self
@@ -606,6 +638,18 @@ class DriveSubsystem(Subsystem):
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
             )
+    def reset_odom_to_vision(self):
+        bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
+
+        vision_pose = Pose2d(x=bot_pose[0],
+                             y=bot_pose[1],
+                             rotation=Rotation2d.fromDegrees(bot_pose[3]))
+        self.reset_pose(vision_pose)
+    
+    def reset_odom_to_vision_cmd(self):
+        return runOnce (self.reset_odom_to_vision)    
+    
+    
 
     
   

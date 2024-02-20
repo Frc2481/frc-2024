@@ -30,7 +30,7 @@ kWheelBase = wpimath.units.inchesToMeters(16.5)
 #wheeelly wheel
 kDriveWheelRadiusIn = 1.5
 kDistanceTraveledOneRotation = (kDriveWheelRadiusIn * 2 * math.pi) 
-kDriveBaseRadiusIn = (((kWheelTrack**2 + kWheelBase**2)**0.5)/2)
+kDriveBaseRadiusIn = wpimath.units.metersToInches(((kWheelTrack**2 + kWheelBase**2)**0.5)/2)
 
 kMaxModuleSpeedFt = 19
 
@@ -140,7 +140,7 @@ kAngulatorA = 0 # 0.0025
 kAngulatorS = 0
 kAngulatorJerk = 0
 kAngulatorAcceleration = 160
-kAngulatorCruiseVelocity = 3
+kAngulatorCruiseVelocity = 3 * 4096
 kMotorResistance = 6
 kAngulatorForwardSoftLimit = 11946
 kAngulatorReverseSoftLimit = 0

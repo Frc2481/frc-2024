@@ -86,9 +86,10 @@ class RobotContainer(object):
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
         SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
-        SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd().ignoringDisable(True))
-        
+        SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd())
+        SmartDashboard.putData("Reset Odom To Vision", self.drivetrain.reset_odom_to_vision_cmd().ignoringDisable(True))
 
+                        
                         
        
     def speaker_score_cmd(self):
@@ -125,6 +126,6 @@ class RobotContainer(object):
         # SmartDashboard.putData(AutoBuilder.bui)
     
         # path = PathPlannerPath.fromPathFile('Sample for programmers')
-        return PathPlannerAuto("Gluke's Bottom Auto pt 2")
+        return PathPlannerAuto("Programmers Auto")
     
         return AutoBuilder.followPath(path)

@@ -43,11 +43,13 @@ kDrivePathAngularKI = 0.0
 kDrivePathAngularKD = 0.0
 
 #drivetrain
-
+#kdriveP = 1.5
 kdriveP = 1.5
 kdriveI = 0
 kdriveD = 0.0
+#kdriveV = 2.0825
 kdriveV = 2.0825 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+#kdriveA = 0.24925
 kdriveA = 0.24925 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
 kdriveS = 0.04225
 kDriveGearReduction = 125

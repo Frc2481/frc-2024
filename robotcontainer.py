@@ -39,6 +39,24 @@ class RobotContainer(object):
         self.operator_controller = CommandXboxController(            
             constants.kOperatorControllerPort)
         
+        NamedCommands.registerCommand('shooter on', self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
+        NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
+        NamedCommands.registerCommand('arm up position', self.arm.arm_up_cmd())
+        NamedCommands.registerCommand('arm down position', self.arm.arm_down_cmd())
+        NamedCommands.registerCommand('arm pick up position', self.arm.arm_pickup_position_cmd())
+        NamedCommands.registerCommand('gripper open', self.arm.gripper_open_cmd())
+        NamedCommands.registerCommand('gripper close', self.arm.gripper_close_cmd())
+        NamedCommands.registerCommand('angulator down', self.angulator.angulator_move_velocity_cmd(-constants.kAngulatorCruiseVelocity))
+        NamedCommands.registerCommand('angulator up', self.angulator.angulator_move_velocity_cmd(constants.kAngulatorCruiseVelocity))
+        NamedCommands.registerCommand('feeder on', self.feeder.feeder_on_cmd())
+        NamedCommands.registerCommand('feeder off',self.feeder.feeder_off_cmd())
+        NamedCommands.registerCommand('intake on', self.intake.set_intake_cmd(0.9, 0.9))
+        NamedCommands.registerCommand('intake off', self.intake.set_intake_cmd(0, 0))
+        
+        
+        
+        
+        
         self.button_bindings_configure()
         
         # CommandScheduler.getInstance().onCommandInitialize(lambda x: print("Execute", x))
@@ -78,11 +96,12 @@ class RobotContainer(object):
         self.driver_controller.b().whileTrue(self.feeder.feeder_on_cmd(-1 * constants.kFeederSpeedRPS))                                   
         #self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
         self.driver_controller.rightBumper().whileTrue(self.drivetrain.drive_with_joystick_limelight_target_align_cmd(self.driver_controller))
-        self.driver_controller.leftBumper().whileTrue(self.drivetrain.drive_with_joystick_limelight_align_cmd(self.driver_controller))
-        self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_joystick_limelight_align_cmd(self.driver_controller))
+        self.driver_controller.leftBumper().whileTrue(self.drivetrain.limelight_angulor_alignment_cmd(self.driver_controller))
+        self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_april_tag_cmd(self.driver_controller))
         self.driver_controller.povLeft().whileTrue(self.intake.set_intake_cmd(-0.5, -0.5))        
         self.driver_controller.povDown().onTrue(self.intake.set_intake_cmd(0.0, 0.0))
         
+            
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
         SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())

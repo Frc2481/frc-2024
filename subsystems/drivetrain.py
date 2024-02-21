@@ -303,31 +303,31 @@ class DriveSubsystem(Subsystem):
         
         # for tag in ll_json["Results"]["Fiducial"]:
         #     print(tag)
-            
-        num_targets = len(ll_json["Results"]["Fiducial"])
+        num_targets = 0 
+        if "Results" in ll_json and "Fiducial" in ll_json["Results"]:
+            num_targets = len(ll_json["Results"]["Fiducial"])
          
         #checks if april tag is visible
         if self.ll_rear_table.getNumber("tv",0) > 0:
-            bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
+            bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0])
             total_latency_ms = self.ll_rear_table.getNumber("cl",0) + \
                                self.ll_rear_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
-                                 rotation=Rotation2d.fromDegrees(bot_pose[3]))
+                                 rotation=Rotation2d.fromDegrees(bot_pose[5]))
             
         
 
 
             if (vision_pose.X() == 0.0): 
                 return
-        
-            distance_to_pose = self.get_pose().relativeTo(vision_pose).translation().norm()
 
+            distance_to_pose = self.get_pose().relativeTo(vision_pose).translation().norm()
             if num_targets:
                 xyStds = 0
                 degStds = 0
-     
+                
                 if (num_targets >= 2): 
                     xyStds = 0.5
                     degStds = 6
@@ -342,7 +342,7 @@ class DriveSubsystem(Subsystem):
                     degStds = 30;           
                 
                 if xyStds > 0:
-                    self.__odometry.setVisionMeasurementStdDevs(xyStds, xyStds, math.radians(degStds))
+                    self.__odometry.setVisionMeasurementStdDevs((xyStds, xyStds, math.radians(degStds)))
                     self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
                                                              
         SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
@@ -373,7 +373,9 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("FR Rps", self._fr.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("BL Rps", self._bl.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("BR Rps", self._br.driveMotor.get_duty_cycle().value)
-                
+        
+        
+                                                         
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
 
@@ -503,13 +505,13 @@ class DriveSubsystem(Subsystem):
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getRightX()) * 6,
                             
-                               True
+                                True
                                 ),
             lambda: None, # self.drive(0, 0, 0, True) 
             self
         )
     
-    def drive_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
+    def limelight_angulor_alignment_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(
                 SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
@@ -525,7 +527,7 @@ class DriveSubsystem(Subsystem):
             )   
         )
     
-    def line_up_with_joystick_limelight_align_cmd(self, joystick: CommandXboxController):
+    def line_up_with_april_tag_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(             
                 SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
@@ -550,13 +552,7 @@ class DriveSubsystem(Subsystem):
             lambda: None,
             self
         )
-        
-    def wait_for_target_visible(self):
-        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 1)
     
-    def wait_for_no_target_visible(self):
-        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 0)
-        
     def drive_towards_target_command(self, joystick: CommandXboxController):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
@@ -578,7 +574,14 @@ class DriveSubsystem(Subsystem):
                                True
                                ),
                 self
-        )    
+        )
+        
+    def wait_for_target_visible(self):
+        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 1)
+    
+    def wait_for_no_target_visible(self):
+        return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 0)
+                
     
     def zero_drive_encoder(self):
         self._fl.zero_drive_encoder()
@@ -630,7 +633,7 @@ class DriveSubsystem(Subsystem):
                 lambda: None,
                 lambda: self.drive(0.0, 0.0, theta=2, field_relative=False),
                 lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
-                lambda: abs(self._gyro.get_yaw().value) > 360 * 5,
+                lambda: abs(self._gyro.get_yaw().value) > 360 * 10,
                 self
             ),
             PrintCommand("Yaw Finished"),

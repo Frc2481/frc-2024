@@ -374,8 +374,11 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("BL Rps", self._bl.driveMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("BR Rps", self._br.driveMotor.get_duty_cycle().value)
         
+        SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)
+        SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
+        SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
+        SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
         
-                                                         
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
 
@@ -504,9 +507,8 @@ class DriveSubsystem(Subsystem):
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getRightX()) * 6,
-                            
-                                True
-                                ),
+                            True
+                            ),
             lambda: None, # self.drive(0, 0, 0, True) 
             self
         )

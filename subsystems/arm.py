@@ -65,10 +65,7 @@ class ArmSubsystem(Subsystem):
     def arm_pickup_position_cmd (self, arm_position = constants.kArmStowPosition):
            return runOnce(
             lambda:  self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position))
-        )
-           
-    def climb_cmd (self):
-        self.armMotor.set_control(VoltageOut(3))                  
+        )         
         
     def gripper_open_cmd(self):
         return runOnce(

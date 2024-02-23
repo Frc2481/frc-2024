@@ -78,15 +78,15 @@ class RobotContainer(object):
         self.operator_controller.rightBumper().onTrue(self.arm.gripper_open_cmd())
         self.operator_controller.leftBumper().onTrue(self.arm.gripper_close_cmd())
         #self.operator_controller.povRight().onTrue(self.unimportant_sim_stuff_cmd())
-        self.operator_controller.povRight().onTrue(self.arm.arm_pickup_position_cmd())
-        self.operator_controller.povUp().whileTrue(self.angulator.angulator_move_velocity_cmd(constants.kAngulatorCruiseVelocity))
-        self.operator_controller.povDown().whileTrue(self.angulator.angulator_move_velocity_cmd(-constants.kAngulatorCruiseVelocity))
+        #self.operator_controller.povRight().onTrue(self.arm.arm_pickup_position_cmd())
+        #self.operator_controller.povUp().whileTrue(self.angulator.angulator_move_velocity_cmd(constants.kAngulatorCruiseVelocity))
+        #self.operator_controller.povDown().whileTrue(self.angulator.angulator_move_velocity_cmd(-constants.kAngulatorCruiseVelocity))
         
         #Use for sysID Test
-        #self.operator_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        #self.operator_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        #self.operator_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        #self.operator_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.operator_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.operator_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.operator_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.operator_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
         
         self.driver_controller.x().onTrue(self.feeder.feeder_on_cmd(constants.kFeederSpeedRPS))
         self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())

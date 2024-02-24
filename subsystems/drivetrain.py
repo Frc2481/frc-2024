@@ -217,6 +217,8 @@ class DriveSubsystem(Subsystem):
             ),
             initialPose=Pose2d()
         )
+        
+        self.robot_relative_driving = False
 
         SmartDashboard.putNumber("limelight gain", 0.2)
         
@@ -235,8 +237,7 @@ class DriveSubsystem(Subsystem):
             self.shouldFlipPath, # Supplier to control path flipping based on alliance color
             self # Reference to this subsystem to set requirements
         )
-        
-        
+          
         self.__loggerState = None
         
         self.__sysid_config = sysid.SysIdRoutine.Config(recordState=self.logState)
@@ -244,47 +245,13 @@ class DriveSubsystem(Subsystem):
         
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
-        
         self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
-        
-        
-    def logState(self, state):
-        if not self.__loggerState:
-            self.__loggerState = StringLogEntry(DataLogManager.getLog(),
-                                                "sysid-test-state-drive")
-        self.__loggerState.append(sysid.SysIdRoutine.stateEnumToString(state))    
-                  
-    def driveVoltage(self, v):
-        self._fl.driveMotor.set_control(VoltageOut(v, enable_foc=False)) 
-        self._fr.driveMotor.set_control(VoltageOut(v, enable_foc=False))
-        self._bl.driveMotor.set_control(VoltageOut(v, enable_foc=False))
-        self._br.driveMotor.set_control(VoltageOut(v, enable_foc=False))
     
-    def sysid_quasistatic_cmd(self, direction):
-        return self.__sysid.quasistatic(direction)
-        
-    
-    def sysid_dynamic_cmd(self, direction):
-        return self.__sysid.dynamic(direction)
-    
-    
-    def driveLog(self, log: SysIdRoutineLog):
-        log.motor("fl") \
-            .voltage(self._fl.driveMotor.get_motor_voltage().value) \
-            .velocity(self._fl.get_state().speed) \
-            .position(self._fl.get_position().distance)
-        log.motor("fr") \
-            .voltage(self._fr.driveMotor.get_motor_voltage().value) \
-            .velocity(self._fr.get_state().speed) \
-            .position(self._fr.get_position().distance)
-        log.motor("bl") \
-            .voltage(self._bl.driveMotor.get_motor_voltage().value) \
-            .velocity(self._bl.get_state().speed) \
-            .position(self._bl.get_position().distance)
-        log.motor("br") \
-            .voltage(self._br.driveMotor.get_motor_voltage().value) \
-            .velocity(self._br.get_state().speed) \
-            .position(self._br.get_position().distance)
+    def shouldFlipPath(self):
+            # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # This will flip the path being followed to the red side of the field.
+        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        return DriverStation.getAlliance() == DriverStation.Alliance.kBlue
     
     def periodic(self):
         self.__odometry.update(
@@ -296,13 +263,13 @@ class DriveSubsystem(Subsystem):
                 self._br.get_position(),
              ]
         )
-         
+        self.limelight_periodic()
+        self.dashboard_periodic()
         
+    # Lime Light Update 
+    def limelight_periodic(self):
         ll_json = json.loads(self.ll_rear_table.getString("json", "{}"))
-        # print(ll_json)
-        
-        # for tag in ll_json["Results"]["Fiducial"]:
-        #     print(tag)
+
         num_targets = 0 
         if "Results" in ll_json and "Fiducial" in ll_json["Results"]:
             num_targets = len(ll_json["Results"]["Fiducial"])
@@ -316,9 +283,6 @@ class DriveSubsystem(Subsystem):
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[5]))
-            
-        
-
 
             if (vision_pose.X() == 0.0): 
                 return
@@ -332,7 +296,6 @@ class DriveSubsystem(Subsystem):
                     xyStds = 0.5
                     degStds = 6
       
-      
                 elif self.ll_rear_table.getNumber("ta",0) > 0.8 and distance_to_pose < 0.5:
                     xyStds = 1.0;
                     degStds = 12;
@@ -344,86 +307,82 @@ class DriveSubsystem(Subsystem):
                 if xyStds > 0:
                     self.__odometry.setVisionMeasurementStdDevs((xyStds, xyStds, math.radians(degStds)))
                     self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
-                                                             
+      
+     
+    def dashboard_periodic(self):                                                       
         SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
-        SmartDashboard.putNumber("FL_Velocity",self._fl.get_state().speed)
+        SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
         SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
+        SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
         
         SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
         SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
-        SmartDashboard.putNumber("FR_Velocity",self._fr.get_state().speed)
+        SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
         SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
+        SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
         
         SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
         SmartDashboard.putNumber("BL_Distance",self._bl.get_position().distance)
-        SmartDashboard.putNumber("BL_Velocity",self._bl.get_state().speed)
+        SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
         SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
+        SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
         
         SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
         SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
-        SmartDashboard.putNumber("BR_Velocity",self._br.get_state().speed)
+        SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
         SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
+        SmartDashboard.putNumber("BR Duty Cycle", self._br.driveMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
+        
+        SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
         SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
         SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
-        SmartDashboard.putNumber("FL Rps", self._fl.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("FR Rps", self._fr.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("BL Rps", self._bl.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("BR Rps", self._br.driveMotor.get_duty_cycle().value)
-        
-        SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)
-        SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
-        SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
-        SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
-        
+               
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
+    # Odometry
 
     def get_pose(self) -> Pose2d:
         return self.__odometry.getEstimatedPosition()
-    
-        
-    def reset_pose(self, pose=Pose2d()):
-            
-            self._gyro.set_yaw(0)
-            
-            self.__odometry.resetPosition(    
-                Rotation2d(),
-                (
-                    self._fl.get_position(),
-                    self._fr.get_position(),
-                    self._bl.get_position(),
-                    self._br.get_position()
-                ),
-                pose
-            )
-        #SmartDashboard.putNumber("Odometry X",self.(pose(X)))
-            
-    #def correct_alliance_vision(self):
-          # self.ally = DriverStation.getAlliance()
-          # if self.ally:
-           # if self.ally.value() == DriverStation.Alliance.kRed:
-           #    self.invert = -1
-           # if self.ally.value() == DriverStation.Alliance.kBlue:
-           #    self.invert = 1
-           # else:
-            #   self.invert = 1
            
-    def drive(self, x, y, theta, field_relative, force_angle=False):
-        # if abs(theta) < 0.1:
-        #     theta = 0  
-        
-        # if abs(x) < 0.3:
-        #    x = 0
-              
-        # if abs(y) < 0.3:
-        #    y = 0
+    def reset_pose(self, pose=Pose2d()):         
+        self._gyro.set_yaw(pose.rotation().degrees())
             
+        self.__odometry.resetPosition(    
+            pose.rotation(),
+            (
+                self._fl.get_position(),
+                self._fr.get_position(),
+                self._bl.get_position(),
+                self._br.get_position()
+            ),
+            pose
+        )
             
-        
+    def reset_odom_to_vision(self):
+        bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
+
+        vision_pose = Pose2d(x=bot_pose[0],
+                             y=bot_pose[1],
+                             rotation=Rotation2d.fromDegrees(bot_pose[3]))
+        self.reset_pose(vision_pose)
+    
+    def reset_odom_to_vision_cmd(self):
+        return runOnce (self.reset_odom_to_vision)    
+    
+    # Drive Controls
+                
+    def drive(self, x, y, theta, field_relative, force_angle=False):                
         if field_relative:
             chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
         else:
@@ -431,21 +390,18 @@ class DriveSubsystem(Subsystem):
 
         self.drive_robot_relative_speed(chassis_speed, force_angle, True)
 
+    def toggle_robot_relative_driving(self):
+        self.robot_relative_driving = not self.robot_relative_driving
+        
+    def toggle_robot_relative_driving_cmd(self):
+        return runOnce(self.toggle_robot_relative_driving)
+
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
-       #return 
-        #SmartDashboard.putNumber("Chassis_Speed_Omega0", chassis_speed.omega)
-        
-        # FIXME: Testing path following
-        #chassis_speed.omega = 0
-        #chassis_speed.vx = 0
-        #chassis_speed.vy = 0
-        
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
 
-        #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod)
-        #SmartDashboard.putNumber("Chassis_Speed_Omega1", chassis_speed.omega)
+        #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) -Should be using
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -462,23 +418,6 @@ class DriveSubsystem(Subsystem):
         self._bl.set_state(module_states[2], voltage_only)
         self._br.set_state(module_states[3], voltage_only)
 
-        SmartDashboard.putNumber("FLAngle", module_states[0].angle.degrees())
-        SmartDashboard.putNumber("FRAngle", module_states[1].angle.degrees())
-        SmartDashboard.putNumber("BLAngle", module_states[2].angle.degrees())
-        SmartDashboard.putNumber("BRAngle", module_states[3].angle.degrees())        
-        SmartDashboard.putNumber("FLSpeed", module_states[0].speed)
-        SmartDashboard.putNumber("FRSpeed", module_states[1].speed)
-        SmartDashboard.putNumber("BLSpeed", module_states[2].speed)
-        SmartDashboard.putNumber("BRSpeed", module_states[3].speed)
-        #SmartDashboard.putNumber("FL Distance", module_states[0].distance)
-        #SmartDashboard.putNumber("FR Distance", module_states[1].distance)
-        #SmartDashboard.putNumber("BL Distance", module_states[2].distance)
-        #SmartDashboard.putNumber("BR Distance", module_states[3].distance)
-        
-        
-
-        
-
     def get_robot_relative_speed(self):
         cs = self.__kinematics.toChassisSpeeds(
             (
@@ -494,13 +433,6 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("Actual Vy", cs.vy)
         
         return cs
-        
-    
-    def shouldFlipPath(self):
-        # Boolean supplier that controls when the path will be mirrored for the red alliance
-        # This will flip the path being followed to the red side of the field.
-        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-        return DriverStation.getAlliance() == DriverStation.Alliance.kBlue
     
     def drive_with_joystick_cmd(self, joystick: CommandXboxController):
         return runEnd(
@@ -584,6 +516,7 @@ class DriveSubsystem(Subsystem):
     def wait_for_no_target_visible(self):
         return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tv', 0) == 0)
                 
+    # Zero Drive Encoder
     
     def zero_drive_encoder(self):
         self._fl.zero_drive_encoder()
@@ -594,6 +527,8 @@ class DriveSubsystem(Subsystem):
     def zero_drive_encoder_cmd(self):
         return runOnce(self.zero_drive_encoder).ignoringDisable(True)
 
+    # Zero Steer Encoder
+
     def zero_steer_encoder(self):
         wpilib.Preferences.setDouble("FL_STEER_OFFSET", self._fl.zero_steer_encoder())
         wpilib.Preferences.setDouble("FR_STEER_OFFSET", self._fr.zero_steer_encoder())
@@ -602,7 +537,8 @@ class DriveSubsystem(Subsystem):
         
     def zero_steer_encoder_cmd(self):
         return runOnce(self.zero_steer_encoder).ignoringDisable(True)
-   
+
+    # Wheel Circumference
     
     def finalize_calibrate_wheel_circumfrence(self):
         distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value)
@@ -643,16 +579,47 @@ class DriveSubsystem(Subsystem):
             
             InstantCommand(self.finalize_calibrate_wheel_circumfrence)
             )
-    def reset_odom_to_vision(self):
-        bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
+ 
 
-        vision_pose = Pose2d(x=bot_pose[0],
-                             y=bot_pose[1],
-                             rotation=Rotation2d.fromDegrees(bot_pose[3]))
-        self.reset_pose(vision_pose)
+#SysId Callbacks
     
-    def reset_odom_to_vision_cmd(self):
-        return runOnce (self.reset_odom_to_vision)    
+    def logState(self, state):
+        if not self.__loggerState:
+            self.__loggerState = StringLogEntry(DataLogManager.getLog(),
+                                                "sysid-test-state-drive")
+        self.__loggerState.append(sysid.SysIdRoutine.stateEnumToString(state))    
+                  
+    def driveVoltage(self, v):
+        self._fl.driveMotor.set_control(VoltageOut(v, enable_foc=False)) 
+        self._fr.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+        self._bl.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+        self._br.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+    
+    def sysid_quasistatic_cmd(self, direction):
+        return self.__sysid.quasistatic(direction)
+        
+    
+    def sysid_dynamic_cmd(self, direction):
+        return self.__sysid.dynamic(direction)
+    
+    
+    def driveLog(self, log: SysIdRoutineLog):
+        log.motor("fl") \
+            .voltage(self._fl.driveMotor.get_motor_voltage().value) \
+            .velocity(self._fl.get_state().speed) \
+            .position(self._fl.get_position().distance)
+        log.motor("fr") \
+            .voltage(self._fr.driveMotor.get_motor_voltage().value) \
+            .velocity(self._fr.get_state().speed) \
+            .position(self._fr.get_position().distance)
+        log.motor("bl") \
+            .voltage(self._bl.driveMotor.get_motor_voltage().value) \
+            .velocity(self._bl.get_state().speed) \
+            .position(self._bl.get_position().distance)
+        log.motor("br") \
+            .voltage(self._br.driveMotor.get_motor_voltage().value) \
+            .velocity(self._br.get_state().speed) \
+            .position(self._br.get_position().distance)
     
     
 

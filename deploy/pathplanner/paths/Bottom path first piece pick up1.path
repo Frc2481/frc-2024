@@ -30,65 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Shoot at the speaker",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "turn shooter on and shoot at the speaker"
-              }
-            },
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 1.0
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "turn intake on",
-      "waypointRelativePos": 0.65,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Turn the intake on"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Turn shooter off",
-      "waypointRelativePos": 0.05,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "turn the shooter off after shooting the note into the speaker"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 7.0,

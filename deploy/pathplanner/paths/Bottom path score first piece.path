@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "after picking up the piece, turn off the intake"
+                "name": "intake off"
               }
             }
           ]

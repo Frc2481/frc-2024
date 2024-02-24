@@ -37,14 +37,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Turn off the intake after picking up the note"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     },
@@ -54,20 +47,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shoot note into speaker"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "turn the shooter off after shooting the note into the speaker"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     }

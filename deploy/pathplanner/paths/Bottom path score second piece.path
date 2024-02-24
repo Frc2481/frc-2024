@@ -37,14 +37,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Turn off the intake after picking up the note"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     },
@@ -59,12 +52,6 @@
               "type": "wait",
               "data": {
                 "waitTime": 2.12
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "turn shooter on and shoot at the speaker"
               }
             }
           ]

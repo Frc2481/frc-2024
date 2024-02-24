@@ -37,14 +37,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "After shooting the piece into the speaker, turn off the shooter"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     },
@@ -54,14 +47,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Turn the intake on"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     },
@@ -71,20 +57,7 @@
       "command": {
         "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 1.24
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "turn shooter on and shoot at the speaker"
-              }
-            }
-          ]
+          "commands": []
         }
       }
     }

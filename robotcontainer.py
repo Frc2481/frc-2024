@@ -100,6 +100,7 @@ class RobotContainer(object):
         self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_april_tag_cmd(self.driver_controller))
         self.driver_controller.povLeft().whileTrue(self.intake.set_intake_cmd(-0.5, -0.5))        
         self.driver_controller.povDown().onTrue(self.intake.set_intake_cmd(0.0, 0.0))
+        self.driver_controller.povUp().toggleOnTrue(self.drivetrain.toggle_robot_relative_driving())
         
             
         

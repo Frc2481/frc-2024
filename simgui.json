@@ -30,6 +30,7 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Gripper Sim": "Mechanism2d",
       "/SmartDashboard/Reset Odom": "Command",
+      "/SmartDashboard/Reset Odom To Vision": "Command",
       "/SmartDashboard/Robot Sim": "Mechanism2d",
       "/SmartDashboard/Zero Steer Encoder": "Command"
     },

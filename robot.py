@@ -6,6 +6,9 @@ import commands2
 
 from robotcontainer import RobotContainer
 
+from phoenix6.hardware import TalonFX
+from phoenix6.configs import TalonFXConfiguration
+
 
 class MyRobot(commands2.TimedCommandRobot):
 
@@ -14,8 +17,13 @@ class MyRobot(commands2.TimedCommandRobot):
         This function is run when the robot is first started up and should be used for any
         initialization code.
         """
+        
+        self.armMotor = TalonFX(1, "2481")
+        self.armMotor.configurator.apply(TalonFXConfiguration())
+        # self.arm2Motor = TalonFX(1)
+        
         print("Here 1")
-        self.container = RobotContainer()
+        # self.container = RobotContainer()
         print("Here 2")
 
         self.autonomousCommand = None

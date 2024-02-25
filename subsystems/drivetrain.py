@@ -247,6 +247,8 @@ class DriveSubsystem(Subsystem):
         
         self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
     
+        self.drive_state = True
+        
     def shouldFlipPath(self):
             # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
@@ -378,7 +380,11 @@ class DriveSubsystem(Subsystem):
         self.reset_pose(vision_pose)
     
     def reset_odom_to_vision_cmd(self):
-        return runOnce (self.reset_odom_to_vision)    
+        return runOnce (self.reset_odom_to_vision)
+    
+    def get_range_to_speaker(self):
+        return  5 #self.get_pose().relativeTo(Translation2d(x=-0.0381, y=5.547)).translation().norm()
+            
     
     # Drive Controls
                 
@@ -395,7 +401,13 @@ class DriveSubsystem(Subsystem):
         
     def toggle_robot_relative_driving_cmd(self):
         return runOnce(self.toggle_robot_relative_driving)
-
+    
+    def field_centric_cmd(self):
+        self.drive_state = True
+        
+    def robot_centric_cmd(self):
+        self.drive_state = False
+            
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
@@ -439,7 +451,7 @@ class DriveSubsystem(Subsystem):
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getRightX()) * 6,
-                            True
+                            self.drive_state
                             ),
             lambda: None, # self.drive(0, 0, 0, True) 
             self
@@ -619,13 +631,4 @@ class DriveSubsystem(Subsystem):
         log.motor("br") \
             .voltage(self._br.driveMotor.get_motor_voltage().value) \
             .velocity(self._br.get_state().speed) \
-            .position(self._br.get_position().distance)
-    
-    
-
-    
-  
-   
-
-            
-        
+            .position(self._br.get_position().distance)        

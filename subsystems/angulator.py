@@ -43,25 +43,28 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         self.angulatorMotor.configReverseSoftLimitThreshold(constants.kAngulatorReverseSoftLimit)
         self.angulatorMotor.configForwardSoftLimitEnable(True)
         self.angulatorMotor.configReverseSoftLimitEnable(True)
+        
                
 
     def angulator_move_velocity_cmd (self, angulator_velocity):
-       return runOnce(
-           lambda:  self.angulatorMotor.set(ControlMode.Velocity(self.rps_to_enc_ticks_per_100_ms(angulator_velocity)))
+       return runEnd(
+           lambda:  self.angulatorMotor.set(ControlMode.Velocity, self.rps_to_enc_ticks_per_100_ms(angulator_velocity)),
+           lambda:  self.angulatorMotor.set(ControlMode.Disabled)
         )
        
     def angulator_set_position_cmd (self, angulator_position):
-           return runOnce(
-           lambda:  self.angulatorMotor.set(ControlMode.MotionMagic.Position(self.rot_to_enc_ticks(angulator_position / 360.0)))
+           return runEnd(
+           lambda:  self.angulatorMotor.set(ControlMode.MotionMagic.Position, self.rot_to_enc_ticks(angulator_position / 360.0)),
+           lambda:  self.angulatorMotor.set(ControlMode.Disabled)
         )   
 
     def angulator_off_cmd (self):
         return runOnce(
            lambda: self.angulatorMotor.set(ControlMode.Disabled())
         )
-    
-    def anglator_set_position_from_range(self, range):
-        self.angulatorMotor.set(ControlMode.MotionMagic.Position(self.rot_to_enc_ticks(math.atan(78/range))))
+        
+    def angulator_set_pos_from_range_cmd(self, range):
+        return runOnce(lambda: self.angulatorMotor.set(ControlMode.MotionMagic.Position(self.rot_to_enc_ticks(math.atan(78/range)))))
 
     def periodic(self):
         # Get the X and Y from the dashboard so we can set angulator to correct angle for this range.

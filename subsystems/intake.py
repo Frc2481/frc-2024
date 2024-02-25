@@ -30,7 +30,7 @@ class IntakeSubsystem(commands2.SubsystemBase):
         self.horizontalMotor.configurator.apply(self.horizontalMotorConfig)
 
         self.verticalMotorConfig = TalonFXConfiguration()
-        self.verticalMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
+        self.verticalMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.verticalMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
         self.verticalMotor.configurator.apply(self.verticalMotorConfig)
 

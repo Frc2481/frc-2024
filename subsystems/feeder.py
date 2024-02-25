@@ -12,7 +12,7 @@ import phoenix6
 from phoenix6.hardware import TalonFX
 
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage
+from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, DutyCycleOut
 from phoenix6.signals.spn_enums import *
 
 from wpilib import DigitalInput
@@ -26,11 +26,11 @@ class FeederSubsystem(object):
 
         self.feederBeambreak = DigitalInput(constants.kFeederBeambreakPort)
         
-        self.feederMotor = TalonFX(constants.kFeederMotorCANID)
+        self.feederMotor = TalonFX(constants.kFeederMotorCANID, "2481")
 
         self.feederMotorConfig = TalonFXConfiguration()
         self.feederMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-        self.feederMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        self.feederMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
         self.feederMotorConfig.slot0.k_p = constants.kFeederP
         self.feederMotorConfig.slot0.k_i = constants.kFeederI
@@ -40,14 +40,10 @@ class FeederSubsystem(object):
         self.feederMotor.configurator.apply(self.feederMotorConfig)
 
 
-    def feeder_on_cmd (self, feeder_speed_rps = constants.kFeederSpeedRPS):
+    def feeder_on_cmd (self):
        return runOnce(
-           # Use this one on the robot.
-           # lambda:  self.feederMotor.set_control(VelocityTorqueCurrentFOC(feeder_speed_rps))
-           
-           # Using this one so SIM works :(
-            lambda:  self.feederMotor.set_control(VelocityVoltage(feeder_speed_rps))
-        )
+            lambda:  self.feederMotor.set_control((DutyCycleOut(0.9)))
+            )
 
 
     def feeder_off_cmd (self):

@@ -13,12 +13,13 @@ kShooterMotorCANID = 9
 kIntakeVerticalMotorCANID = 10
 kIntakeHorizontalMotorCANID = 11
 kFeederMotorCANID = 12
-kAngulatorMotorCANID = 13
+kAngulatorMotorCANID = 30
 kArmMotorCANID = 14
 kSwerveFrontLeftSteerEncoderCANID = 2
 kSwerveFrontRightSteerEncoderCANID = 4
 kSwerveBackLeftSteerEncoderCANID = 6
 kSwerveBackrightSteerEncoderCANID = 8
+kAngulatorEncoderCANID = 31
 kPigeonCANID = 1
 
 kDriveMaxSpeed = 6.4 
@@ -72,25 +73,31 @@ kSwerveReductionDrive = 4.31
 
 kDriverControllerPort = 0
 kOperatorControllerPort = 1
+kDiagControllerPort = 2
 
 #Feeder
-kFeederSpeedRPS = 20
+kFeederSpeedRPS = 10
 kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
 
 #BeamBrake
-kIntakeBeambreakPort = 0
-kFeederBeambreakPort = 1
+kIntakeBeambreakPort = 9
+kFeederBeambreakPort = 2
+kArmZero = 8
 
 #ShooterFocCurrentGains
+kShooterSpeedSubwooferRPS = 40
+kShooterSpeedHappyDonutRPS = 40
 kShooterSpeedRPS = 50
 kShooterToArmSpeedRPS = 10
-kShooterP = 0
+kShooterP = 0.01
 kShooterI = 0
 kShooterD = 0
-kShooterV = 0
+kShooterV = 0.0125
+kShooterA = 0
+kShooterS = 0.02
 kShooterPeakCurrent = 40
 kShooterCruiseVelocity = 0
 kShooterAcceleration = 0
@@ -98,10 +105,13 @@ kShooterJerk = 0
 
 #Gripper
 kGripperSolenoidModule = 0
-kGripperDoubleSolenoidForwardPort = 1
-kGripperDoubleSolenoidReversePort = 2
+kGripperDoubleSolenoidForwardPort = 6
+kGripperDoubleSolenoidReversePort = 7
 
-
+#Climber
+kClimberSolenoidModule = 0
+kClimberDoubleSolenoidForwardPort = 4
+kClimberDoubleSolenoidReversePort = 5
 
 #Arm
 kArmSolenoidModule = 0
@@ -121,16 +131,14 @@ kArmA = 0.0
 kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
-
-
-# FIND ARM POSITION
-kArmUpPosition = 35.44
-kArmStowPosition = 15.716
-kArmDownPosition = 0
-
-
+kArmScorePosition = 35.44
+kArmClimbPosition = 36.00
+kArmPickupPosition = 15.716
+kArmDownPosition = 1
 
 #angulator
+kAngulatorHappyDonutPosition = 23.75
+kAngulatorSubwooferPosition = 47.5
 kAngulatorGearReduction = 125.0
 kAngulatorDownPosition = 0   
 kAngulatorUpPosition = 47.5 

@@ -113,14 +113,6 @@ kClimberSolenoidModule = 0
 kClimberDoubleSolenoidForwardPort = 4
 kClimberDoubleSolenoidReversePort = 5
 
-#Arm
-kArmSolenoidModule = 0
-kArmDoubleSolenoidForwardPort = 3
-kArmDoubleSolenoidReversePort = 4
-
-kArmSolenoid2Module = 0
-kArmDoubleSolenoid2ForwardPort = 5
-kArmDoubleSolenoid2ReversePort = 6
 
 #Arm Motor
 kArmP = 1
@@ -137,23 +129,23 @@ kArmPickupPosition = 15.716
 kArmDownPosition = 1
 
 #angulator
-kAngulatorHappyDonutPosition = 23.75
-kAngulatorSubwooferPosition = 47.5
-kAngulatorGearReduction = 125.0
-kAngulatorDownPosition = 0   
-kAngulatorUpPosition = 47.5 
-kAngulatorP = 2
-kAngulatorI = 0# .01
-kAngulatorD = 0.1
-kAngulatorV = 0.02
-kAngulatorA = 0 # 0.0025
-kAngulatorS = 0
+kAngulatorHappyDonutAngleDeg = 23.75 /360
+kAngulatorSubwooferAngleDeg = 65 / 360
+kAngulatorGearReduction = 259.9
+kAngulatorDownPosition = 0 # 20.5/360   
+kAngulatorUpPosition =  0.112 #/360
+kAngulatorP = 0.1
+kAngulatorI = 0.0# .01
+kAngulatorD = 0
+kAngulatorV = 30.7 # 0.041
+kAngulatorA = 0.00 # 0.0025
+kAngulatorS = 0.3
 kAngulatorJerk = 0
-kAngulatorAcceleration = 160
-kAngulatorCruiseVelocity = 3 * 4096
+kAngulatorAcceleration = 2.0
+kAngulatorCruiseVelocity = 0.31
 kMotorResistance = 6
-kAngulatorForwardSoftLimit = 11946
-kAngulatorReverseSoftLimit = 0
+kAngulatorForwardSoftLimitRot = 0.13 # 70 / 360
+kAngulatorReverseSoftLimitRot = 0 # 22.5 / 360
 
 #Metric system units
 kArmMass = 10 / 2.205
@@ -161,5 +153,3 @@ kArmLength = 16 / 39.37
 
 #steer
 kSteerGearReduction = 4
-
-# https://prod.liveshare.vsengsaas.visualstudio.com/join?A43088F23A8DB725BF103347DA2FBF3ED7C8

@@ -42,13 +42,31 @@ class ArmSubsystem(Subsystem):
         
         self.zero_arm_switch =  DigitalInput(constants.kArmZero)
         
+        self.setpoint = 0
+        
     
         self.gripperSolenoid = DoubleSolenoid(
             # constants.kGripperSolenoidModule,
             moduleType = wpilib.PneumaticsModuleType.CTREPCM,
             forwardChannel = constants.kGripperDoubleSolenoidForwardPort,
             reverseChannel = constants.kGripperDoubleSolenoidReversePort
-        )        
+        ) 
+        
+    def get_error(self):
+        return self.setpoint - self.armMotor.get_position().value
+    
+    def set_arm_position(self, position):
+        self.setpoint = position
+        self.armMotor.set_control(MotionMagicVoltage(position=position))
+    
+    def arm_set_pos_cmd (self, arm_position):
+        return FunctionalCommand(
+            lambda: self.set_arm_position(arm_position),
+            lambda: None,
+            lambda interrupted: None,
+            lambda: math.fabs(self.get_error()) < 1,
+            self
+        )       
 
     def arm_climb_pos_cmd (self, arm_position = constants.kArmClimbPosition):
            return runOnce(
@@ -69,9 +87,7 @@ class ArmSubsystem(Subsystem):
         )           
            
     def arm_pickup_pos_cmd (self, arm_position = constants.kArmPickupPosition):
-           return runOnce(
-            lambda:  self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position))
-        )         
+           return self.arm_set_pos_cmd(arm_position)         
         
     def gripper_open_cmd(self):
         return runOnce(

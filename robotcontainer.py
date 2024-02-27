@@ -74,27 +74,34 @@ class RobotContainer(object):
         self.operator_controller.povDown().onTrue(self.climber.Batman_grapling_hook_cmd())
         #self.operator_controller.back().onTrue(self.prepare_to_climb_cmd())
        
-        #Use for sysID Test
-        self.diag_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        self.diag_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        self.diag_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        self.diag_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        
-        self.driver_controller.y().onTrue(self.feeder.feeder_off_cmd())  
+               
+          
         self.driver_controller.a().onTrue(self.drivetrain.field_centric_cmd())
         self.driver_controller.b().onTrue(self.drivetrain.robot_centric_cmd())
-        
-        #$self.driver_controller.b().onTrue(self.feeder.feeder_on_cmd())
-        #self.driver_controller.rightBumper().onTrue(self.speaker_score_cmd())
-        
-        self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
+        #self.driver_controller.x().onTrue(self.drivetrain.odometry reset)
         self.driver_controller.rightBumper().whileTrue(self.intake.set_intake_cmd(-0.5, -0.5))        
         self.driver_controller.rightBumper().onFalse(self.intake.set_intake_cmd(0.0, 0.0))
-        self.driver_controller.rightTrigger().onTrue(self.intake.set_intake_cmd(0.9, 0.9))
+        self.driver_controller.rightTrigger().onTrue(self.intake.set_intake_cmd(0.9, 0.9))        
+        #self.driver_controller.leftTrigger().onTrue(auto align)
+        self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
+       
         
         #self.driver_controller.leftBumper().whileTrue(self.drivetrain.limelight_angulor_alignment_cmd(self.driver_controller))
         #self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_april_tag_cmd(self.driver_controller))
         #self.driver_controller.rightBumper().whileTrue(self.drivetrain.drive_with_joystick_limelight_target_align_cmd(self.driver_controller))    
+        
+        #Use for sysID Test
+        # self.diag_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        # self.diag_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        # self.diag_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        # self.diag_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        
+        self.diag_controller.povLeft().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.diag_controller.povRight().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.diag_controller.povUp().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.diag_controller.povDown().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        
+        self.diag_controller.a().onTrue(self.angulator.zero_angulator_encoder_cmd())
         
         SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
         SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
@@ -111,23 +118,25 @@ class RobotContainer(object):
         
         SmartDashboard.putData("Shooter On", self.shooter.shooter_on_cmd())
         SmartDashboard.putData("Shooter Off", self.shooter.shooter_off_cmd())
-        # SmartDashboard.putData
+        SmartDashboard.putData("Feeder Off",self.feeder.feeder_off_cmd())
+        SmartDashboard.putData("Feeder On",self.feeder.feeder_on_cmd())
+        SmartDashboard.putData("Zero Angulator", self.angulator.zero_angulator_encoder_cmd().ignoringDisable(True))
+        
+        SmartDashboard.putData("Amp Handoff", self.amp_handoff_cmd())
         
 
     def prepare_happy_donut_cmd(self):
-        # angulator to happy donut position 
-        self.angulator.angulator_set_position_cmd(constants.kAngulatorHappyDonutPosition)
-        # shooter on to happy donut persentage
-        self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS)
-        return None
+        return (# angulator to happy donut position 
+                self.angulator.angulator_set_pos_cmd(constants.kAngulatorHappyDonutAngleDeg))
+                # shooter on to happy donut persentage
+                #.alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS)))
     
     def prepare_subwoofer_shot_cmd(self):
-        # angulator to subwoofer position 
-        self.angulator.angulator_set_position_cmd(constants.kAngulatorSubwooferPosition)
-        # shooter on to subwoofer persentage
-        self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)
-        return None
-    
+        return(# angulator to subwoofer position 
+               self.angulator.angulator_set_pos_cmd(constants.kAngulatorSubwooferAngleDeg))
+               # shooter on to subwoofer persentage
+               #.alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)))
+        
     def prepare_speaker_shot_cmd(self):
         return (self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker())
                 .andThen(self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker())))
@@ -142,11 +151,18 @@ class RobotContainer(object):
                 #TODO angulator down               
     
     def amp_handoff_cmd(self):
-        return (self.shooter.shooter_to_arm_cmd().andThen(self.feeder.feeder_on_cmd)
-                .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
-                .andThen(self.arm.gripper_close_cmd())
-                .andThen(self.shooter.shooter_off_cmd())
-                .andThen(self.feeder.feeder_off_cmd()))
+        return (sequence(
+                self.angulator.angulator_set_pos_cmd(0),
+                self.arm.arm_pickup_pos_cmd(),
+                self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
+                self.arm.arm_pickup_pos_cmd(12.0)))
+                
+                # self.shooter.shooter_to_arm_cmd(),
+                # # self.feeder.feeder_on_cmd()
+                # .andThen(WaitUntilCommand(self.feeder.feeder_piece_ejected))
+                # .andThen(self.arm.gripper_close_cmd())
+                # .andThen(self.shooter.shooter_off_cmd())
+                # .andThen(self.feeder.feeder_off_cmd()))
     
     def amp_score_cmd(self):
         return (self.arm.gripper_open_cmd()

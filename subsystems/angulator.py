@@ -11,6 +11,7 @@ from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VoltageOut, VelocityVoltage, MotionMagicVoltage
 from phoenix6.signals.spn_enums import *
+from phoenix6.status_code import StatusCode
 from talonfxextended import TalonFXExtended
 from wpilib import SmartDashboard
 from wpilib.sysid import SysIdRoutineLog
@@ -84,7 +85,7 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         self.angulatorEncoder = CANcoder(constants.kAngulatorEncoderCANID, "2481")
         self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.UNSIGNED_0_TO1
         self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.CLOCKWISE_POSITIVE
-        # self.canCoderConfig.magnet_sensor.magnet_offset = constants.kAngulatorDownPosition
+        self.canCoderConfig.magnet_sensor.magnet_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
         self.angulatorEncoder.configurator.apply(self.canCoderConfig)
         
         self.angulatorMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.FUSED_CANCODER
@@ -120,9 +121,27 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         return runOnce(
            lambda: self.angulatorMotor.set_control(VoltageOut(0))
         )
+        
+    def apply_encoder_config_with_retries(self, config):
+        for i in range(5):
+            result = self.angulatorEncoder.configurator.apply(config)
+            if result == StatusCode.OK:
+                break
     
     def zero_encoder(self):
+        # Make sure the magnet offset starts out at 0 before calling get_absolute_position().
+        self.canCoderConfig.magnet_sensor.magnet_offset = 0
+        self.apply_encoder_config_with_retries(self.canCoderConfig)            
+        
         self.angulatorEncoder.set_position(0)
+        
+        # Wait for a new reading after applying the offset.
+        angulator_offset = self.angulatorEncoder.get_absolute_position()
+        angulator_offset.wait_for_update(1)
+        
+        self.canCoderConfig.magnet_sensor.magnet_offset = -angulator_offset.value
+        self.apply_encoder_config_with_retries(self.canCoderConfig)
+        wpilib.Preferences.setDouble("ANGULATOR_OFFSET", -angulator_offset.value)
         
     def zero_angulator_encoder_cmd(self):
         return runOnce(self.zero_encoder)    

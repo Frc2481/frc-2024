@@ -81,6 +81,7 @@ kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
+kFeederSpeed = 0.9
 
 #BeamBrake
 kFeederBeambreakPort = 9
@@ -90,6 +91,7 @@ kArmZero = 8
 kShooterSpeedSubwooferRPS = 40
 kShooterSpeedHappyDonutRPS = 40
 kShooterSpeedRPS = 50
+kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
 kShooterP = 0.01
 kShooterI = 0

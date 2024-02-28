@@ -86,7 +86,7 @@ class RobotContainer(Subsystem):
         #self.driver_controller.x().onTrue(self.drivetrain.odometry reset)
         self.driver_controller.rightBumper().whileTrue(self.intake_feeder_cmd(-0.5, -0.5, -0.5))        
         self.driver_controller.rightBumper().onFalse(self.intake_feeder_cmd(0.0, 0.0, 0.0))
-        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(0.9, 0.9, 0.9))        
+        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))        
         #self.driver_controller.leftTrigger().onTrue(auto align)
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
        
@@ -132,7 +132,7 @@ class RobotContainer(Subsystem):
         
         SmartDashboard.putData("Reset Arm and Angulator", self.score_amp_stow_arm_cmd ())
         
-        SmartDashboard.putData("Intake On", self.intake_feeder_cmd(0.9, 0.9, 0.9))
+        SmartDashboard.putData("Intake On", self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))
         SmartDashboard.putData("Intake Off", self.intake_feeder_off_cmd())
         
         SmartDashboard.putNumber("Shooter Voltage", self.shooter.shooterMotor.get_motor_voltage().value)
@@ -171,10 +171,13 @@ class RobotContainer(Subsystem):
                 self.shooter.shooter_on_cmd(25),
                 self.feeder.feeder_on_cmd(.5),
                 self.arm.gripper_close_cmd(),
+                WaitCommand(.1),
                 self.arm.arm_score_pos_cmd(),
                 WaitCommand(.2),
                 self.shooter.shooter_off_cmd(),
-                self.feeder.feeder_off_cmd()))
+                self.feeder.feeder_off_cmd(),
+                WaitCommand(0.5),
+                self.angulator.angulator_set_pos_cmd(0)))
                 
                 # self.shooter.shooter_to_arm_cmd(),
                 # # self.feeder.feeder_on_cmd()
@@ -217,12 +220,17 @@ class RobotContainer(Subsystem):
         return AutoBuilder.followPath(path)
     
     def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical):
-        return(self.intake.set_intake_cmd(intake_cmd_horizontal, intake_cmd_vertical) \
-        .alongWith(self.feeder.feeder_on_cmd(feeder_cmd)))
+        return(self.score_amp_stow_arm_cmd().andThen(
+            self.intake.set_intake_cmd(intake_cmd_horizontal, intake_cmd_vertical).alongWith(
+                self.feeder.feeder_on_cmd(feeder_cmd))))
+        
         
     def intake_feeder_off_cmd(self):
         return(self.intake.intake_off_cmd()) \
-        .alongWith(self.feeder.feeder_off_cmd())
+        .alongWith(self.feeder.feeder_off_cmd())\
+        .andThen(self.shooter.shooter_on_cmd(constants.kShooterReverseSpeed))\
+        .andThen(WaitCommand(.1))\
+        .andThen(self.shooter.shooter_off_cmd())
     
     
     def beambreak_false_callback(self):
@@ -237,7 +245,15 @@ class RobotContainer(Subsystem):
         PrintCommand("DGT: beambreak onTrue") 
         
     def beambreak_false_cmd(self):
-        return (runOnce(lambda: self.beambreak_false_callback()))
+        return sequence(
+             InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
+             InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
+             self.shooter.shooter_on_cmd(-1),
+             self.feeder.feeder_on_cmd(-.05),
+             WaitUntilCommand(lambda: self.beambreak.get() == True),
+             self.shooter.shooter_off_cmd(),
+             self.feeder.feeder_off_cmd()
+        )
     
     def beambreak_true_cmd(self):
         return (runOnce(lambda: self.beambreak_true_callback()))

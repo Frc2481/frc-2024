@@ -49,10 +49,10 @@ kdriveP = 1.5
 kdriveI = 0
 kdriveD = 0.0
 #kdriveV = 2.0825
-kdriveV = 2.0825 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveV = 2.0496 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
 #kdriveA = 0.24925
-kdriveA = 0.24925 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
-kdriveS = 0.04225
+kdriveA = 0.077519 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveS = 0.1891
 kDriveGearReduction = 125
 
 
@@ -88,7 +88,7 @@ kFeederBeambreakPort = 9
 kArmZero = 8
 
 #ShooterFocCurrentGains
-kShooterSpeedSubwooferRPS = 40
+kShooterSpeedSubwooferRPS = 60
 kShooterSpeedHappyDonutRPS = 40
 kShooterSpeedRPS = 50
 kShooterReverseSpeed = -10
@@ -131,7 +131,7 @@ kArmDownPosition = 1
 
 #angulator
 kAngulatorHappyDonutAngleDeg = 23.75 /360
-kAngulatorSubwooferAngleDeg = 65 / 360
+kAngulatorSubwooferAngleDeg = 31.64 / 360
 kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   
 kAngulatorUpPosition =  0.112 #/360

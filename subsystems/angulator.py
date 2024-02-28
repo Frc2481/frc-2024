@@ -83,10 +83,12 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         
         self.canCoderConfig = CANcoderConfiguration()
         self.angulatorEncoder = CANcoder(constants.kAngulatorEncoderCANID, "2481")
-        self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.UNSIGNED_0_TO1
+        self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.SIGNED_PLUS_MINUS_HALF
         self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.CLOCKWISE_POSITIVE
         self.canCoderConfig.magnet_sensor.magnet_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
-        self.angulatorEncoder.configurator.apply(self.canCoderConfig)
+        # self.angulatorEncoder.configurator.apply(self.canCoderConfig)
+        
+        self.apply_encoder_config_with_retries(self.canCoderConfig)
         
         self.angulatorMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.FUSED_CANCODER
         self.angulatorMotorConfig.feedback.feedback_remote_sensor_id = constants.kAngulatorEncoderCANID 
@@ -133,15 +135,17 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         self.canCoderConfig.magnet_sensor.magnet_offset = 0
         self.apply_encoder_config_with_retries(self.canCoderConfig)            
         
-        self.angulatorEncoder.set_position(0)
+        # self.angulatorEncoder.set_position(0)
         
         # Wait for a new reading after applying the offset.
         angulator_offset = self.angulatorEncoder.get_absolute_position()
         angulator_offset.wait_for_update(1)
         
-        self.canCoderConfig.magnet_sensor.magnet_offset = -angulator_offset.value
+        self.canCoderConfig.magnet_sensor.magnet_offset = angulator_offset.value
         self.apply_encoder_config_with_retries(self.canCoderConfig)
-        wpilib.Preferences.setDouble("ANGULATOR_OFFSET", -angulator_offset.value)
+        wpilib.Preferences.setDouble("ANGULATOR_OFFSET", angulator_offset.value)
+        
+        SmartDashboard.putNumber("Angulator Absolute", angulator_offset.value)
         
     def zero_angulator_encoder_cmd(self):
         return runOnce(self.zero_encoder)    

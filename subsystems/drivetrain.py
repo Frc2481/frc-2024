@@ -74,7 +74,7 @@ class SwerveModule(object):
         self.driveMotor.configurator.apply(self.driveMotorConfig)
         
         self.steerMotorConfig = TalonFXConfiguration()
-        self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
+        self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.steerMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE if steerInverted else InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.steerMotorConfig.motor_output.peak_forward_duty_cycle = 0.2
         self.steerMotorConfig.motor_output.peak_reverse_duty_cycle = -0.2
@@ -402,11 +402,14 @@ class DriveSubsystem(Subsystem):
     def toggle_robot_relative_driving_cmd(self):
         return runOnce(self.toggle_robot_relative_driving)
     
+    def set_field_centric(self, field_centric):
+        self.drive_state = field_centric
+    
     def field_centric_cmd(self):
-        self.drive_state = True
+        return runOnce(lambda: self.set_field_centric(True))
         
     def robot_centric_cmd(self):
-        self.drive_state = False
+        return runOnce(lambda: self.set_field_centric(False))
             
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)

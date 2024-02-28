@@ -96,15 +96,15 @@ class RobotContainer(Subsystem):
         #self.driver_controller.rightBumper().whileTrue(self.drivetrain.drive_with_joystick_limelight_target_align_cmd(self.driver_controller))    
         
         #Use for sysID Test
-        # self.diag_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        # self.diag_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.diag_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        self.diag_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.diag_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        self.diag_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
         
-        self.diag_controller.povLeft().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        self.diag_controller.povRight().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        self.diag_controller.povUp().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        self.diag_controller.povDown().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        # self.diag_controller.povLeft().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
+        # self.diag_controller.povRight().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        # self.diag_controller.povUp().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
+        # self.diag_controller.povDown().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
         
         self.diag_controller.a().onTrue(self.angulator.zero_angulator_encoder_cmd())
         
@@ -146,9 +146,9 @@ class RobotContainer(Subsystem):
     
     def prepare_subwoofer_shot_cmd(self):
         return(# angulator to subwoofer position 
-               self.angulator.angulator_set_pos_cmd(constants.kAngulatorSubwooferAngleDeg))
+               self.angulator.angulator_set_pos_cmd(constants.kAngulatorSubwooferAngleDeg)
                # shooter on to subwoofer persentage
-               #.alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)))
+               .alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)))
         
     def prepare_speaker_shot_cmd(self):
         return (self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker())
@@ -156,12 +156,11 @@ class RobotContainer(Subsystem):
                                    
     def speaker_score_cmd(self):
         return (sequence(
-                self.arm.arm_stow_pos_cmd(),
                 self.feeder.feeder_on_cmd(.9),
-                WaitCommand(1)),
+                WaitCommand(2),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
-                self.angulator.angulator_set_pos_cmd(0))               
+                self.angulator.angulator_set_pos_cmd(0)))               
     
     def amp_handoff_cmd(self):
         return (sequence(

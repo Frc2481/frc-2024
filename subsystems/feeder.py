@@ -15,17 +15,11 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, DutyCycleOut
 from phoenix6.signals.spn_enums import *
 
-from wpilib import DigitalInput
-
-
 
 class FeederSubsystem(object):
 
     def __init__(self):
-        super().__init__()
-
-        self.feederBeambreak = DigitalInput(constants.kFeederBeambreakPort)
-        
+        super().__init__()        
         self.feederMotor = TalonFX(constants.kFeederMotorCANID, "2481")
 
         self.feederMotorConfig = TalonFXConfiguration()
@@ -40,9 +34,9 @@ class FeederSubsystem(object):
         self.feederMotor.configurator.apply(self.feederMotorConfig)
 
 
-    def feeder_on_cmd (self):
+    def feeder_on_cmd (self, duty):
        return runOnce(
-            lambda:  self.feederMotor.set_control((DutyCycleOut(0.9)))
+            lambda:  self.feederMotor.set_control((DutyCycleOut(duty)))
             )
 
 
@@ -51,13 +45,5 @@ class FeederSubsystem(object):
            lambda: self.feederMotor.set_control(VoltageOut(0))
         )
     
-    def has_game_piece(self) -> bool:
-        # TODO beam break
-        return self.feederBeambreak.get()
-       
-    
-    def feeder_piece_ejected(self) -> bool:
-        # TODO beam break
-        return not self.feederBeambreak.get()
-        
+
     

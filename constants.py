@@ -83,8 +83,7 @@ kFeederD = 0
 kFeederV = 1.0
 
 #BeamBrake
-kIntakeBeambreakPort = 9
-kFeederBeambreakPort = 2
+kFeederBeambreakPort = 9
 kArmZero = 8
 
 #ShooterFocCurrentGains
@@ -123,7 +122,7 @@ kArmA = 0.0
 kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
-kArmScorePosition = 35.44
+kArmScorePosition = 34.5
 kArmClimbPosition = 36.00
 kArmPickupPosition = 15.716
 kArmDownPosition = 1

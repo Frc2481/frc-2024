@@ -75,8 +75,8 @@ class AngulatorSubsystem(commands2.SubsystemBase):
         # self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = 1 / constants.kAngulatorGearReduction
         
         
-        self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorUpPosition
-        self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_threshold = constants.kAngulatorDownPosition
+        self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorForwardSoftLimitRot
+        self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_threshold = constants.kAngulatorReverseSoftLimitRot
         self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_enable = True
         self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_enable =  True
         

@@ -20,8 +20,6 @@ class IntakeSubsystem(commands2.SubsystemBase):
     def __init__(self):
         super().__init__()
         
-        self.intakeBeambreak = DigitalInput(constants.kIntakeBeambreakPort)
-
         self.horizontalMotor = TalonFX(constants.kIntakeHorizontalMotorCANID, "2481")
         self.verticalMotor = TalonFX(constants.kIntakeVerticalMotorCANID, "2481")
         self.horizontalMotorConfig = TalonFXConfiguration()
@@ -46,12 +44,13 @@ class IntakeSubsystem(commands2.SubsystemBase):
         return commands2.cmd.runOnce(
             lambda: self.set_intake(horizontal, vertical)
         )
-    
-    def has_game_piece(self) -> bool:
-        # TODO beam break
-        return self.intakeBeambreak.get()
-    
-    def intake_piece_ejected(self) -> bool:
-        # TODO beam break
-        return not self.intakeBeambreak.get()
-    
+        
+    def intake_off(self):
+        self.horizontalMotor.set_control(VoltageOut(0))
+        self.verticalMotor.set_control(VoltageOut(0))
+        
+    def intake_off_cmd(self):
+        return commands2.cmd.runOnce(
+            lambda: self.intake_off())
+        
+            

@@ -35,7 +35,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
-        # self.container.periodic()
+        self.container.periodic()
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
@@ -47,4 +47,4 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
-        #self.container.periodic()
+        self.container.periodic()

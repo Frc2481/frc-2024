@@ -55,7 +55,10 @@ kdriveA = 0.077519 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
 kdriveS = 0.1891
 kDriveGearReduction = 125
 
-
+kAlignStateNone = 0
+kAlignStateSpeaker = 1
+kAlignStateAmp = 2
+kAlignStateNote = 3
 
 #steer
 ksteerP = 100
@@ -89,7 +92,7 @@ kArmZero = 8
 
 #ShooterFocCurrentGains
 kShooterSpeedSubwooferRPS = 60
-kShooterSpeedHappyDonutRPS = 40
+kShooterSpeedHappyDonutRPS = 80
 kShooterSpeedRPS = 50
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
@@ -125,12 +128,12 @@ kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
 kArmScorePosition = 34.5
-kArmClimbPosition = 36.00
+kArmClimbPosition = 34
 kArmPickupPosition = 15.716
 kArmDownPosition = 1
 
 #angulator
-kAngulatorHappyDonutAngleDeg = 23.75 /360
+kAngulatorHappyDonutAngleDeg = 0
 kAngulatorSubwooferAngleDeg = 31.64 / 360
 kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   

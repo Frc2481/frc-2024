@@ -20,7 +20,12 @@ class ArmSubsystem(Subsystem):
     def __init__(self):
                
         self.armMotor = TalonFX(constants.kArmMotorCANID, "2481")
-        
+        self.climberSolenoid = DoubleSolenoid(
+            # constants.kGripperSolenoidModule,\[]
+            moduleType = wpilib.PneumaticsModuleType.CTREPCM,
+            forwardChannel = constants.kClimberDoubleSolenoidForwardPort,
+            reverseChannel = constants.kClimberDoubleSolenoidReversePort
+        )  
         self.armMotorConfig = TalonFXConfiguration()
         self.armMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.armMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
@@ -109,4 +114,19 @@ class ArmSubsystem(Subsystem):
             self.armMotor.set_position(0) 
     
     
-                  
+    # Climber up
+    def kill_the_beast(self):
+        if self.armMotor.get_position().value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
+            self.climberSolenoid.set(DoubleSolenoid.Value.kReverse)
+
+    
+    # Climber down    
+    def batman_grapling_hook(self):
+        if self.armMotor.get_position().value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
+            self.climberSolenoid.set(DoubleSolenoid.Value.kForward)
+            
+    def kill_the_beast_cmd(self):
+        return runOnce(lambda: self.kill_the_beast())
+    
+    def batman_grappling_hook_cmd(self):
+        return runOnce(lambda: self.batman_grapling_hook())

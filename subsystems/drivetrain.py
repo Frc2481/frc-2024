@@ -270,15 +270,18 @@ class DriveSubsystem(Subsystem):
         
     # Lime Light Update 
     def limelight_periodic(self):
-        ll_json = json.loads(self.ll_rear_table.getString("json", "{}"))
+        # ll_json = json.loads(self.ll_rear_table.getString("json", "{}"))
+        # #NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose").getInteger("tag count")
+    
 
-        num_targets = 0 
-        if "Results" in ll_json and "Fiducial" in ll_json["Results"]:
-            num_targets = len(ll_json["Results"]["Fiducial"])
+        # num_targets = 0 
+        # if "Results" in ll_json and "Fiducial" in ll_json["Results"]:
+        #     num_targets = len(ll_json["Results"]["Fiducial"])
          
         #checks if april tag is visible
         if self.ll_rear_table.getNumber("tv",0) > 0:
-            bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0])
+            bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0,0])
+            num_targets = bot_pose[7]
             total_latency_ms = self.ll_rear_table.getNumber("cl",0) + \
                                self.ll_rear_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
@@ -349,12 +352,19 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
+        SmartDashboard.putNumber("Angle to Speaker", self.get_angle_to_speaker())
+        SmartDashboard.putNumber("Distance to Speaker", self.get_range_to_speaker())
+        
+        #SmartDashboard.putNumber("april tag count", NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose").getInteger(0))
+        
                
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
     # Odometry
-
-    def get_pose(self) -> Pose2d:
+    
+     
+    
+    def get_pose(self) -> Pose2d:        
         return self.__odometry.getEstimatedPosition()
            
     def reset_pose(self, pose=Pose2d()):         
@@ -370,6 +380,14 @@ class DriveSubsystem(Subsystem):
             ),
             pose
         )
+
+        
+    def reset_yaw(self):
+        self.reset_pose(self.get_pose().rotateBy(self.get_pose().rotation() * -1))
+        
+    
+    def reset_yaw_cmd(self):
+        return runOnce(lambda: self.reset_yaw())
             
     def reset_odom_to_vision(self):
         bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])
@@ -383,7 +401,7 @@ class DriveSubsystem(Subsystem):
         return runOnce (self.reset_odom_to_vision)
     
     def get_range_to_speaker(self):
-        return  5 #self.get_pose().relativeTo(Translation2d(x=-0.0381, y=5.547)).translation().norm()
+        return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()
             
     
     # Drive Controls
@@ -460,7 +478,7 @@ class DriveSubsystem(Subsystem):
             self
         )
     
-    def limelight_angulor_alignment_cmd(self, joystick: CommandXboxController):
+    def limelight_note_align_cmd(self, joystick: CommandXboxController, state):
         return RepeatCommand(
                 SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
@@ -468,21 +486,30 @@ class DriveSubsystem(Subsystem):
             )   
         )
         
-    def drive_with_joystick_limelight_target_align_cmd(self, joystick: CommandXboxController):
+    def limelight_speaker_align_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(
                 SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_target_visible()),
-                    self.drive_towards_target_command(joystick).raceWith(self.wait_for_no_target_visible())          
+                    self.drive_speaker_aligned_cmd(joystick).raceWith(self.wait_for_no_target_visible())          
             )   
         )
     
-    def line_up_with_april_tag_cmd(self, joystick: CommandXboxController):
+    def limelight_amp_align_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(             
                 SequentialCommandGroup(
-                    self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
-                    self.amp_lineup_cmd(joystick).raceWith(self.wait_for_no_note_visible())                               
+                    self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_target_visible()),
+                    self.amp_lineup_cmd(joystick).raceWith(self.wait_for_no_target_visible())                               
             )              
         )
+        
+    def limelight_align_cmd(self, joystick: CommandXboxController, state_cb):
+        return SelectCommand({
+            constants.kAlignStateNone: self.drive_with_joystick_cmd(joystick),
+            constants.kAlignStateAmp: self.limelight_amp_align_cmd(joystick),
+            constants.kAlignStateNote: self.limelight_amp_align_cmd(joystick),
+            constants.kAlignStateSpeaker: self.limelight_speaker_align_cmd(joystick)
+        },
+        state_cb)
         
     def wait_for_note_visible(self):
         return WaitUntilCommand(lambda: NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tv', 0) == 1)
@@ -502,12 +529,20 @@ class DriveSubsystem(Subsystem):
             self
         )
     
-    def drive_towards_target_command(self, joystick: CommandXboxController):
+    def get_angle_to_speaker(self):
+        # TODO: Make this work for red alliance too.
+        # TODO: Possible add a trim if this isn't perfect.
+        translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+        angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())
+        return angle_to_speaker.degrees()
+    
+    def drive_speaker_aligned_cmd(self, joystick: CommandXboxController):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
-                                -NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
-                                SmartDashboard.getNumber("limelight gain", 0),
+                                self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight gain", 0),
+                                #-NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
+                                #SmartDashboard.getNumber("limelight gain", 0),
                                 True
                     ), 
             lambda: None,

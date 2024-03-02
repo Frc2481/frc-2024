@@ -220,7 +220,8 @@ class DriveSubsystem(Subsystem):
         
         self.robot_relative_driving = False
 
-        SmartDashboard.putNumber("limelight gain", 0.2)
+        SmartDashboard.putNumber("limelight lateral gain", 1.0)
+        SmartDashboard.putNumber("limelight angle gain", 0.2)
         
         AutoBuilder.configureHolonomic(
             self.get_pose, # Robot pose supplier
@@ -228,9 +229,9 @@ class DriveSubsystem(Subsystem):
             self.get_robot_relative_speed, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
-                PIDConstants(2.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(3.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(2.0, 0.0, 0.0), # Rotation PID constants
-                6.01, # Max module speed, in m/s
+                5.58, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig() # Default path replanning config. See the API for the options here
             ),
@@ -253,7 +254,7 @@ class DriveSubsystem(Subsystem):
             # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-        return DriverStation.getAlliance() == DriverStation.Alliance.kBlue
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
     
     def periodic(self):
         self.__odometry.update(
@@ -271,9 +272,7 @@ class DriveSubsystem(Subsystem):
     # Lime Light Update 
     def limelight_periodic(self):
         # ll_json = json.loads(self.ll_rear_table.getString("json", "{}"))
-        # #NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose").getInteger("tag count")
-    
-
+        
         # num_targets = 0 
         # if "Results" in ll_json and "Fiducial" in ll_json["Results"]:
         #     num_targets = len(ll_json["Results"]["Fiducial"])
@@ -354,10 +353,7 @@ class DriveSubsystem(Subsystem):
         
         SmartDashboard.putNumber("Angle to Speaker", self.get_angle_to_speaker())
         SmartDashboard.putNumber("Distance to Speaker", self.get_range_to_speaker())
-        
-        #SmartDashboard.putNumber("april tag count", NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose").getInteger(0))
-        
-               
+                    
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
     # Odometry
@@ -478,7 +474,7 @@ class DriveSubsystem(Subsystem):
             self
         )
     
-    def limelight_note_align_cmd(self, joystick: CommandXboxController, state):
+    def limelight_note_align_cmd(self, joystick: CommandXboxController):
         return RepeatCommand(
                 SequentialCommandGroup(
                     self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_note_visible()),
@@ -495,18 +491,18 @@ class DriveSubsystem(Subsystem):
         )
     
     def limelight_amp_align_cmd(self, joystick: CommandXboxController):
-        return RepeatCommand(             
-                SequentialCommandGroup(
-                    self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_target_visible()),
-                    self.amp_lineup_cmd(joystick).raceWith(self.wait_for_no_target_visible())                               
-            )              
-        )
+        return self.amp_lineup_cmd(joystick)
+        # return RepeatCommand(             
+        #         SequentialCommandGroup(
+        #             self.drive_with_joystick_cmd(joystick).raceWith(self.wait_for_target_visible()),
+        #             self.amp_lineup_cmd(joystick).raceWith(self.wait_for_no_target_visible())                               
+        #     )              
+        # )
         
     def limelight_align_cmd(self, joystick: CommandXboxController, state_cb):
         return SelectCommand({
-            constants.kAlignStateNone: self.drive_with_joystick_cmd(joystick),
             constants.kAlignStateAmp: self.limelight_amp_align_cmd(joystick),
-            constants.kAlignStateNote: self.limelight_amp_align_cmd(joystick),
+            constants.kAlignStateNote: self.limelight_note_align_cmd(joystick),
             constants.kAlignStateSpeaker: self.limelight_speaker_align_cmd(joystick)
         },
         state_cb)
@@ -522,7 +518,7 @@ class DriveSubsystem(Subsystem):
             lambda: self.drive(scale_axis(math.hypot(joystick.getLeftY(), joystick.getLeftX())) * constants.kDriveMaxSpeed,
                                 0,
                                 scale_axis(-NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) *
-                                SmartDashboard.getNumber("limelight gain", 0)),
+                                SmartDashboard.getNumber("limelight angle gain", 0)),
                                 False
                     ), 
             lambda: None,
@@ -540,7 +536,7 @@ class DriveSubsystem(Subsystem):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
-                                self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight gain", 0),
+                                self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
                                 #-NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
                                 #SmartDashboard.getNumber("limelight gain", 0),
                                 True
@@ -549,15 +545,28 @@ class DriveSubsystem(Subsystem):
             self
         )
     
+    def get_lateral_distance_amp(self):
+        # TODO: Make this work for red alliance too.
+        # TODO: Possible add a trim if this isn't perfect.
+        # FIXME: Why do we have to fudge this 20cm?
+        translation_to_amp = self.get_pose().relativeTo(Pose2d(2.0415, 8.2042, Rotation2d.fromDegrees(270))).translation()
+        return -translation_to_amp.Y()
+        angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())
+        return angle_to_speaker.degrees()
+    
+    def get_angle_to_amp(self):
+        # TODO: Make this work for red alliance too.
+        return Rotation2d.fromDegrees(270).rotateBy(-self.get_pose().rotation()).degrees()
+    
     def amp_lineup_cmd(self, joystick: CommandXboxController):
         return runEnd(
-            lambda: self.drive(scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),
-                               -NetworkTableInstance.getDefault().getTable("limelight-front").getNumber('tx', 0) * 
-                                   SmartDashboard.getNumber("limelight gain", 0),
-                               scale_axis(-joystick.getRightX() * 6),
+            lambda: self.drive(self.get_lateral_distance_amp() * SmartDashboard.getNumber("limelight lateral gain", 0),
+                                scale_axis(-joystick.getLeftY() * constants.kDriveMaxSpeed),                               
+                               self.get_angle_to_amp() * SmartDashboard.getNumber("limelight angle gain", 0),
                                True
-                               ),
-                self
+                    ),
+            lambda: None,
+            self
         )
         
     def wait_for_target_visible(self):

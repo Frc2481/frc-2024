@@ -33,12 +33,20 @@ class RobotContainer(Subsystem):
         self.arm = ArmSubsystem()
         self.drivetrain = DriveSubsystem()
         self.angulator = AngulatorSubsystem()     
+        
+        NamedCommands.registerCommand('prepare happy donut', self.prepare_happy_donut_cmd())
+        NamedCommands.registerCommand('prepare speaker shot', self.prepare_speaker_shot_cmd())
+        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))
+        NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
+        NamedCommands.registerCommand('prepare subwoofer shot', self.prepare_subwoofer_shot_cmd())
+        NamedCommands.registerCommand('first note shot', self.prep_first_shot_auto())
+        
         self.beambreak = DigitalInput(constants.kFeederBeambreakPort)
         self.beambreak_trigger = Trigger(self.beambreak.get)
-        self.beambreak_trigger.onFalse(self.beambreak_false_cmd())
+        self.beambreak_trigger.onFalse(self.beambreak_false_cmd(self.get_align_state))
         self.beambreak_trigger.onTrue(self.beambreak_true_cmd())
-        self.align_state = constants.kAlignStateNone
-        
+        self.align_state = constants.kAlignStateSpeaker       
+         
         self.driver_controller = CommandXboxController(
             constants.kDriverControllerPort)
 
@@ -47,19 +55,7 @@ class RobotContainer(Subsystem):
         
         self.diag_controller = CommandXboxController(
             constants.kDiagControllerPort)
-        
-        NamedCommands.registerCommand('shooter on', self.shooter.shooter_on_cmd(constants.kShooterSpeedRPS))
-        NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
-        NamedCommands.registerCommand('arm up position', self.arm.arm_score_pos_cmd())
-        NamedCommands.registerCommand('arm down position', self.arm.arm_stow_pos_cmd())
-        NamedCommands.registerCommand('arm pick up position', self.arm.arm_pickup_pos_cmd())
-        NamedCommands.registerCommand('gripper open', self.arm.gripper_open_cmd())
-        NamedCommands.registerCommand('gripper close', self.arm.gripper_close_cmd())
-        NamedCommands.registerCommand('feeder on', self.feeder.feeder_on_cmd(.9))
-        NamedCommands.registerCommand('feeder off',self.feeder.feeder_off_cmd())
-        NamedCommands.registerCommand('intake on', self.intake.set_intake_cmd(0.9, 0.9))
-        NamedCommands.registerCommand('intake off', self.intake.set_intake_cmd(0, 0))
-        
+               
         self.button_bindings_configure()
 
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
@@ -82,8 +78,8 @@ class RobotContainer(Subsystem):
         self.driver_controller.a().onTrue(self.drivetrain.field_centric_cmd())
         self.driver_controller.b().onTrue(self.drivetrain.robot_centric_cmd())
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
-        self.driver_controller.rightBumper().whileTrue(self.intake_sequence_cmd(-0.5, -0.5, -0.5))        
-        self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0))
+        self.driver_controller.rightBumper().whileTrue(self.vomit_cmd())        
+        self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
         self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))        
         self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
         # self.driver_controller.leftTrigger().onFalse(self.set_align_state_cmd(constants.kAlignStateNone))
@@ -129,16 +125,17 @@ class RobotContainer(Subsystem):
         
         SmartDashboard.putData("Amp Handoff", self.amp_handoff_cmd())
         
-        SmartDashboard.putData("Reset Arm and Angulator", self.score_amp_stow_arm_cmd ())
+        SmartDashboard.putData("Reset Arm and Angulator", self.score_amp_stow_arm_cmd())
         
         SmartDashboard.putData("Intake On", self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))
         SmartDashboard.putData("Intake Off", self.intake_feeder_off_cmd())
         
         SmartDashboard.putNumber("Shooter Voltage", self.shooter.shooterMotor.get_motor_voltage().value)
         
+        
     def get_align_state(self):
         return self.align_state
-    
+   
     def prepare_happy_donut_cmd(self):
         return (# angulator to happy donut position 
                 self.angulator.angulator_set_pos_cmd(constants.kAngulatorHappyDonutAngleDeg)
@@ -171,23 +168,23 @@ class RobotContainer(Subsystem):
                 WaitCommand(2),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
-                self.angulator.angulator_set_pos_cmd(0)))               
+                # self.angulator.angulator_set_pos_cmd(0)
+        ))               
     
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
+                self.shooter.shooter_on_cmd(20),
                 self.angulator.angulator_set_pos_cmd(0),
                 self.arm.arm_pickup_pos_cmd(11.5),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
-                self.shooter.shooter_on_cmd(25),
-                self.feeder.feeder_on_cmd(.5),
+                self.feeder.feeder_on_cmd(.9),
                 self.arm.gripper_close_cmd(),
                 WaitCommand(.1),
-                self.arm.arm_score_pos_cmd(),
-                WaitCommand(.2),
+                self.arm.arm_score_pos_cmd().withTimeout(1.0),
+                WaitCommand(0.5),
                 self.shooter.shooter_off_cmd(),
                 self.feeder.feeder_off_cmd(),
-                WaitCommand(0.5),
                 self.angulator.angulator_set_pos_cmd(0)))
                 
     def prepare_to_climb_cmd(self):
@@ -195,11 +192,19 @@ class RobotContainer(Subsystem):
             self.arm.arm_climb_pos_cmd(),
             self.arm.gripper_open_cmd()))
                 
-    def score_amp_stow_arm_cmd (self):
+    def score_amp_stow_arm_cmd(self):
         return(sequence(
             self.arm.gripper_open_cmd(),
+            WaitCommand(.2),
             self.angulator.angulator_set_pos_cmd(0),
-            self.arm.arm_stow_pos_cmd()))                
+            self.arm.arm_stow_pos_cmd(),
+            self.set_align_state_cmd(constants.kAlignStateSpeaker)))       
+        
+    def prep_first_shot_auto(self):
+        return(sequence(
+            self.shooter.shooter_on_cmd(70),
+            self.angulator.angulator_set_pos_cmd(0.11)))
+                            
         
     #def unimportant_sim_stuff_cmd(self):
         #return (InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
@@ -216,15 +221,22 @@ class RobotContainer(Subsystem):
         # SmartDashboard.putData(AutoBuilder.bui)
     
         # path = PathPlannerPath.fromPathFile('Sample for programmers')
-        return PathPlannerAuto("Programmers Auto")
+        return PathPlannerAuto("6 piece")
     
         return AutoBuilder.followPath(path)
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical):
-        return sequence(self.score_amp_stow_arm_cmd(),
+        return sequence(self.angulator.angulator_set_pos_cmd(0),
+                        self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
                         self.feeder.feeder_on_cmd(feeder_cmd))
     
+    def vomit_cmd(self):
+        return (sequence(
+                self.shooter.shooter_on_cmd(-50),
+                self.intake_sequence_cmd(-0.5, -0.5, -0.5),
+                ))
+                
     def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical):
         return(sequence(
             self.set_align_state_cmd(constants.kAlignStateNote),
@@ -239,33 +251,48 @@ class RobotContainer(Subsystem):
         .andThen(self.shooter.shooter_off_cmd())
     
     
-    def beambreak_false_callback(self):
-        SmartDashboard.putNumber("Feeder BeamBreak", False)
-        self.intake.horizontalMotor.set_control(VoltageOut(0))
-        self.feeder.feederMotor.set_control(VoltageOut(0))
-        self.intake.verticalMotor.set_control(VoltageOut(0))
-    
     def beambreak_true_callback(self):
         SmartDashboard.putNumber("Feeder BeamBreak", True)
         PrintCommand("DGT: beambreak onTrue") 
         
-    def beambreak_false_cmd(self):
-        return sequence(
+        
+    def beambreak_during_intake_cmd(self):
+        return (
+            sequence(
+             InstantCommand(lambda: SmartDashboard.putNumber("Feeder BeamBreak", False)),
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
              InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
-          
              self.shooter.shooter_on_cmd(-1),
              self.feeder.feeder_on_cmd(-.05),
              WaitUntilCommand(lambda: self.beambreak.get() == True),
              self.shooter.shooter_off_cmd(),
              self.feeder.feeder_off_cmd()
-        )
-    
+             #self.set_align_state_cmd(constants.kAlignStateSpeaker)
+        ))
+        
+    def beambreak_other_cmd(self):
+        return sequence(
+             InstantCommand(lambda: SmartDashboard.putNumber("Feeder BeamBreak", False)),
+             InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
+             InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
+             self.feeder.feeder_off_cmd())
+                
+    def beambreak_false_cmd(self, state_cb):
+        return SelectCommand({
+                constants.kAlignStateNote: self.beambreak_during_intake_cmd(),
+                constants.kAlignStateAmp: self.beambreak_other_cmd(),
+                constants.kAlignStateSpeaker: self.beambreak_other_cmd(),
+                constants.kAlignStateNone: self.beambreak_other_cmd(),
+                },
+                state_cb
+            )    
+        
     def beambreak_true_cmd(self):
         return (runOnce(lambda: self.beambreak_true_callback()))
     
     def periodic(self):
         SmartDashboard.putNumber("Align State", self.align_state)
+        SmartDashboard.putNumber("Feeder BeamBreak", int(self.beambreak.get()))
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
     
     

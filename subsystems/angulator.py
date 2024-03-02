@@ -24,7 +24,7 @@ from phoenix6.hardware.cancoder import CANcoder
 
 
 
-class AngulatorSubsystem(commands2.SubsystemBase):
+class AngulatorSubsystem(Subsystem):
     def log_state(self, state):
         if not self.__loggerState:
             self.__loggerState = StringLogEntry(DataLogManager.getLog(),

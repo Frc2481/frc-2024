@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.543901303968717,
-      "y": 6.122112096498434
+      "x": 1.5076223757576612,
+      "y": 6.082592758381551
     },
     "rotation": 0
   },
@@ -18,15 +18,75 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "New Path"
+            "name": "wait command"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "Second Piece Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait command"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
           }
         }
       ]

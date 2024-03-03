@@ -3,37 +3,66 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.546574551907237,
-        "y": 3.49465733779079
+        "x": 7.873565709619607,
+        "y": 5.780352125319856
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.25377893862872,
-        "y": 3.929128247816976
+        "x": 6.976288830217701,
+        "y": 6.6398489255890505
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "6p3e1"
     },
     {
       "anchor": {
-        "x": 2.546574551907237,
-        "y": 4.288038999577739
+        "x": 1.6587426922885087,
+        "y": 6.488728609058204
       },
       "prevControl": {
-        "x": 2.3293390968941443,
-        "y": 4.467494375458121
+        "x": 2.5560179329091772,
+        "y": 6.583194374014655
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "6p3score_end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 28.18,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "shooter on angultor to position",
-      "waypointRelativePos": 0.0,
+      "name": "Finish Intaking",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake finish"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "prepare speaker shot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare Shoot Round 2",
+      "waypointRelativePos": 0.95,
       "command": {
         "type": "parallel",
         "data": {
@@ -42,29 +71,6 @@
               "type": "named",
               "data": {
                 "name": "prepare speaker shot"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "intake feeder on"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "shoot note",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "speaker score"
               }
             }
           ]
@@ -80,13 +86,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -27.095552493751736,
-    "rotateFast": false
+    "rotation": 34.59228868750994,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "2-3",
+  "folder": "Matt's Dream Auto",
   "previewStartingState": {
-    "rotation": -36.57303097851933,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

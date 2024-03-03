@@ -36,7 +36,7 @@ class FeederSubsystem(object):
 
     def feeder_on_cmd (self, duty):
        return runOnce(
-            lambda:  self.feederMotor.set_control((DutyCycleOut(duty)))
+            lambda:  self.feederMotor.set_control((VoltageOut(duty * 12.0)))
             )
 
 

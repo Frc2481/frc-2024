@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.543901303968717,
-        "y": 6.122112096498434
+        "x": 1.5076223757576612,
+        "y": 6.082592758381551
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.239755426413941,
-        "y": 6.082271887792347
+        "x": 6.910173691735454,
+        "y": 7.187660073013372
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.156916303114945,
-        "y": 7.301000310411508
+        "x": 7.8641206898364295,
+        "y": 7.442675607159178
       },
       "prevControl": {
-        "x": 4.385376545605371,
-        "y": 7.407240866961073
+        "x": 6.532372900408337,
+        "y": 7.083764855398416
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,30 +30,50 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.45,
-      "rotationDegrees": 29.103855872651504,
-      "rotateFast": false
+      "waypointRelativePos": 0.3,
+      "rotationDegrees": 10.100514287395363,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "intake feeder on",
-      "waypointRelativePos": 0.85,
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter off"
+              }
+            }
+          ]
         }
       }
     },
     {
       "name": "shoot note",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "speaker score"
+              }
+            }
+          ]
         }
       }
     },
@@ -76,21 +96,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 90.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
     "rotation": 0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Matt's Dream Auto",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

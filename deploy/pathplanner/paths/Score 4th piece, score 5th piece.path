@@ -38,22 +38,88 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "name": "prepare to shoot",
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "prepare speaker shot"
+              }
+            }
+          ]
         }
       }
     },
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 1.0,
+      "name": "score speaker",
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "speaker score"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "intake on",
+      "waypointRelativePos": 0.7,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake on"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "all sorts of things",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "prepare speaker shot"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 0.1
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "speaker score"
+              }
+            }
+          ]
         }
       }
     }

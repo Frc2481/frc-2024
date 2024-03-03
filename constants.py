@@ -84,10 +84,11 @@ kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
-kFeederSpeed = 0.9
+kFeederSpeed = 0.2
 
 #BeamBrake
-kFeederBeambreakPort = 9
+kFeederBeambreakStageTwoPort = 9
+kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
@@ -139,7 +140,7 @@ kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   
 kAngulatorUpPosition =  0.112 #/360
 kAngulatorP = 0.1
-kAngulatorI = 0.0# .01
+kAngulatorI = 0.02# .01
 kAngulatorD = 0
 kAngulatorV = 30.7 # 0.041
 kAngulatorA = 0.00 # 0.0025

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.298591599862615,
-        "y": 7.423785567592822
+        "x": 5.465085664909227,
+        "y": 6.403723431009602
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.618550175473802,
-        "y": 7.121544934531126
+        "x": 6.447367722359738,
+        "y": 6.186487975996508
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "6p2score_end"
     },
     {
       "anchor": {
-        "x": 5.502865744041938,
-        "y": 6.054257699032017
+        "x": 7.684665313956048,
+        "y": 5.752017065970323
       },
       "prevControl": {
-        "x": 5.82399641666999,
-        "y": 6.790969242119899
+        "x": 7.099074087399014,
+        "y": 5.931472441850704
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,18 +32,25 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "intake off",
+      "name": "Start Intake",
       "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            }
+          ]
         }
       }
     },
     {
-      "name": "shooter on",
-      "waypointRelativePos": 0.7,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -53,20 +60,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.7,
+    "maxVelocity": 3.0,
     "maxAcceleration": 4.0,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 90.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -173.55324462089544,
+    "rotation": -1.1017061152063408,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Top Auto",
+  "folder": "Matt's Dream Auto",
   "previewStartingState": {
-    "rotation": 154.92558065818434,
+    "rotation": 8.615648184163962,
     "velocity": 0
   },
   "useDefaultConstraints": true

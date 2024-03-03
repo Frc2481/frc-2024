@@ -36,15 +36,23 @@ class RobotContainer(Subsystem):
         
         NamedCommands.registerCommand('prepare happy donut', self.prepare_happy_donut_cmd())
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_speaker_shot_cmd())
-        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))
+        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 1, .9))
+        NamedCommands.registerCommand('intake finish', self.intake_sequence_part_2_cmd())
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare subwoofer shot', self.prepare_subwoofer_shot_cmd())
         NamedCommands.registerCommand('first note shot', self.prep_first_shot_auto())
+        NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
+        NamedCommands.registerCommand('wait command', WaitCommand(0.25))
         
-        self.beambreak = DigitalInput(constants.kFeederBeambreakPort)
-        self.beambreak_trigger = Trigger(self.beambreak.get)
-        self.beambreak_trigger.onFalse(self.beambreak_false_cmd(self.get_align_state))
-        self.beambreak_trigger.onTrue(self.beambreak_true_cmd())
+        
+        self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
+        # self.beambreak_trigger_one = Trigger(self.beambreak_one.get)
+        # self.beambreak_trigger_one.onFalse(self.beambreak_one_false_cmd())
+
+        self.beambreak_two = DigitalInput(constants.kFeederBeambreakStageTwoPort)
+        # self.beambreak_trigger_two = Trigger(self.beambreak_two.get)
+        # self.beambreak_trigger_two.onFalse(self.beambreak_two_false_cmd())
+        
         self.align_state = constants.kAlignStateSpeaker       
          
         self.driver_controller = CommandXboxController(
@@ -168,7 +176,7 @@ class RobotContainer(Subsystem):
                 WaitCommand(2),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
-                # self.angulator.angulator_set_pos_cmd(0)
+                self.angulator.angulator_set_pos_cmd(0)
         ))               
     
     def amp_handoff_cmd(self):
@@ -202,8 +210,8 @@ class RobotContainer(Subsystem):
         
     def prep_first_shot_auto(self):
         return(sequence(
-            self.shooter.shooter_on_cmd(70),
-            self.angulator.angulator_set_pos_cmd(0.11)))
+            self.shooter.shooter_on_cmd(80),
+            self.angulator.angulator_set_pos_cmd(0.031)))
                             
         
     #def unimportant_sim_stuff_cmd(self):
@@ -229,7 +237,15 @@ class RobotContainer(Subsystem):
         return sequence(self.angulator.angulator_set_pos_cmd(0),
                         self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
-                        self.feeder.feeder_on_cmd(feeder_cmd))
+                        self.feeder.feeder_on_cmd(feeder_cmd),
+                        WaitUntilCommand(lambda: self.beambreak_two.get() == False),
+                        self.beambreak_during_intake_cmd()
+                        )
+    
+    def intake_sequence_part_2_cmd(self):
+        return sequence(WaitUntilCommand(lambda: self.beambreak_two.get() == False),
+                        self.beambreak_during_intake_cmd())
+
     
     def vomit_cmd(self):
         return (sequence(
@@ -250,11 +266,6 @@ class RobotContainer(Subsystem):
         .andThen(WaitCommand(.1))\
         .andThen(self.shooter.shooter_off_cmd())
     
-    
-    def beambreak_true_callback(self):
-        SmartDashboard.putNumber("Feeder BeamBreak", True)
-        PrintCommand("DGT: beambreak onTrue") 
-        
         
     def beambreak_during_intake_cmd(self):
         return (
@@ -263,36 +274,28 @@ class RobotContainer(Subsystem):
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
              InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
              self.shooter.shooter_on_cmd(-1),
-             self.feeder.feeder_on_cmd(-.05),
-             WaitUntilCommand(lambda: self.beambreak.get() == True),
+             self.feeder.feeder_on_cmd(-.1),
+             WaitUntilCommand(lambda: self.beambreak_two.get() == True),
              self.shooter.shooter_off_cmd(),
              self.feeder.feeder_off_cmd()
              #self.set_align_state_cmd(constants.kAlignStateSpeaker)
         ))
         
-    def beambreak_other_cmd(self):
-        return sequence(
-             InstantCommand(lambda: SmartDashboard.putNumber("Feeder BeamBreak", False)),
-             InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
-             InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
-             self.feeder.feeder_off_cmd())
-                
-    def beambreak_false_cmd(self, state_cb):
-        return SelectCommand({
-                constants.kAlignStateNote: self.beambreak_during_intake_cmd(),
-                constants.kAlignStateAmp: self.beambreak_other_cmd(),
-                constants.kAlignStateSpeaker: self.beambreak_other_cmd(),
-                constants.kAlignStateNone: self.beambreak_other_cmd(),
-                },
-                state_cb
-            )    
-        
-    def beambreak_true_cmd(self):
-        return (runOnce(lambda: self.beambreak_true_callback()))
     
+                
+    def beambreak_one_false_cmd(self):
+        return self.beambreak_during_intake_cmd()
+        #return sequence(
+         #           self.intake.set_intake_cmd(0, 0),
+          #          self.feeder.feeder_on_cmd(0))
+    
+    def beambreak_two_false_cmd(self):
+        return self.intake_feeder_cmd(0, 0, 0)
+
     def periodic(self):
         SmartDashboard.putNumber("Align State", self.align_state)
-        SmartDashboard.putNumber("Feeder BeamBreak", int(self.beambreak.get()))
+        SmartDashboard.putNumber("beam break one", int(self.beambreak_one.get()))
+        SmartDashboard.putNumber("beam break two", int(self.beambreak_two.get()))
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
     
     

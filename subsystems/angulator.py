@@ -95,6 +95,8 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = 1.0
         self.angulatorMotorConfig.feedback.rotor_to_sensor_ratio = 259.9 # 353.68
         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
+
+        self.angulatorEncoder.set_position(0)
     
     def get_error(self):
         return self.setpoint - self.angulatorMotor.get_position().value
@@ -108,7 +110,7 @@ class AngulatorSubsystem(Subsystem):
             lambda: self.set_angualtor_position(angulator_position),
             lambda: None,
             lambda interrupted: None,
-            lambda: math.fabs(self.get_error()) < 0.01,
+            lambda: math.fabs(self.get_error()) < 0.005,
             self
         )
         

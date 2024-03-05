@@ -111,7 +111,8 @@ class ArmSubsystem(Subsystem):
         SmartDashboard.putNumber("Arm Zero Switch", self.zero_arm_switch.get())
         
         if self.zero_arm_switch.get() == 0:
-            self.armMotor.set_position(0) 
+            if self.armMotor.get_position().value == 0:
+                self.armMotor.set_position(0) 
     
     
     # Climber up

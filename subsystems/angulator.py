@@ -110,9 +110,9 @@ class AngulatorSubsystem(Subsystem):
             lambda: self.set_angualtor_position(angulator_position),
             lambda: None,
             lambda interrupted: None,
-            lambda: math.fabs(self.get_error()) < 0.005,
+            lambda: math.fabs(self.get_error()) < 0.0005,
             self
-        )
+        ).withTimeout(0.5)
         
     def angulator_amp_handoff_cmd(self):
         return self.angulator_set_pos_cmd(0.13)
@@ -158,16 +158,24 @@ class AngulatorSubsystem(Subsystem):
         SmartDashboard.putNumber("Angulator Absolute", angulator_offset.value)
         
     def zero_angulator_encoder_cmd(self):
-        return runOnce(self.zero_encoder)    
+        return runOnce(self.zero_encoder)
+
+    def wait_for_angulator_on_target(self):    
+        return(sequence(WaitUntilCommand(lambda: self.angulatorMotor.get_closed_loop_error().value < constants.kAngulatorOnTarget),
+                        PrintCommand('Angulator On Target')))
+            
         
     def periodic(self):
-       SmartDashboard.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
+    #    SmartDashboard.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
        SmartDashboard.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
-       SmartDashboard.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
-       SmartDashboard.putNumber("Angulator Voltage", self.angulatorMotor.get_motor_voltage().value)
-       SmartDashboard.putNumber("Angulator Reference Position", self.angulatorMotor.get_closedloop_reference_position().value)
-       SmartDashboard.putNumber("Angulator Reference Velocity", self.angulatorMotor.get_closedloop_reference_slope_position().value)
-       SmartDashboard.putNumber("Angulator rotations", self.angulatorMotor.get_position().value)
+    #    SmartDashboard.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
+    #    SmartDashboard.putNumber("Angulator Voltage", self.angulatorMotor.get_motor_voltage().value)
+    #    SmartDashboard.putNumber("Angulator Reference Position", self.angulatorMotor.get_closedloop_reference_position().value)
+    #    SmartDashboard.putNumber("Angulator Reference Velocity", self.angulatorMotor.get_closedloop_reference_slope_position().value)
+    #    SmartDashboard.putNumber("Angulator rotations", self.angulatorMotor.get_position().value)
+
+       if self.angulatorMotor.get_position().value < 0:
+           self.angulatorEncoder.set_position(0)
        
 
 

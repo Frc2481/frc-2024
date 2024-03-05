@@ -84,7 +84,7 @@ kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
-kFeederSpeed = 0.2
+kFeederSpeed = 0.05
 
 #BeamBrake
 kFeederBeambreakStageTwoPort = 9
@@ -106,7 +106,8 @@ kShooterS = 0.02
 kShooterPeakCurrent = 40
 kShooterCruiseVelocity = 0
 kShooterAcceleration = 0
-kShooterJerk = 0 
+kShooterJerk = 0
+kShooterOnTarget = 1 
 
 #Gripper
 kGripperSolenoidModule = 0
@@ -151,6 +152,7 @@ kAngulatorCruiseVelocity = 0.31
 kMotorResistance = 6
 kAngulatorForwardSoftLimitRot = 0.13 # 70 / 360
 kAngulatorReverseSoftLimitRot = 0 # 22.5 / 360
+kAngulatorOnTarget = 0.001
 
 #Metric system units
 kArmMass = 10 / 2.205

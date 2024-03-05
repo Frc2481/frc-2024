@@ -19,6 +19,8 @@ from pathplannerlib.path import PathPlannerPath
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.auto import PathPlannerAuto
 
+from ntcore import NetworkTableInstance
+
 from commands2 import sysid
 from wpilib.sysid import SysIdRoutineLog
 from wpilib import DigitalInput
@@ -36,11 +38,11 @@ class RobotContainer(Subsystem):
         
         NamedCommands.registerCommand('prepare happy donut', self.prepare_happy_donut_cmd())
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_speaker_shot_cmd())
-        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 1, .9))
+        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
         NamedCommands.registerCommand('intake finish', self.intake_sequence_part_2_cmd())
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare subwoofer shot', self.prepare_subwoofer_shot_cmd())
-        NamedCommands.registerCommand('first note shot', self.prep_first_shot_auto())
+        NamedCommands.registerCommand('prepare first shot', self.prep_first_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait command', WaitCommand(0.25))
         
@@ -66,8 +68,7 @@ class RobotContainer(Subsystem):
                
         self.button_bindings_configure()
 
-        self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
-        DataLogManager.start()
+        # DataLogManager.start()
 
     def button_bindings_configure(self):
         print("Here 3")
@@ -88,11 +89,10 @@ class RobotContainer(Subsystem):
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
         self.driver_controller.rightBumper().whileTrue(self.vomit_cmd())        
         self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
-        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))        
+        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.6))        
         self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
         # self.driver_controller.leftTrigger().onFalse(self.set_align_state_cmd(constants.kAlignStateNone))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
-       
         
         #self.driver_controller.leftBumper().whileTrue(self.drivetrain.limelight_angulor_alignment_cmd(self.driver_controller))
         #self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_april_tag_cmd(self.driver_controller))
@@ -165,15 +165,18 @@ class RobotContainer(Subsystem):
     def prepare_speaker_shot_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateSpeaker),
+                WaitUntilCommand(lambda: self.beambreak_two.get() == False),
                 self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker),
                 self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS))
-                # self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker()))
+                #self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker())
             )
                                    
     def speaker_score_cmd(self):
-        return (sequence(
+            return (sequence(
+                # self.angulator.wait_for_angulator_on_target(),
+                self.shooter.wait_for_shooter_on_target(),
                 self.feeder.feeder_on_cmd(.9),
-                WaitCommand(2),
+                WaitCommand(0.25),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)
@@ -182,6 +185,8 @@ class RobotContainer(Subsystem):
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
+                self.intake.set_intake_cmd(0, 0),
+                self.feeder.feeder_on_cmd(0),
                 self.shooter.shooter_on_cmd(20),
                 self.angulator.angulator_set_pos_cmd(0),
                 self.arm.arm_pickup_pos_cmd(11.5),
@@ -210,25 +215,10 @@ class RobotContainer(Subsystem):
         
     def prep_first_shot_auto(self):
         return(sequence(
-            self.shooter.shooter_on_cmd(80),
+            self.shooter.shooter_on_cmd(40),
             self.angulator.angulator_set_pos_cmd(0.031)))
-                            
-        
-    #def unimportant_sim_stuff_cmd(self):
-        #return (InstantCommand(lambda: self.drivetrain._fl.driveMotor.sim_state.set_raw_rotor_position(8.25))
-        #.andThen(InstantCommand(lambda: self.drivetrain._fr.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-       # .andThen(InstantCommand(lambda: self.drivetrain._bl.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-        #.andThen(InstantCommand(lambda: self.drivetrain._br.driveMotor.sim_state.set_raw_rotor_position(8.25)))
-        #.andThen(InstantCommand(lambda: self.drivetrain._gyro.sim_state.set_raw_yaw(359))))  
                 
     def getAutonomousCommand(self):
-    # Load the path you want to follow using its name in the GUI
-        # self._sd = ntcore.NetworkTableInstance.getDefault().getTable("SmartDashboard")
-        # self._sd.put("Run Auto", )
-        
-        # SmartDashboard.putData(AutoBuilder.bui)
-    
-        # path = PathPlannerPath.fromPathFile('Sample for programmers')
         return PathPlannerAuto("6 piece")
     
         return AutoBuilder.followPath(path)
@@ -238,12 +228,13 @@ class RobotContainer(Subsystem):
                         self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
                         self.feeder.feeder_on_cmd(feeder_cmd),
-                        WaitUntilCommand(lambda: self.beambreak_two.get() == False),
-                        self.beambreak_during_intake_cmd()
+                        WaitUntilCommand(lambda: self.beambreak_one.get() == False),
+                        ScheduleCommand(self.beambreak_during_intake_cmd())
                         )
     
     def intake_sequence_part_2_cmd(self):
-        return sequence(WaitUntilCommand(lambda: self.beambreak_two.get() == False),
+        return InstantCommand(lambda: None)
+        return sequence(WaitUntilCommand(lambda: self.beambreak_one.get() == False),
                         self.beambreak_during_intake_cmd())
 
     
@@ -272,30 +263,33 @@ class RobotContainer(Subsystem):
             sequence(
              InstantCommand(lambda: SmartDashboard.putNumber("Feeder BeamBreak", False)),
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))),
-             InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))),
-             self.shooter.shooter_on_cmd(-1),
-             self.feeder.feeder_on_cmd(-.1),
-             WaitUntilCommand(lambda: self.beambreak_two.get() == True),
-             self.shooter.shooter_off_cmd(),
-             self.feeder.feeder_off_cmd()
+             self.feeder.feeder_on_cmd(0.025),
+            #  WaitUntilCommand(lambda: self.beambreak_two.get() == False),
+             WaitUntilCommand(lambda: self.beambreak_two.get() == False),
+             self.feeder.feeder_off_cmd(),
+             InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0)))
+             
+            #  self.shooter.shooter_on_cmd(-1),
+            #  self.feeder.feeder_on_cmd(-.1),
+             
+            #  self.shooter.shooter_off_cmd(),
+             
              #self.set_align_state_cmd(constants.kAlignStateSpeaker)
         ))
-        
-    
-                
+                 
     def beambreak_one_false_cmd(self):
         return self.beambreak_during_intake_cmd()
-        #return sequence(
-         #           self.intake.set_intake_cmd(0, 0),
-          #          self.feeder.feeder_on_cmd(0))
     
     def beambreak_two_false_cmd(self):
         return self.intake_feeder_cmd(0, 0, 0)
 
     def periodic(self):
-        SmartDashboard.putNumber("Align State", self.align_state)
+        # SmartDashboard.putNumber("Align State", self.align_state)
         SmartDashboard.putNumber("beam break one", int(self.beambreak_one.get()))
         SmartDashboard.putNumber("beam break two", int(self.beambreak_two.get()))
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
+
+        SmartDashboard.putNumber("Feeder Speed", self.feeder.feederMotor.get_duty_cycle().value)
+        
     
     

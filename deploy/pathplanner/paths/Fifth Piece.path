@@ -3,37 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.465085664909227,
-        "y": 6.403723431009602
+        "x": 2.5749096112567713,
+        "y": 6.82874932125261
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.447367722359738,
-        "y": 6.186487975996508
+        "x": 2.338784116677322,
+        "y": 6.422613470575958
       },
       "isLocked": false,
-      "linkedName": "6p2score_end"
+      "linkedName": "6p4end"
     },
     {
       "anchor": {
-        "x": 8.071911125066345,
-        "y": 5.544226630740407
+        "x": 2.5749096112567713,
+        "y": 5.534781610957229
       },
       "prevControl": {
-        "x": 7.486319898509311,
-        "y": 5.723682006620788
+        "x": 1.8287530483857124,
+        "y": 5.582006709873119
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6p3e1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake",
-      "waypointRelativePos": 0.15,
+      "name": "intake on",
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,34 +47,24 @@
           ]
         }
       }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 90.0,
-    "maxAngularAcceleration": 360.0
+    "maxVelocity": 2.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -1.1017061152063408,
-    "rotateFast": false
+    "rotation": 0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",
   "previewStartingState": {
-    "rotation": 8.615648184163962,
+    "rotation": 26.565051177078196,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

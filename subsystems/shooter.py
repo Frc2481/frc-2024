@@ -42,6 +42,7 @@ class ShooterSubsystem(object):
         )
         
     def shooter_off_cmd(self):
+        return InstantCommand(lambda: None)
         return runOnce(
             lambda: self.shooterMotor.set_control(VoltageOut(0))
         )
@@ -55,4 +56,8 @@ class ShooterSubsystem(object):
         return runOnce(
             lambda: None
         )
+    
+    def wait_for_shooter_on_target(self):    
+        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget),
+                        PrintCommand('Shooter On Target')))
         

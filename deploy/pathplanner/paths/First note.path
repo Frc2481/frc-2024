@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.910173691735454,
-        "y": 7.187660073013372
+        "x": 4.766154200954058,
+        "y": 6.545398727757272
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.8641206898364295,
-        "y": 7.442675607159178
+        "x": 7.986905947017743,
+        "y": 6.97042461800028
       },
       "prevControl": {
-        "x": 6.532372900408337,
-        "y": 7.083764855398416
+        "x": 6.626823098240116,
+        "y": 6.809859281686253
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "intake feeder on",
-      "waypointRelativePos": 0.55,
+      "name": "prep shot",
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,13 +47,7 @@
             {
               "type": "named",
               "data": {
-                "name": "intake feeder on"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter off"
+                "name": "prepare first shot"
               }
             }
           ]
@@ -61,8 +55,8 @@
       }
     },
     {
-      "name": "shoot note",
-      "waypointRelativePos": 0.2,
+      "name": "shoot",
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -78,8 +72,8 @@
       }
     },
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0,
+      "name": "intake on",
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -87,7 +81,13 @@
             {
               "type": "named",
               "data": {
-                "name": "first note shot"
+                "name": "intake feeder on"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter off"
               }
             }
           ]

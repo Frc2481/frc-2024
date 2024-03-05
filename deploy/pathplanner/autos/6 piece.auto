@@ -18,12 +18,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "wait command"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Second Piece Score"
@@ -36,33 +30,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "speaker score"
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Third Piece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait command"
           }
         },
         {
@@ -78,9 +54,39 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
+            "name": "speaker score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fourth Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fifth Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
           }
         },
         {

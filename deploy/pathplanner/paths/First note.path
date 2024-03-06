@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5076223757576612,
-        "y": 6.082592758381551
+        "x": 5.398970526426981,
+        "y": 6.488728609058204
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.766154200954058,
-        "y": 6.545398727757272
+        "x": 6.400142623443846,
+        "y": 6.724854103637653
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "6p1ae1"
     },
     {
       "anchor": {
@@ -20,26 +20,20 @@
         "y": 6.97042461800028
       },
       "prevControl": {
-        "x": 6.626823098240116,
-        "y": 6.809859281686253
+        "x": 7.155744206098082,
+        "y": 6.762634182770364
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "6p1e1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 10.100514287395363,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "intake on",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -48,12 +42,6 @@
               "type": "named",
               "data": {
                 "name": "intake feeder on"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter off"
               }
             }
           ]
@@ -69,14 +57,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 8.325650330426878,
     "rotateFast": true
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",
   "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+    "rotation": 9.246112745563268,
+    "velocity": 2.6
   },
   "useDefaultConstraints": true
 }

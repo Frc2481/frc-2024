@@ -3,60 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.071911125066345,
-        "y": 5.544226630740407
+        "x": 1.573737514239907,
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.032958948916768,
-        "y": 6.526508688190916
+        "x": 2.5560195716904155,
+        "y": 6.04481267924884
       },
       "isLocked": false,
-      "linkedName": "6p3e1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1026586220978727,
-        "y": 6.280938173828288
+        "x": 5.398970526426981,
+        "y": 6.488728609058204
       },
       "prevControl": {
-        "x": 3.0188255410661355,
-        "y": 6.479283589275026
+        "x": 4.501693647025074,
+        "y": 6.347053312310534
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6p3score_end"
+      "linkedName": "6p1ae1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 28.18,
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 6.397443100399723,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "prepare speaker shot",
+      "name": "prepare first shot",
       "waypointRelativePos": 0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "prepare speaker shot"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Prepare Shoot Round 2",
-      "waypointRelativePos": 0.95,
       "command": {
         "type": "parallel",
         "data": {
@@ -64,7 +47,24 @@
             {
               "type": "named",
               "data": {
-                "name": "prepare speaker shot"
+                "name": "prepare first shot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "score first piece",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "speaker score"
               }
             }
           ]
@@ -73,15 +73,15 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 90.0,
-    "maxAngularAcceleration": 360.0
+    "maxVelocity": 2.6,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 33.69006752597992,
-    "rotateFast": true
+    "velocity": 2.6,
+    "rotation": 7.907162702958326,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",
@@ -89,5 +89,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

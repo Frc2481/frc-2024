@@ -14,6 +14,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "new first note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "First note"
           }
         },
@@ -81,6 +87,30 @@
           "type": "path",
           "data": {
             "pathName": "Fifth Piece"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sixth piece"
           }
         },
         {

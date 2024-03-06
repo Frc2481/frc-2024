@@ -94,7 +94,7 @@ class RobotContainer(Subsystem):
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
         self.driver_controller.rightBumper().whileTrue(self.vomit_cmd())        
         self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
-        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.6))        
+        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.8))        
         self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
         # self.driver_controller.leftTrigger().onFalse(self.set_align_state_cmd(constants.kAlignStateNone))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
@@ -223,8 +223,8 @@ class RobotContainer(Subsystem):
         
     def prep_first_shot_auto(self):
         return(sequence(
-            self.shooter.shooter_on_cmd(40),
-            self.angulator.angulator_set_pos_cmd(0.031)))
+            self.shooter.shooter_on_cmd(65),
+            self.angulator.angulator_set_pos_cmd(0.013)))
                 
     def getAutonomousCommand(self):
         return PathPlannerAuto("6 piece")
@@ -270,7 +270,7 @@ class RobotContainer(Subsystem):
         return (
              InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
-             self.feeder.feeder_on_cmd(0.05))
+             self.feeder.feeder_on_cmd(0.15))
             # #  WaitUntilCommand(lambda: self.beambreak_two.get() == False),
             #  WaitUntilCommand(lambda: self.beambreak_two.get() == False),
             #  self.feeder.feeder_off_cmd(),

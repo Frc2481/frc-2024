@@ -84,7 +84,7 @@ kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
-kFeederSpeed = 0.05
+kFeederSpeed = 0.1
 
 #BeamBrake
 kFeederBeambreakStageTwoPort = 9

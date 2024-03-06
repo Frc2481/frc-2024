@@ -42,7 +42,7 @@ class ShooterSubsystem(object):
         )
         
     def shooter_off_cmd(self):
-        return InstantCommand(lambda: None)
+        #return InstantCommand(lambda: None)
         return runOnce(
             lambda: self.shooterMotor.set_control(VoltageOut(0))
         )

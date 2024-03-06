@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.5076223757576612,
+      "y": 6.082592758381551
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "First note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Second Piece Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepare speaker shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -97,23 +97,52 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
 
         self.angulatorEncoder.set_position(0)
-    
+
+          
     def get_error(self):
         return self.setpoint - self.angulatorMotor.get_position().value
     
-    def set_angualtor_position(self, position):
+    def set_angulator_position(self, position):
         self.setpoint = position
         self.angulatorMotor.set_control(MotionMagicVoltage(position=position))
     
     def angulator_set_pos_cmd (self, angulator_position):
         return FunctionalCommand(
-            lambda: self.set_angualtor_position(angulator_position),
+            lambda: self.set_angulator_position(angulator_position),
             lambda: None,
             lambda interrupted: None,
             lambda: math.fabs(self.get_error()) < 0.0005,
             self
         ).withTimeout(0.5)
+    
+    def angulator_inc_pos_target(self, delta):
+        self.setpoint = self.setpoint + delta
+        self.angulatorMotor.set_control(MotionMagicVoltage(position=self.setpoint))
+
+    def angulator_up_cmd(self):
+        return FunctionalCommand(
+            lambda: self.angulator_inc_pos_target(.001),
+            lambda: None,
+            lambda interrupted: None,
+            lambda: math.fabs(self.get_error()) < 0.0005,
+            self
+        ).withTimeout(0.5)
+        #return InstantCommand(lambda: self.angulator_inc_pos_target(.01)).andThen\
+        #    (InstantCommand(lambda: self.angulator_set_pos_cmd(self.varChange)))
         
+    
+    def angulator_down_cmd(self):
+        return FunctionalCommand(
+            lambda: self.angulator_inc_pos_target(-.001),
+            lambda: None,
+            lambda interrupted: None,
+            lambda: math.fabs(self.get_error()) < 0.0005,
+            self
+        ).withTimeout(0.5)
+            # return InstantCommand(lambda: self.angulator_inc_pos_target(-.01)).andThen\
+            # (InstantCommand(lambda: self.angulator_set_pos_cmd(self.varChange)))
+    
+   
     def angulator_amp_handoff_cmd(self):
         return self.angulator_set_pos_cmd(0.13)
 
@@ -161,7 +190,7 @@ class AngulatorSubsystem(Subsystem):
         return runOnce(self.zero_encoder)
 
     def wait_for_angulator_on_target(self):    
-        return(sequence(WaitUntilCommand(lambda: self.angulatorMotor.get_closed_loop_error().value < constants.kAngulatorOnTarget),
+        return(sequence(WaitUntilCommand(lambda: self.get_error() < constants.kAngulatorOnTarget),
                         PrintCommand('Angulator On Target')))
             
         
@@ -177,7 +206,6 @@ class AngulatorSubsystem(Subsystem):
        if self.angulatorMotor.get_position().value < 0:
            self.angulatorEncoder.set_position(0)
        
-
 
         
 

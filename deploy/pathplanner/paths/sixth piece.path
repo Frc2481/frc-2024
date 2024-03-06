@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.986905947017743,
-        "y": 6.97042461800028
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.410759740243886,
-        "y": 6.743744143204007
+        "x": 3.0,
+        "y": 7.0
       },
       "isLocked": false,
-      "linkedName": "6p1e1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.465085664909227,
-        "y": 6.403723431009602
+        "x": 4.0,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 6.296247405828888,
-        "y": 6.847639360818966
+        "x": 3.0,
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6p2score_end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,14 +33,14 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 90.0,
-    "maxAngularAcceleration": 360.0
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 6.340191745910041,
-    "rotateFast": true
+    "rotation": 0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",

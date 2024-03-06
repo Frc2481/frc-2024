@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.093213602314695,
-        "y": 6.526508688190916
+        "x": 2.1026586220978727,
+        "y": 6.280938173828288
       },
       "prevControl": {
-        "x": 2.990488842935365,
-        "y": 6.620974453147366
+        "x": 2.999933862718543,
+        "y": 6.375403938784738
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,18 +38,12 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Finish Intaking",
+      "name": "prepare speaker shot",
       "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
         "data": {
           "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intake finish"
-              }
-            },
             {
               "type": "named",
               "data": {
@@ -86,7 +80,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 34.59228868750994,
+    "rotation": 33.69006752597992,
     "rotateFast": true
   },
   "reversed": false,

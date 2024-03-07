@@ -42,7 +42,8 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare subwoofer shot', self.prepare_subwoofer_shot_cmd())
-        NamedCommands.registerCommand('prepare first shot', self.prep_first_shot_auto())
+        NamedCommands.registerCommand('prepare first amp shot', self.prep_first_amp_shot_auto())
+        NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait command', WaitCommand(0.25))
         
@@ -221,13 +222,18 @@ class RobotContainer(Subsystem):
             self.arm.arm_stow_pos_cmd(),
             self.set_align_state_cmd(constants.kAlignStateSpeaker)))       
         
-    def prep_first_shot_auto(self):
+    def prep_first_amp_shot_auto(self):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
             self.angulator.angulator_set_pos_cmd(0.013)))
+    
+    def prep_first_feeder_shot_auto(self):
+        return(sequence(
+            self.shooter.shooter_on_cmd(65),
+            self.angulator.angulator_set_pos_cmd(0.011)))
                 
     def getAutonomousCommand(self):
-        return PathPlannerAuto("6 piece")
+        return PathPlannerAuto("4 piece")
 
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical):

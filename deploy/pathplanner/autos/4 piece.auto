@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5076223757576612,
-      "y": 6.082592758381551
+      "x": 1.413172177925882,
+      "y": 1.246742629394435
     },
-    "rotation": 0
+    "rotation": -29.0
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "amp new first note"
+            "pathName": "feeder first piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "amp First note"
+            "pathName": "feeder second piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "feeder second piece score"
           }
         },
         {
@@ -44,13 +44,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "feeder third piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "feeder third piece score"
           }
         },
         {
@@ -68,7 +68,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "feeder fourth piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "feeder score fourth piece"
           }
         },
         {
@@ -86,43 +92,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "amp Fifth Piece"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "amp sixth piece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
+            "pathName": "feeder final"
           }
         }
       ]

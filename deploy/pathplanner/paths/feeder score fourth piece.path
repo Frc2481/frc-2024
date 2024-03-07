@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.053021085499989,
+        "y": 4.108583623697357
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.116792029948506,
+        "y": 4.439159316108586
+      },
+      "isLocked": false,
+      "linkedName": "4pe6"
+    },
+    {
+      "anchor": {
+        "x": 4.199453013963381,
+        "y": 4.83585014700206
+      },
+      "prevControl": {
+        "x": 6.182907168430752,
+        "y": 4.486384415024475
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "4pe5"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -5.856013585428933,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Ben's Dream Auto",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.413172177925882,
+        "y": 1.246742629394435
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7165849080044406,
+        "y": 1.123957372213121
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.9833896559671516,
+        "y": 0.9350569765495622
+      },
+      "prevControl": {
+        "x": 3.746092064370838,
+        "y": 1.0767322732972322
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "4pe1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -40.5,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "prepare first feeder shot",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "prepare first feeder shot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "speaker score",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "speaker score"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.6,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 2.6,
+    "rotation": -33.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Ben's Dream Auto",
+  "previewStartingState": {
+    "rotation": -29.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

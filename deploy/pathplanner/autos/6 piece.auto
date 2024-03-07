@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Second Piece Score"
           }
         },
         {
@@ -44,13 +44,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Third Piece"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Third Piece Score"
           }
         },
         {
@@ -68,7 +68,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Fourth Piece"
           }
         },
         {

@@ -153,7 +153,8 @@ class AngulatorSubsystem(Subsystem):
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
         self.angulatorMotor.set_control(MotionMagicVoltage(position=angulator_rotation))
-        
+
+
     def angulator_set_pos_from_range_cmd(self, range_cb):
         return runOnce(lambda: self.set_pos_from_range(range_cb()))
 

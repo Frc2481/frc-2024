@@ -92,9 +92,9 @@ kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
-kShooterSpeedSubwooferRPS = 60
+kShooterSpeedSubwooferRPS = 40
 kShooterSpeedHappyDonutRPS = 80
-kShooterSpeedRPS = 50
+kShooterSpeedMaxRPS = 90
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
 kShooterP = 0.01

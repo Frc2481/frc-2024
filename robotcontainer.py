@@ -81,7 +81,7 @@ class RobotContainer(Subsystem):
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.prepare_happy_donut_cmd())
         self.operator_controller.x().onTrue(self.prepare_subwoofer_shot_cmd())
-        self.operator_controller.rightBumper().onTrue(self.prepare_speaker_shot_cmd())
+        self.operator_controller.rightBumper().whileTrue(self.prepare_speaker_shot_cmd())
         self.operator_controller.rightTrigger().onTrue(self.score_amp_stow_arm_cmd())
         self.operator_controller.leftTrigger().onTrue(self.amp_handoff_cmd())
         self.operator_controller.leftBumper().onTrue(self.shooter.shooter_off_cmd())
@@ -123,6 +123,9 @@ class RobotContainer(Subsystem):
         SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
         SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd())
         SmartDashboard.putData("Reset Odom To Vision", self.drivetrain.reset_odom_to_vision_cmd().ignoringDisable(True))
+
+        SmartDashboard.putData("+shoot speed", self.shooter.increase_shooter_speed_cmd()) 
+        SmartDashboard.putData("-shoot speed", self.shooter.decrease_shooter_speed_cmd()) 
         
         SmartDashboard.putData("Arm Up", self.arm.arm_score_pos_cmd())
         SmartDashboard.putData("Arm Down", self.arm.arm_stow_pos_cmd())
@@ -168,17 +171,33 @@ class RobotContainer(Subsystem):
         
     def set_align_state(self, state):
         self.align_state = state
-        
+
+
     def set_align_state_cmd(self, state):
         return runOnce(lambda: self.set_align_state(state))
+
+
+    def speaker_shot_end(self, interrupted):
+        self.angulator.set_angulator_position(0)
+        self.shooter.shooterMotor.set_control(VoltageOut(0))
+
         
     def prepare_speaker_shot_cmd(self):
-        return (sequence(
-                self.set_align_state_cmd(constants.kAlignStateSpeaker),
-                self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker),
-                self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS))
-                #self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker())
+        return (RepeatCommand(
+                self.set_align_state_cmd(constants.kAlignStateSpeaker)\
+                    .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))\
+                    .alongWith(self.shooter.shooter_set_speed_from_range_cmd(self.drivetrain.get_range_to_speaker)))
+
             )
+        # return (
+        #     FunctionalCommand(lambda: self.set_align_state_cmd(constants.kAlignStateSpeaker),
+        #                       lambda: self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS)\
+        #                         .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))
+        #                         .alongWith(self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker)),
+        #                         lambda interrupted: self.speaker_shot_end(interrupted),
+        #                         lambda: self.shooter.shooterMotor.get_velocity().value < 1,
+        #                         self.angulator)
+        #         )
                                    
     def speaker_score_cmd(self):
             return (sequence(
@@ -233,7 +252,7 @@ class RobotContainer(Subsystem):
             self.angulator.angulator_set_pos_cmd(0.011)))
                 
     def getAutonomousCommand(self):
-        return PathPlannerAuto("4 piece")
+        return PathPlannerAuto("6 piece")
 
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical):
@@ -303,7 +322,9 @@ class RobotContainer(Subsystem):
 
     def periodic(self):
         # SmartDashboard.putNumber("Align State", self.align_state)
-        SmartDashboard.putNumber("beam break one", int(self.beambreak_one.get()))
-        SmartDashboard.putNumber("beam break two", int(self.beambreak_two.get()))
+        #SmartDashboard.putNumber("beam break one", int(self.beambreak_one.get()))
+        #SmartDashboard.putNumber("beam break two", int(self.beambreak_two.get()))
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
         SmartDashboard.putNumber("Feeder Speed", self.feeder.feederMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
+        SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)

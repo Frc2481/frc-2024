@@ -30,6 +30,7 @@ from phoenix6.configs.cancoder_configs import CANcoderConfiguration
 from phoenix6.hardware.cancoder import CANcoder
 from phoenix6.hardware import TalonFX
 from phoenix6.hardware import Pigeon2
+from phoenix6.status_signal import BaseStatusSignal
 
 import constants
 
@@ -50,7 +51,6 @@ from utils import *
 
 from subsystems.swervemodule import SwerveModule
 
-   # hi from 2024        
 
 class DriveSubsystem(Subsystem):
 
@@ -182,7 +182,14 @@ class DriveSubsystem(Subsystem):
         return InstantCommand(lambda: self.set_auto_face_goal(enabled))
     
     def periodic(self):
+
         start_time = wpilib.Timer.getFPGATimestamp()     
+
+        self._fl.update()
+        self._fr.update()
+        self._bl.update()
+        self._br.update()
+
         self.__odometry.update(
             Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [

@@ -94,7 +94,7 @@ kArmZero = 8
 #ShooterFocCurrentGains
 kShooterSpeedSubwooferRPS = 40
 kShooterSpeedHappyDonutRPS = 80
-kShooterSpeedMaxRPS = 90
+kShooterSpeedMaxRPS = 80
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
 kShooterP = 0.01
@@ -129,7 +129,7 @@ kArmA = 0.0
 kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
-kArmScorePosition = 34.5
+kArmScorePosition = 34.916504
 kArmClimbPosition = 34
 kArmPickupPosition = 15.716
 kArmDownPosition = 1

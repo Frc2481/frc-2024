@@ -85,17 +85,17 @@ class ShooterSubsystem(object):
             lambda: self.shooterMotor.set_control(VelocityDutyCycle(shooter_to_arm_speed_rps))
         )
 
-    def set_speed_from_range(self, range):
+    def set_speed_from_range(self, range_cb):
         rps = constants.kShooterSpeedSubwooferRPS
-        rps = rps + 9 * range
+        rps = rps + 9 * range_cb()
         if rps > constants.kShooterSpeedMaxRPS:
             rps = constants.kShooterSpeedMaxRPS
-        if range < 1: 
+        if range_cb() < 1: 
             rps = constants.kShooterSpeedSubwooferRPS
         self.shooterMotor.set_control(VelocityDutyCycle(rps))
 
     def shooter_set_speed_from_range_cmd(self, range_cb):
-        return runOnce(lambda: self.set_speed_from_range(range_cb()))
+        return runOnce(lambda: self.set_speed_from_range(range_cb))
     
     def wait_for_shooter_on_target(self):    
         return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget),

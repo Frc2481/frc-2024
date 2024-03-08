@@ -178,26 +178,29 @@ class RobotContainer(Subsystem):
 
 
     def speaker_shot_end(self, interrupted):
-        self.angulator.set_angulator_position(0)
-        self.shooter.shooterMotor.set_control(VoltageOut(0))
+        None
+        #self.angulator.set_angulator_position(0)
+        #self.shooter.shooterMotor.set_control(VoltageOut(0))
 
-        
+    def notalambda(self): 
+        self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
+        self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
+    
+
     def prepare_speaker_shot_cmd(self):
-        return (RepeatCommand(
-                self.set_align_state_cmd(constants.kAlignStateSpeaker)\
-                    .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))\
-                    .alongWith(self.shooter.shooter_set_speed_from_range_cmd(self.drivetrain.get_range_to_speaker)))
+        # return (RepeatCommand(
+        #         self.set_align_state_cmd(constants.kAlignStateSpeaker)\
+        #             .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))\
+        #             .alongWith(self.shooter.shooter_set_speed_from_range_cmd(self.drivetrain.get_range_to_speaker)))
 
-            )
-        # return (
-        #     FunctionalCommand(lambda: self.set_align_state_cmd(constants.kAlignStateSpeaker),
-        #                       lambda: self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS)\
-        #                         .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))
-        #                         .alongWith(self.shooter.shooter_range_set_speed_cmd(self.drivetrain.get_range_to_speaker)),
-        #                         lambda interrupted: self.speaker_shot_end(interrupted),
-        #                         lambda: self.shooter.shooterMotor.get_velocity().value < 1,
-        #                         self.angulator)
-        #         )
+        #     )
+        return (
+            FunctionalCommand(lambda: self.set_align_state(constants.kAlignStateSpeaker),
+                              lambda: self.notalambda(),
+                              lambda interrupted: None,
+                              lambda: self.driver_controller.leftBumper().getAsBoolean(),
+                                self.angulator)
+                )
                                    
     def speaker_score_cmd(self):
             return (sequence(

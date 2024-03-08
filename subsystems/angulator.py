@@ -146,9 +146,9 @@ class AngulatorSubsystem(Subsystem):
     def angulator_amp_handoff_cmd(self):
         return self.angulator_set_pos_cmd(0.13)
 
-    def set_pos_from_range(self, range_m):
+    def set_pos_from_range(self, range_cb):
         HEIGHT_OF_TARGET = 1.98
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 18 # TODO: Put this in constant
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 18 # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
@@ -156,12 +156,13 @@ class AngulatorSubsystem(Subsystem):
 
 
     def angulator_set_pos_from_range_cmd(self, range_cb):
-        return runOnce(lambda: self.set_pos_from_range(range_cb()))
+        return runOnce(lambda: self.set_pos_from_range(range_cb))
 
 
     def angulator_off_cmd (self):
         return runOnce(
-           lambda: self.angulatorMotor.set_control(VoltageOut(0))
+           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0))
+           
         )
         
     def apply_encoder_config_with_retries(self, config):

@@ -25,7 +25,6 @@ class FeederSubsystem(object):
         self.feederMotorConfig = TalonFXConfiguration()
         self.feederMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.feederMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
-
         self.feederMotorConfig.slot0.k_p = constants.kFeederP
         self.feederMotorConfig.slot0.k_i = constants.kFeederI
         self.feederMotorConfig.slot0.k_d = constants.kFeederD

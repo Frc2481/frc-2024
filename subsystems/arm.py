@@ -44,26 +44,26 @@ class ArmSubsystem(Subsystem):
         self.armMotorConfig.software_limit_switch.reverse_soft_limit_enable =  True
         
         self.armMotor.configurator.apply(self.armMotorConfig)
-        
         self.zero_arm_switch =  DigitalInput(constants.kArmZero)
-        
         self.setpoint = 0
         
-    
         self.gripperSolenoid = DoubleSolenoid(
             # constants.kGripperSolenoidModule,
             moduleType = wpilib.PneumaticsModuleType.CTREPCM,
             forwardChannel = constants.kGripperDoubleSolenoidForwardPort,
             reverseChannel = constants.kGripperDoubleSolenoidReversePort
         ) 
-        
+
+
     def get_error(self):
         return self.setpoint - self.armMotor.get_position().value
-    
+
+
     def set_arm_position(self, position):
         self.setpoint = position
         self.armMotor.set_control(MotionMagicVoltage(position=position))
-    
+
+
     def arm_set_pos_cmd (self, arm_position):
         return FunctionalCommand(
             lambda: self.set_arm_position(arm_position),
@@ -73,43 +73,49 @@ class ArmSubsystem(Subsystem):
             self
         )       
 
+
     def arm_climb_pos_cmd (self, arm_position = constants.kArmClimbPosition):
            return runOnce(
             lambda:  self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position))
             
         )    
-    
+
+
     def arm_score_pos_cmd (self, arm_position = constants.kArmScorePosition):
            return runOnce(
             lambda:  self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position))
             
         )       
-        
+
+
     def arm_stow_pos_cmd (self, arm_position = constants.kArmDownPosition):
         return sequence(    
             self.gripper_open_cmd(),
             InstantCommand (lambda:self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position)))
         )           
-           
+
+
     def arm_pickup_pos_cmd (self, arm_position = constants.kArmPickupPosition):
            return self.arm_set_pos_cmd(arm_position)         
-        
+
+
     def gripper_open_cmd(self):
         return runOnce(
             lambda: self.gripperSolenoid.set(DoubleSolenoid.Value.kForward)
         ) 
-        
+
+
     def close_gripper_safe(self):
         if self.armMotor.get_position().value > 7: # Position at which we can hit electronics.
             self.gripperSolenoid.set(DoubleSolenoid.Value.kReverse)
-            
+
+
     def gripper_close_cmd(self):
             return runOnce(self.close_gripper_safe)
-            
+
+
     def periodic(self):
         SmartDashboard.putNumber("Arm Position", self.armMotor.get_position().value)
-        SmartDashboard.putNumber("Arm Zero Switch", self.zero_arm_switch.get())
-        
         if self.zero_arm_switch.get() == 0:
             if self.armMotor.get_position().value == 0:
                 self.armMotor.set_position(0) 
@@ -125,9 +131,11 @@ class ArmSubsystem(Subsystem):
     def batman_grapling_hook(self):
         if self.armMotor.get_position().value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
             self.climberSolenoid.set(DoubleSolenoid.Value.kForward)
-            
+
+
     def kill_the_beast_cmd(self):
         return runOnce(lambda: self.kill_the_beast())
+
     
     def batman_grappling_hook_cmd(self):
         return runOnce(lambda: self.batman_grapling_hook())

@@ -49,14 +49,15 @@ class AngulatorSubsystem(Subsystem):
     
     def sysid_dynamic_cmd(self, direction):
         return self.__sysid.dynamic(direction)
-    
+
+
     def __init__(self):
         super().__init__()
         self.__loggerState = None
-        
         self.setpoint = 0
         
         self.angulatorMotor = TalonFXExtended(constants.kAngulatorMotorCANID, "2481")
+        
         self.__sysid_config = sysid.SysIdRoutine.Config(recordState=self.log_state)
         self.__sysid_mechanism = sysid.SysIdRoutine.Mechanism(self.move_voltage, self.move_log, self, "angulator")
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
@@ -73,7 +74,6 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kAngulatorCruiseVelocity
         self.angulatorMotorConfig.motion_magic.motion_magic_acceleration = constants.kAngulatorAcceleration
         self.angulatorMotorConfig.motion_magic.motion_magic_jerk = constants.kAngulatorJerk
-        # self.angulatorMotorConfig.feedback.sensor_to_mechanism_ratio = 1 / constants.kAngulatorGearReduction
         
         
         self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorForwardSoftLimitRot
@@ -86,7 +86,6 @@ class AngulatorSubsystem(Subsystem):
         self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.SIGNED_PLUS_MINUS_HALF
         self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.CLOCKWISE_POSITIVE
         self.canCoderConfig.magnet_sensor.magnet_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
-        # self.angulatorEncoder.configurator.apply(self.canCoderConfig)
         
         self.apply_encoder_config_with_retries(self.canCoderConfig)
         
@@ -101,12 +100,14 @@ class AngulatorSubsystem(Subsystem):
           
     def get_error(self):
         return self.setpoint - self.angulatorMotor.get_position().value
-    
+
+
     def set_angulator_position(self, position):
         self.setpoint = position
         self.angulatorMotor.set_control(MotionMagicVoltage(position=position))
     
-    def angulator_set_pos_cmd (self, angulator_position):
+
+    def angulator_set_pos_cmd(self, angulator_position):
         return FunctionalCommand(
             lambda: self.set_angulator_position(angulator_position),
             lambda: None,
@@ -115,9 +116,11 @@ class AngulatorSubsystem(Subsystem):
             self
         ).withTimeout(0.5)
     
+
     def angulator_inc_pos_target(self, delta):
         self.setpoint = self.setpoint + delta
         self.angulatorMotor.set_control(MotionMagicVoltage(position=self.setpoint))
+
 
     def angulator_up_cmd(self):
         return FunctionalCommand(
@@ -127,9 +130,7 @@ class AngulatorSubsystem(Subsystem):
             lambda: math.fabs(self.get_error()) < 0.0005,
             self
         ).withTimeout(0.5)
-        #return InstantCommand(lambda: self.angulator_inc_pos_target(.01)).andThen\
-        #    (InstantCommand(lambda: self.angulator_set_pos_cmd(self.varChange)))
-        
+
     
     def angulator_down_cmd(self):
         return FunctionalCommand(
@@ -139,12 +140,11 @@ class AngulatorSubsystem(Subsystem):
             lambda: math.fabs(self.get_error()) < 0.0005,
             self
         ).withTimeout(0.5)
-            # return InstantCommand(lambda: self.angulator_inc_pos_target(-.01)).andThen\
-            # (InstantCommand(lambda: self.angulator_set_pos_cmd(self.varChange)))
-    
+
    
     def angulator_amp_handoff_cmd(self):
         return self.angulator_set_pos_cmd(0.13)
+
 
     def set_pos_from_range(self, range_cb):
         HEIGHT_OF_TARGET = 1.98
@@ -161,21 +161,21 @@ class AngulatorSubsystem(Subsystem):
 
     def angulator_off_cmd (self):
         return runOnce(
-           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0))
-           
+           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0))  
         )
-        
+
+
     def apply_encoder_config_with_retries(self, config):
         for i in range(5):
             result = self.angulatorEncoder.configurator.apply(config)
             if result == StatusCode.OK:
                 break
-    
+
+
     def zero_encoder(self):
         # Make sure the magnet offset starts out at 0 before calling get_absolute_position().
         self.canCoderConfig.magnet_sensor.magnet_offset = 0
-        self.apply_encoder_config_with_retries(self.canCoderConfig)            
-        
+        self.apply_encoder_config_with_retries(self.canCoderConfig)                    
         self.angulatorEncoder.set_position(0)
         
         # Wait for a new reading after applying the offset.
@@ -185,25 +185,15 @@ class AngulatorSubsystem(Subsystem):
         self.canCoderConfig.magnet_sensor.magnet_offset = angulator_offset.value
         self.apply_encoder_config_with_retries(self.canCoderConfig)
         wpilib.Preferences.setDouble("ANGULATOR_OFFSET", angulator_offset.value)
-        
         SmartDashboard.putNumber("Angulator Absolute", angulator_offset.value)
-        
+
+
     def zero_angulator_encoder_cmd(self):
         return runOnce(self.zero_encoder)
 
-    def wait_for_angulator_on_target(self):    
-        return(sequence(WaitUntilCommand(lambda: self.get_error() < constants.kAngulatorOnTarget),
-                        PrintCommand('Angulator On Target')))
-            
-        
+
     def periodic(self):
-    #    SmartDashboard.putNumber("Angulator Current", self.angulatorMotor.get_supply_current().value)
        SmartDashboard.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
-    #    SmartDashboard.putNumber("Angulator Velocity", self.angulatorMotor.get_velocity().value)
-    #    SmartDashboard.putNumber("Angulator Voltage", self.angulatorMotor.get_motor_voltage().value)
-    #    SmartDashboard.putNumber("Angulator Reference Position", self.angulatorMotor.get_closedloop_reference_position().value)
-    #    SmartDashboard.putNumber("Angulator Reference Velocity", self.angulatorMotor.get_closedloop_reference_slope_position().value)
-    #    SmartDashboard.putNumber("Angulator rotations", self.angulatorMotor.get_position().value)
 
        if self.angulatorMotor.get_position().value < 0:
            self.angulatorEncoder.set_position(0)

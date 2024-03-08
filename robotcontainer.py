@@ -37,16 +37,13 @@ class RobotContainer(Subsystem):
         self.angulator = AngulatorSubsystem()    
         self.auto_mode = False 
         
-        NamedCommands.registerCommand('prepare happy donut', self.prepare_happy_donut_cmd())
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_speaker_shot_cmd())
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
-        NamedCommands.registerCommand('prepare subwoofer shot', self.prepare_subwoofer_shot_cmd())
         NamedCommands.registerCommand('prepare first amp shot', self.prep_first_amp_shot_auto())
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait command', WaitCommand(0.25))
-        
         
         self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
         self.beambreak_trigger_one = Trigger(self.beambreak_one.get)
@@ -60,21 +57,16 @@ class RobotContainer(Subsystem):
          
         self.driver_controller = CommandXboxController(
             constants.kDriverControllerPort)
-
         self.operator_controller = CommandXboxController(            
             constants.kOperatorControllerPort)
-        
-        self.diag_controller = CommandXboxController(
-            constants.kDiagControllerPort)
-               
+    
         self.button_bindings_configure()
-
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
         
-        SmartDashboard.putNumber("shooter_cmd_angle", 0)
-        SmartDashboard.putNumber("shooter_cmd_speed", 0)
-
+        # SmartDashboard.putNumber("shooter_cmd_angle", 0)
+        # SmartDashboard.putNumber("shooter_cmd_speed", 0)
         # DataLogManager.start()
+
 
     def button_bindings_configure(self):
         print("Here 3")
@@ -88,8 +80,7 @@ class RobotContainer(Subsystem):
         self.operator_controller.povUp().onTrue(self.arm.kill_the_beast_cmd())
         self.operator_controller.povDown().onTrue(self.arm.batman_grappling_hook_cmd())
         self.operator_controller.back().onTrue(self.prepare_to_climb_cmd())
-       
-                         
+                               
         self.driver_controller.a().onTrue(self.drivetrain.field_centric_cmd())
         self.driver_controller.b().onTrue(self.drivetrain.robot_centric_cmd())
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
@@ -97,78 +88,39 @@ class RobotContainer(Subsystem):
         self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
         self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.8))        
         self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
-        # self.driver_controller.leftTrigger().onFalse(self.set_align_state_cmd(constants.kAlignStateNone))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
         
-        #self.driver_controller.leftBumper().whileTrue(self.drivetrain.limelight_angulor_alignment_cmd(self.driver_controller))
-        #self.driver_controller.povRight().whileTrue(self.drivetrain.line_up_with_april_tag_cmd(self.driver_controller))
-        #self.driver_controller.rightBumper().whileTrue(self.drivetrain.drive_with_joystick_limelight_target_align_cmd(self.driver_controller))    
-        
         #Use for sysID Test
-        self.diag_controller.povLeft().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        self.diag_controller.povRight().whileTrue(self.drivetrain.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povUp().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povDown().whileTrue(self.drivetrain.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
         self.driver_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
         self.driver_controller.povDown().onTrue(self.angulator.angulator_down_cmd())
 
-        # self.diag_controller.povLeft().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        # self.diag_controller.povRight().whileTrue(self.angulator.sysid_quasistatic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povUp().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kForward))
-        # self.diag_controller.povDown().whileTrue(self.angulator.sysid_dynamic_cmd(sysid.SysIdRoutine.Direction.kReverse))
-        
-        self.diag_controller.a().onTrue(self.angulator.zero_angulator_encoder_cmd())
-        
-        SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
-        SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
-        SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd())
-        SmartDashboard.putData("Reset Odom To Vision", self.drivetrain.reset_odom_to_vision_cmd().ignoringDisable(True))
-
+        # SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
+        # SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
+        # SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd())
+        # SmartDashboard.putData("Reset Odom To Vision", self.drivetrain.reset_odom_to_vision_cmd().ignoringDisable(True))
         SmartDashboard.putData("+shoot speed", self.shooter.increase_shooter_speed_cmd()) 
-        SmartDashboard.putData("-shoot speed", self.shooter.decrease_shooter_speed_cmd()) 
-        
-        SmartDashboard.putData("Arm Up", self.arm.arm_score_pos_cmd())
-        SmartDashboard.putData("Arm Down", self.arm.arm_stow_pos_cmd())
-        SmartDashboard.putData("Arm Pick Up", self.arm.arm_pickup_pos_cmd())
-        SmartDashboard.putData("Arm Climb", self.arm.arm_climb_pos_cmd())
-        
-        SmartDashboard.putData("Gripper Open", self.arm.gripper_open_cmd())
-        SmartDashboard.putData("Gripper Close", self.arm.gripper_close_cmd())
-        
-        SmartDashboard.putData("Shooter On", self.shooter.shooter_on_cmd())
-        SmartDashboard.putData("Shooter Off", self.shooter.shooter_off_cmd())
-        SmartDashboard.putData("Feeder Off",self.feeder.feeder_off_cmd())
-        SmartDashboard.putData("Feeder On",self.feeder.feeder_on_cmd(.9))
-                
+        SmartDashboard.putData("-shoot speed", self.shooter.decrease_shooter_speed_cmd())       
         SmartDashboard.putData("Zero Angulator", self.angulator.zero_angulator_encoder_cmd().ignoringDisable(True))
-        
-        SmartDashboard.putData("Amp Handoff", self.amp_handoff_cmd())
-        
-        SmartDashboard.putData("Reset Arm and Angulator", self.score_amp_stow_arm_cmd())
-        
-        SmartDashboard.putData("Intake On", self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.9))
-        SmartDashboard.putData("Intake Off", self.intake_feeder_off_cmd())
-        
-        SmartDashboard.putNumber("Shooter Voltage", self.shooter.shooterMotor.get_motor_voltage().value)
-
-        
         
         
     def get_align_state(self):
         return self.align_state
-   
+
+
     def prepare_happy_donut_cmd(self):
         return (# angulator to happy donut position 
                 self.angulator.angulator_set_pos_cmd(constants.kAngulatorHappyDonutAngleDeg)
                 # shooter on to happy donut persentage
                 .alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedHappyDonutRPS)))
-    
+
+
     def prepare_subwoofer_shot_cmd(self):
         return(# angulator to subwoofer position 
                self.angulator.angulator_set_pos_cmd(constants.kAngulatorSubwooferAngleDeg)
                # shooter on to subwoofer persentage
                .alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)))
-        
+
+
     def set_align_state(self, state):
         self.align_state = state
 
@@ -177,31 +129,21 @@ class RobotContainer(Subsystem):
         return runOnce(lambda: self.set_align_state(state))
 
 
-    def speaker_shot_end(self, interrupted):
-        None
-        #self.angulator.set_angulator_position(0)
-        #self.shooter.shooterMotor.set_control(VoltageOut(0))
-
-    def notalambda(self): 
+    def set_angle_speed_from_range(self): 
         self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
         self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
     
 
     def prepare_speaker_shot_cmd(self):
-        # return (RepeatCommand(
-        #         self.set_align_state_cmd(constants.kAlignStateSpeaker)\
-        #             .alongWith(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))\
-        #             .alongWith(self.shooter.shooter_set_speed_from_range_cmd(self.drivetrain.get_range_to_speaker)))
-
-        #     )
         return (
             FunctionalCommand(lambda: self.set_align_state(constants.kAlignStateSpeaker),
-                              lambda: self.notalambda(),
+                              lambda: self.set_angle_speed_from_range(),
                               lambda interrupted: None,
                               lambda: self.driver_controller.leftBumper().getAsBoolean(),
                                 self.angulator)
                 )
-                                   
+
+
     def speaker_score_cmd(self):
             return (sequence(
                 # self.angulator.wait_for_angulator_on_target(),
@@ -212,7 +154,8 @@ class RobotContainer(Subsystem):
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)
         ))               
-    
+
+
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
@@ -230,12 +173,14 @@ class RobotContainer(Subsystem):
                 self.shooter.shooter_off_cmd(),
                 self.feeder.feeder_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)))
-                
+
+
     def prepare_to_climb_cmd(self):
         return (sequence(
             self.arm.arm_climb_pos_cmd(),
             self.arm.gripper_open_cmd()))
-                
+
+
     def score_amp_stow_arm_cmd(self):
         return(sequence(
             self.arm.gripper_open_cmd(),
@@ -243,17 +188,20 @@ class RobotContainer(Subsystem):
             self.angulator.angulator_set_pos_cmd(0),
             self.arm.arm_stow_pos_cmd(),
             self.set_align_state_cmd(constants.kAlignStateSpeaker)))       
-        
+
+
     def prep_first_amp_shot_auto(self):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
             self.angulator.angulator_set_pos_cmd(0.013)))
     
+
     def prep_first_feeder_shot_auto(self):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
             self.angulator.angulator_set_pos_cmd(0.011)))
-                
+
+
     def getAutonomousCommand(self):
         return PathPlannerAuto("6 piece")
 
@@ -266,12 +214,8 @@ class RobotContainer(Subsystem):
                         #WaitUntilCommand(lambda: self.beambreak_one.get() == False),
                         #ScheduleCommand(self.beambreak_during_intake_cmd())
                         )
-    
 
-    def intake_sequence_part_2_cmd(self):
-        return InstantCommand(lambda: None)
 
-    
     def vomit_cmd(self):
         return (sequence(
                 self.shooter.shooter_on_cmd(-50),
@@ -284,14 +228,6 @@ class RobotContainer(Subsystem):
             self.set_align_state_cmd(constants.kAlignStateNote),
             self.intake_sequence_cmd(feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical))
             )
-
-
-    def intake_feeder_off_cmd(self):
-        return(self.intake.intake_off_cmd()) \
-        .alongWith(self.feeder.feeder_off_cmd())\
-        .andThen(self.shooter.shooter_on_cmd(constants.kShooterReverseSpeed))\
-        .andThen(WaitCommand(.1))\
-        .andThen(self.shooter.shooter_off_cmd())
     
         
     def beambreak_during_intake_cmd(self):
@@ -299,19 +235,8 @@ class RobotContainer(Subsystem):
              InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
              self.feeder.feeder_on_cmd(0.15))
-            # #  WaitUntilCommand(lambda: self.beambreak_two.get() == False),
-            #  WaitUntilCommand(lambda: self.beambreak_two.get() == False),
-            #  self.feeder.feeder_off_cmd(),
-            #  InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0)),
-            #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak two", False)))
-             
-            #  self.shooter.shooter_on_cmd(-1),
-            #  self.feeder.feeder_on_cmd(-.1),
-             
-            #  self.shooter.shooter_off_cmd(),
-             
-             #self.set_align_state_cmd(constants.kAlignStateSpeaker)
         )
+
 
     def beambreak_one_false_cmd(self):
         return self.beambreak_during_intake_cmd()
@@ -324,10 +249,6 @@ class RobotContainer(Subsystem):
 
 
     def periodic(self):
-        # SmartDashboard.putNumber("Align State", self.align_state)
-        #SmartDashboard.putNumber("beam break one", int(self.beambreak_one.get()))
-        #SmartDashboard.putNumber("beam break two", int(self.beambreak_two.get()))
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
-        SmartDashboard.putNumber("Feeder Speed", self.feeder.feederMotor.get_duty_cycle().value)
         SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
         SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)

@@ -24,7 +24,7 @@ from ntcore import NetworkTableInstance
 from commands2 import sysid
 from wpilib.sysid import SysIdRoutineLog
 from wpilib import DigitalInput
-from phoenix6.controls import VoltageOut
+from phoenix6.controls import VoltageOut, VelocityDutyCycle
 
 class RobotContainer(Subsystem):
 
@@ -38,12 +38,24 @@ class RobotContainer(Subsystem):
         self.auto_mode = False 
         
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_auto_speaker_shot_cmd())
+        NamedCommands.registerCommand('prepare second amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.005))
+        NamedCommands.registerCommand('prepare third amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.08))
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
-        NamedCommands.registerCommand('prepare first amp shot', self.prep_first_amp_shot_auto())
+        NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait command', WaitCommand(0.25))
+        NamedCommands.registerCommand('wait for second beam break', 
+                                      WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(1.0))
+        NamedCommands.registerCommand('wait for not second beam break', 
+                                      WaitUntilCommand(lambda: self.beambreak_two.get() == True).withTimeout(1.0))
+        NamedCommands.registerCommand('wait for shooter on target', self.shooter.wait_for_shooter_on_target())
+        NamedCommands.registerCommand('wait for angulator on target', self.angulator.wait_for_angulator_on_target())
+        NamedCommands.registerCommand('auto shooter command', 
+                                      sequence(
+                                          RunCommand(lambda: self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)),
+                                          RunCommand(lambda: self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker))))
         
         self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
         self.beambreak_trigger_one = Trigger(self.beambreak_one.get)
@@ -65,7 +77,9 @@ class RobotContainer(Subsystem):
         
         SmartDashboard.putNumber("shooter_cmd_angle", 0)
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
-        # DataLogManager.start()
+        DataLogManager.start()
+
+        self.auto_path = PathPlannerAuto("6 piece")
 
 
     def button_bindings_configure(self):
@@ -129,7 +143,7 @@ class RobotContainer(Subsystem):
         return runOnce(lambda: self.set_align_state(state))
 
 
-    def set_angle_speed_from_range(self): 
+    def set_angle_speed_from_range(self):
         self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
         self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
     
@@ -148,9 +162,15 @@ class RobotContainer(Subsystem):
             FunctionalCommand(lambda: self.set_align_state(constants.kAlignStateSpeaker),
                               lambda: self.set_angle_speed_from_range(),
                               lambda interrupted: None,
-                              lambda: self.shooter.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget,
-                                self.angulator)
+                              lambda: self.shooter.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget)
+                                # self.angulator)
                 )
+    
+    def prepare_auto_shooter_and_angulator_cmd(self, shooter_rps, shooter_angle):
+        return parallel(
+           self.shooter.shooter_on_cmd(shooter_rps),
+           self.angulator.angulator_set_pos_cmd(shooter_angle)
+        )
 
 
 
@@ -163,7 +183,15 @@ class RobotContainer(Subsystem):
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)
-        ))               
+        ))
+        
+    def speaker_auto_score_cmd(self):
+        return sequence(
+                self.feeder.feeder_on_cmd(.9),
+                WaitCommand(0.25),
+                self.feeder.feeder_off_cmd(),
+                self.shooter.shooter_off_cmd(),
+                self.angulator.angulator_set_pos_cmd(0))          
 
 
     def amp_handoff_cmd(self):
@@ -203,7 +231,7 @@ class RobotContainer(Subsystem):
     def prep_first_amp_shot_auto(self):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
-            self.angulator.angulator_set_pos_cmd(0.014)))
+            self.angulator.angulator_set_pos_cmd(0.012)))
             #0.014 works with fresh battery
     
 
@@ -214,7 +242,7 @@ class RobotContainer(Subsystem):
 
 
     def getAutonomousCommand(self):
-        return PathPlannerAuto("6 piece")
+        return self.auto_path
 
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical):
@@ -263,3 +291,6 @@ class RobotContainer(Subsystem):
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
         SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
         SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)
+        SmartDashboard.putNumber("shoot speed ref", self.shooter.shooterMotor.get_closed_loop_reference().value)
+        SmartDashboard.putNumber("shoot speed motor voltage", self.shooter.shooterMotor.get_motor_voltage().value)
+        SmartDashboard.putNumber("shoot supply voltage", self.shooter.shooterMotor.get_supply_voltage().value)

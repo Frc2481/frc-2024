@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5076223757576612,
-      "y": 6.082592758381551
+      "x": 1.573737514239907,
+      "y": 6.0
     },
     "rotation": 0
   },
@@ -24,93 +24,248 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Second Piece Score"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Second Piece Score"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare second amp speaker shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
+            "name": "wait for shooter on target"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Third Piece"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Third Piece Score"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare third amp speaker shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "speaker score"
+            "name": "wait for shooter on target"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Third Piece"
+            "waitTime": 0.25
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Third Piece Score"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Fourth Piece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "amp Fifth Piece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "prepare speaker shot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Fourth Piece"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare speaker shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "speaker score"
+            "name": "wait for angulator on target"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "amp sixth piece"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp Fifth Piece"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare speaker shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp sixth piece"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare speaker shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {

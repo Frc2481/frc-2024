@@ -101,7 +101,7 @@ class AngulatorSubsystem(Subsystem):
 
           
     def get_error(self):
-        return self.setpoint - (self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
+        return self.setpoint - self.angulatorEncoder.get_absolute_position().value
 
 
     def set_angulator_position(self, position):
@@ -115,8 +115,7 @@ class AngulatorSubsystem(Subsystem):
             lambda: self.set_angulator_position(angulator_position),
             lambda: None,
             lambda interrupted: None,
-            lambda: math.fabs(self.get_error()) < 0.0005,
-            self
+            lambda: math.fabs(self.get_error()) < 0.05,
         ).withTimeout(0.5)
     
 
@@ -192,10 +191,14 @@ class AngulatorSubsystem(Subsystem):
 
     def zero_angulator_encoder_cmd(self):
         return runOnce(self.zero_encoder)
+    
+    def wait_for_angulator_on_target(self):
+        return WaitUntilCommand(lambda: math.fabs(self.get_error()) < 0.01)
 
 
     def periodic(self):
        SmartDashboard.putNumber("Angulator Position",self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
+       SmartDashboard.putNumber("Angulator Error", self.get_error())
        
 
         

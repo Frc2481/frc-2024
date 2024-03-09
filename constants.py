@@ -93,8 +93,8 @@ kArmZero = 8
 
 #ShooterFocCurrentGains
 kShooterSpeedSubwooferRPS = 65
-kShooterSpeedHappyDonutRPS = 83
-kShooterSpeedMaxRPS = 85
+kShooterSpeedHappyDonutRPS = 82
+kShooterSpeedMaxRPS = 82
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
 kShooterP = 0.01

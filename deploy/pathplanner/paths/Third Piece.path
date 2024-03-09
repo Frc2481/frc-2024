@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 8.062466105283166,
-        "y": 5.459221452691806
+        "x": 8.053021085499989,
+        "y": 5.355326235076849
       },
       "prevControl": {
-        "x": 7.476874878726132,
-        "y": 5.638676828572187
+        "x": 7.467429858942955,
+        "y": 5.53478161095723
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Start Intake",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.3,
       "command": {
         "type": "parallel",
         "data": {
@@ -50,15 +50,15 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 90.0,
-    "maxAngularAcceleration": 360.0
+    "maxVelocity": 3.75,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
     "rotation": -1.1017061152063408,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",
@@ -66,5 +66,5 @@
     "rotation": 8.615648184163962,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

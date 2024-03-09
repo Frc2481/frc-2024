@@ -56,7 +56,7 @@
     },
     {
       "name": "score first piece",
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {

@@ -92,9 +92,9 @@ kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
-kShooterSpeedSubwooferRPS = 40
-kShooterSpeedHappyDonutRPS = 80
-kShooterSpeedMaxRPS = 80
+kShooterSpeedSubwooferRPS = 65
+kShooterSpeedHappyDonutRPS = 83
+kShooterSpeedMaxRPS = 85
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
 kShooterP = 0.01
@@ -135,12 +135,12 @@ kArmPickupPosition = 15.716
 kArmDownPosition = 1
 
 #angulator
-kAngulatorHappyDonutAngleDeg = 0
+kAngulatorHappyDonutAngleDeg = 0.002
 kAngulatorSubwooferAngleDeg = 31.64 / 360
 kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   
 kAngulatorUpPosition =  0.112 #/360
-kAngulatorP = 0.1
+kAngulatorP = 150
 kAngulatorI = 0.02# .01
 kAngulatorD = 0
 kAngulatorV = 30.7 # 0.041
@@ -151,7 +151,7 @@ kAngulatorAcceleration = 2.0
 kAngulatorCruiseVelocity = 0.31
 kMotorResistance = 6
 kAngulatorForwardSoftLimitRot = 0.13 # 70 / 360
-kAngulatorReverseSoftLimitRot = 0 # 22.5 / 360
+kAngulatorReverseSoftLimitRot = 0.00488 # 22.5 / 360
 kAngulatorOnTarget = 0.001
 
 #Metric system units

@@ -389,7 +389,10 @@ class DriveSubsystem(Subsystem):
         return runOnce (self.reset_odom_to_vision)
     
     def get_range_to_speaker(self):
-        return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   
+        if self.shouldFlipPath():
+            return self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation().norm()   
+        else:
+            return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   
     
     # Drive Controls
                 

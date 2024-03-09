@@ -57,16 +57,17 @@ class ShooterSubsystem(object):
 
     def shooter_inc_speed_target(self, delta):
         self.setpoint = self.setpoint + delta
-        if self.setpoint > 85:
-            self.setpoint = 85
+        if self.setpoint > 83:
+            self.setpoint = 83
+
         elif self.setpoint < 0:
             self.setpoint = 0
-        self.shooterMotor.set_control(VelocityDutyCycle(position=self.setpoint))
+        self.shooterMotor.set_control(VelocityDutyCycle(velocity=self.setpoint))
 
 
     def increase_shooter_speed_cmd(self):
         return FunctionalCommand(
-            lambda: self.shooter_inc_speed_target(5),
+            lambda: self.shooter_inc_speed_target(1),
             lambda: None,
             lambda interrupted: None,
             lambda: math.fabs(self.get_error()) < 0.5,
@@ -90,7 +91,7 @@ class ShooterSubsystem(object):
 
     def set_speed_from_range(self, range_cb):
         rps = constants.kShooterSpeedSubwooferRPS
-        rps = rps + 9 * range_cb()
+        rps = rps + 4.1 * (range_cb()-1.3)
         if rps > constants.kShooterSpeedMaxRPS:
             rps = constants.kShooterSpeedMaxRPS
         if range_cb() < 1: 
@@ -101,7 +102,7 @@ class ShooterSubsystem(object):
     def shooter_set_speed_from_range_cmd(self, range_cb):
         return runOnce(lambda: self.set_speed_from_range(range_cb))
 
-    
+
     def wait_for_shooter_on_target(self):    
         return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget),
                         PrintCommand('Shooter On Target')))

@@ -40,7 +40,7 @@ class AngulatorSubsystem(Subsystem):
         log.motor("angulator") \
             .voltage(self.angulatorMotor.get_motor_voltage().value) \
             .velocity(self.angulatorMotor.get_velocity().value) \
-            .position(self.angulatorMotor.get_position().value)
+            .position(self.angulatorMotor.get_absolute_position().value)
 
 
     def sysid_quasistatic_cmd(self, direction):
@@ -62,6 +62,8 @@ class AngulatorSubsystem(Subsystem):
         self.__sysid_mechanism = sysid.SysIdRoutine.Mechanism(self.move_voltage, self.move_log, self, "angulator")
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
 
+        self.encoder_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
+
         self.angulatorMotorConfig = TalonFXConfiguration()
         self.angulatorMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.angulatorMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
@@ -76,8 +78,8 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorMotorConfig.motion_magic.motion_magic_jerk = constants.kAngulatorJerk
         
         
-        self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorForwardSoftLimitRot
-        self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_threshold = constants.kAngulatorReverseSoftLimitRot
+        self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorForwardSoftLimitRot + self.encoder_offset
+        self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_threshold = constants.kAngulatorReverseSoftLimitRot + self.encoder_offset
         self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_enable = True
         self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_enable =  True
         
@@ -85,7 +87,7 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorEncoder = CANcoder(constants.kAngulatorEncoderCANID, "2481")
         self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.SIGNED_PLUS_MINUS_HALF
         self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.CLOCKWISE_POSITIVE
-        self.canCoderConfig.magnet_sensor.magnet_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
+        self.canCoderConfig.magnet_sensor.magnet_offset = 0
         
         self.apply_encoder_config_with_retries(self.canCoderConfig)
         
@@ -95,14 +97,15 @@ class AngulatorSubsystem(Subsystem):
         self.angulatorMotorConfig.feedback.rotor_to_sensor_ratio = 259.9 # 353.68
         self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
 
-        self.angulatorEncoder.set_position(0)
+        # self.angulatorEncoder.set_position(0)
 
           
     def get_error(self):
-        return self.setpoint - self.angulatorMotor.get_position().value
+        return self.setpoint - (self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
 
 
     def set_angulator_position(self, position):
+        position += self.encoder_offset
         self.setpoint = position
         self.angulatorMotor.set_control(MotionMagicVoltage(position=position))
     
@@ -148,11 +151,12 @@ class AngulatorSubsystem(Subsystem):
 
     def set_pos_from_range(self, range_cb):
         HEIGHT_OF_TARGET = 1.98
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 18 # TODO: Put this in constant
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 22
+         # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
-        self.angulatorMotor.set_control(MotionMagicVoltage(position=angulator_rotation))
+        self.angulatorMotor.set_control(MotionMagicVoltage(position=angulator_rotation+self.encoder_offset))
 
 
     def angulator_set_pos_from_range_cmd(self, range_cb):
@@ -161,7 +165,7 @@ class AngulatorSubsystem(Subsystem):
 
     def angulator_off_cmd (self):
         return runOnce(
-           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0))  
+           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0 + self.encoder_offset))  
         )
 
 
@@ -173,17 +177,15 @@ class AngulatorSubsystem(Subsystem):
 
 
     def zero_encoder(self):
-        # Make sure the magnet offset starts out at 0 before calling get_absolute_position().
-        self.canCoderConfig.magnet_sensor.magnet_offset = 0
-        self.apply_encoder_config_with_retries(self.canCoderConfig)                    
-        self.angulatorEncoder.set_position(0)
-        
         # Wait for a new reading after applying the offset.
         angulator_offset = self.angulatorEncoder.get_absolute_position()
         angulator_offset.wait_for_update(1)
+
+        self.encoder_offset = angulator_offset.value
         
-        self.canCoderConfig.magnet_sensor.magnet_offset = angulator_offset.value
-        self.apply_encoder_config_with_retries(self.canCoderConfig)
+        self.angulatorMotorConfig.software_limit_switch.forward_soft_limit_threshold = constants.kAngulatorForwardSoftLimitRot + self.encoder_offset
+        self.angulatorMotorConfig.software_limit_switch.reverse_soft_limit_threshold = constants.kAngulatorReverseSoftLimitRot + self.encoder_offset
+        self.angulatorMotor.configurator.apply(self.angulatorMotorConfig)
         wpilib.Preferences.setDouble("ANGULATOR_OFFSET", angulator_offset.value)
         SmartDashboard.putNumber("Angulator Absolute", angulator_offset.value)
 
@@ -193,10 +195,7 @@ class AngulatorSubsystem(Subsystem):
 
 
     def periodic(self):
-       SmartDashboard.putNumber("Angulator Position",self.angulatorMotor.get_position().value)
-
-       if self.angulatorMotor.get_position().value < 0:
-           self.angulatorEncoder.set_position(0)
+       SmartDashboard.putNumber("Angulator Position",self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
        
 
         

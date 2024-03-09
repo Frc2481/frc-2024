@@ -37,7 +37,7 @@ class RobotContainer(Subsystem):
         self.angulator = AngulatorSubsystem()    
         self.auto_mode = False 
         
-        NamedCommands.registerCommand('prepare speaker shot', self.prepare_speaker_shot_cmd())
+        NamedCommands.registerCommand('prepare speaker shot', self.prepare_auto_speaker_shot_cmd())
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare first amp shot', self.prep_first_amp_shot_auto())
@@ -63,8 +63,8 @@ class RobotContainer(Subsystem):
         self.button_bindings_configure()
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
         
-        # SmartDashboard.putNumber("shooter_cmd_angle", 0)
-        # SmartDashboard.putNumber("shooter_cmd_speed", 0)
+        SmartDashboard.putNumber("shooter_cmd_angle", 0)
+        SmartDashboard.putNumber("shooter_cmd_speed", 0)
         # DataLogManager.start()
 
 
@@ -94,8 +94,8 @@ class RobotContainer(Subsystem):
         self.driver_controller.povUp().onTrue(self.angulator.angulator_up_cmd())
         self.driver_controller.povDown().onTrue(self.angulator.angulator_down_cmd())
 
-        # SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
-        # SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
+        SmartDashboard.putData("Reset Odom", InstantCommand(lambda: self.drivetrain.reset_pose()).ignoringDisable(True))
+        SmartDashboard.putData("Zero Steer Encoder", self.drivetrain.zero_steer_encoder_cmd())
         # SmartDashboard.putData("Calibrate Wheel Circumference", self.drivetrain.calibrate_wheel_circumference_cmd())
         # SmartDashboard.putData("Reset Odom To Vision", self.drivetrain.reset_odom_to_vision_cmd().ignoringDisable(True))
         SmartDashboard.putData("+shoot speed", self.shooter.increase_shooter_speed_cmd()) 
@@ -142,6 +142,16 @@ class RobotContainer(Subsystem):
                               lambda: self.driver_controller.leftBumper().getAsBoolean(),
                                 self.angulator)
                 )
+    
+    def prepare_auto_speaker_shot_cmd(self):
+        return (
+            FunctionalCommand(lambda: self.set_align_state(constants.kAlignStateSpeaker),
+                              lambda: self.set_angle_speed_from_range(),
+                              lambda interrupted: None,
+                              lambda: self.shooter.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget,
+                                self.angulator)
+                )
+
 
 
     def speaker_score_cmd(self):
@@ -193,7 +203,8 @@ class RobotContainer(Subsystem):
     def prep_first_amp_shot_auto(self):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
-            self.angulator.angulator_set_pos_cmd(0.013)))
+            self.angulator.angulator_set_pos_cmd(0.014)))
+            #0.014 works with fresh battery
     
 
     def prep_first_feeder_shot_auto(self):

@@ -56,7 +56,7 @@
     },
     {
       "name": "speaker score",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {

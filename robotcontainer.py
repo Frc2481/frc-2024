@@ -81,7 +81,7 @@ class RobotContainer(Subsystem):
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
         DataLogManager.start()
 
-        self.auto_path = PathPlannerAuto("6 piece")
+        self.auto_path = PathPlannerAuto("4 piece")
 
 
     def button_bindings_configure(self):

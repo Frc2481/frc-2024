@@ -181,7 +181,7 @@ class RobotContainer(Subsystem):
                 # self.angulator.wait_for_angulator_on_target(),
                 self.shooter.wait_for_shooter_on_target(),
                 self.feeder.feeder_on_cmd(.9),
-                WaitCommand(0.1),
+                WaitCommand(0.2),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)

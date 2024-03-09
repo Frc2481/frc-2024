@@ -104,7 +104,7 @@ class ShooterSubsystem(object):
 
 
     def wait_for_shooter_on_target(self):    
-        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_error().value < constants.kShooterOnTarget),
+        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_reference().value - constants.kShooterOnTarget < self.shooterMotor.get_velocity().value),
                         PrintCommand('Shooter On Target')))
     
         

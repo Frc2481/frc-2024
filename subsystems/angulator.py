@@ -155,7 +155,7 @@ class AngulatorSubsystem(Subsystem):
         angulator_rotation = angulator_angle / 360.0
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
-        self.angulatorMotor.set_control(MotionMagicVoltage(position=angulator_rotation+self.encoder_offset))
+        self.set_angulator_position(angulator_rotation)
 
 
     def angulator_set_pos_from_range_cmd(self, range_cb):
@@ -193,7 +193,7 @@ class AngulatorSubsystem(Subsystem):
         return runOnce(self.zero_encoder)
     
     def wait_for_angulator_on_target(self):
-        return WaitUntilCommand(lambda: math.fabs(self.get_error()) < 0.01)
+        return WaitUntilCommand(lambda: math.fabs(self.get_error()) < 0.003)
 
 
     def periodic(self):

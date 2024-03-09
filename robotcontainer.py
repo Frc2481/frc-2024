@@ -38,9 +38,9 @@ class RobotContainer(Subsystem):
         self.auto_mode = False 
         
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_auto_speaker_shot_cmd())
-        NamedCommands.registerCommand('prepare second amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.005))
+        NamedCommands.registerCommand('prepare second amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.004))
         NamedCommands.registerCommand('prepare third amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.08))
-        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3))
+        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
@@ -49,7 +49,9 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('wait for second beam break', 
                                       WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(1.0))
         NamedCommands.registerCommand('wait for not second beam break', 
-                                      WaitUntilCommand(lambda: self.beambreak_two.get() == True).withTimeout(1.0))
+                                      WaitUntilCommand(lambda: 
+                                                       (self.beambreak_two.get() == True) and 
+                                                       (self.beambreak_one.get() == True)).withTimeout(1.0))
         NamedCommands.registerCommand('wait for shooter on target', self.shooter.wait_for_shooter_on_target())
         NamedCommands.registerCommand('wait for angulator on target', self.angulator.wait_for_angulator_on_target())
         NamedCommands.registerCommand('auto shooter command', 
@@ -179,21 +181,12 @@ class RobotContainer(Subsystem):
                 # self.angulator.wait_for_angulator_on_target(),
                 self.shooter.wait_for_shooter_on_target(),
                 self.feeder.feeder_on_cmd(.9),
-                WaitCommand(0.25),
+                WaitCommand(0.1),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)
         ))
-        
-    def speaker_auto_score_cmd(self):
-        return sequence(
-                self.feeder.feeder_on_cmd(.9),
-                WaitCommand(0.25),
-                self.feeder.feeder_off_cmd(),
-                self.shooter.shooter_off_cmd(),
-                self.angulator.angulator_set_pos_cmd(0))          
-
-
+               
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
@@ -245,13 +238,12 @@ class RobotContainer(Subsystem):
         return self.auto_path
 
     
-    def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical):
-        return sequence(self.angulator.angulator_set_pos_cmd(0),
+    def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical, auto=False):
+        return sequence(
+                        self.angulator.angulator_set_pos_cmd(0),
                         self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
                         self.feeder.feeder_on_cmd(feeder_cmd)
-                        #WaitUntilCommand(lambda: self.beambreak_one.get() == False),
-                        #ScheduleCommand(self.beambreak_during_intake_cmd())
                         )
 
 
@@ -262,17 +254,17 @@ class RobotContainer(Subsystem):
                 ))
 
 
-    def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical):
+    def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto=False):
         return(sequence(
             self.set_align_state_cmd(constants.kAlignStateNote),
-            self.intake_sequence_cmd(feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical))
+            self.intake_sequence_cmd(feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto))
             )
     
         
     def beambreak_during_intake_cmd(self):
         return (
-             InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
-             InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
+            #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
+             InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
              self.feeder.feeder_on_cmd(0.15))
         )
 
@@ -294,3 +286,8 @@ class RobotContainer(Subsystem):
         SmartDashboard.putNumber("shoot speed ref", self.shooter.shooterMotor.get_closed_loop_reference().value)
         SmartDashboard.putNumber("shoot speed motor voltage", self.shooter.shooterMotor.get_motor_voltage().value)
         SmartDashboard.putNumber("shoot supply voltage", self.shooter.shooterMotor.get_supply_voltage().value)
+
+        SmartDashboard.putNumber("feeder duty cycle", self.feeder.feederMotor.get_duty_cycle().value)
+
+        SmartDashboard.putNumber("beambreak one", self.beambreak_one.get())
+        SmartDashboard.putNumber("beambreak two", self.beambreak_two.get())

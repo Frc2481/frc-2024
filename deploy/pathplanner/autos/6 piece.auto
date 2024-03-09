@@ -44,6 +44,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.05
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "prepare second amp speaker shot"
@@ -119,21 +125,15 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.25
+            "name": "speaker score"
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
               {
                 "type": "path",
                 "data": {
@@ -175,15 +175,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
               {
                 "type": "path",
                 "data": {
@@ -225,15 +225,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
               {
                 "type": "path",
                 "data": {

@@ -31,6 +31,7 @@ from phoenix6.configs.cancoder_configs import CANcoderConfiguration
 from phoenix6.hardware.cancoder import CANcoder
 from phoenix6.hardware import TalonFX
 from phoenix6.hardware import Pigeon2
+from phoenix6.status_signal import BaseStatusSignal
 
 import constants
 
@@ -105,8 +106,17 @@ class SwerveModule(object):
         self.steerEncoder.configurator.apply(self.canCoderConfig)
 
         self.wheel_circumference = 0
-        
 
+        self.driveVelocitySignal = self.driveMotor.get_velocity()
+        self.drivePositionSignal = self.driveMotor.get_position()
+        self.steerVelocitySignal = self.steerMotor.get_velocity()
+        self.steerPositionSignal = self.steerEncoder.get_absolute_position()
+        self.allSignals = [self.driveVelocitySignal, self.drivePositionSignal,
+                           self.steerVelocitySignal, self.steerPositionSignal]
+
+        self.state_drive_pos = 0
+        self.state_drive_vel = 0
+        self.state_steer_ang = 0
 
     def zero_steer_encoder(self):
         print("Zero Encoder Start")
@@ -127,11 +137,10 @@ class SwerveModule(object):
         self.steerEncoder.configurator.apply(self.canCoderConfig)
        
     def distance(self):
-        return wpimath.units.inchesToMeters(self.driveMotor.get_position().value * self.wheel_circumference)
-    
-    
+        return wpimath.units.inchesToMeters(self.state_drive_pos * self.wheel_circumference)
+
     def angle(self):
-        return Rotation2d(self.steerEncoder.get_absolute_position().value * 2 * math.pi)
+        return self.state_steer_ang
     
     def set_state(self, state: SwerveModuleState, voltage_only):
         state = SwerveModuleState.optimize(state, self.angle())
@@ -154,7 +163,7 @@ class SwerveModule(object):
    
     def get_state(self): 
         return SwerveModuleState(
-            speed=wpimath.units.inchesToMeters(self.driveMotor.get_velocity().value * (self.wheel_circumference)),
+            speed=wpimath.units.inchesToMeters(self.state_drive_vel * (self.wheel_circumference)),
             angle=self.angle()
         )
     
@@ -163,7 +172,15 @@ class SwerveModule(object):
     
     def get_voltage(self):
         return self.driveMotor.get_motor_voltage().value
-       
+
+    def update(self):
+        BaseStatusSignal.refresh_all(self.allSignals)
+
+        self.state_drive_pos = BaseStatusSignal.get_latency_compensated_value(self.drivePositionSignal, self.driveVelocitySignal)
+        state_steer_ang = BaseStatusSignal.get_latency_compensated_value(self.steerPositionSignal, self.steerVelocitySignal)
+        self.state_drive_vel = self.driveVelocitySignal.value
+
+        self.state_steer_ang = Rotation2d(state_steer_ang * 2 * math.pi)
 
 class DriveSubsystem(Subsystem):
 
@@ -254,12 +271,17 @@ class DriveSubsystem(Subsystem):
         self.drive_state = True
         
     def shouldFlipPath(self):
-            # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         return DriverStation.getAlliance() == DriverStation.Alliance.kRed
     
     def periodic(self):
+        self._fl.update()
+        self._fr.update()
+        self._bl.update()
+        self._br.update()
+
         self.__odometry.update(
             Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [

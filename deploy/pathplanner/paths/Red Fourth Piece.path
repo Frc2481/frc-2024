@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.327425408521762,
-        "y": 5.896350913830608
+        "x": 1.9821435997356744,
+        "y": 5.989311400811477
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5068807844021435,
-        "y": 6.028581190795099
+        "x": 2.161598975616056,
+        "y": 6.121541677775968
       },
       "isLocked": false,
       "linkedName": "red6p3score_end"
     },
     {
       "anchor": {
-        "x": 2.685987286876546,
-        "y": 6.613474670540174
+        "x": 2.818787982563503,
+        "y": 6.666594948814957
       },
       "prevControl": {
-        "x": 2.5537570099120543,
-        "y": 6.509579452925217
+        "x": 2.6865577055990113,
+        "y": 6.5626997312
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,7 +50,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0

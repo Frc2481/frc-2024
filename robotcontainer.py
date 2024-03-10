@@ -1,6 +1,6 @@
 import constants
 import wpilib
-from wpilib import SmartDashboard, DataLogManager
+from wpilib import SmartDashboard, DataLogManager, DriverStation
 from commands2 import *
 from commands2.button import * 
 from commands2.cmd import * 
@@ -82,6 +82,7 @@ class RobotContainer(Subsystem):
         DataLogManager.start()
 
         self.auto_path = PathPlannerAuto("6 piece")
+        self.prev_alliance = DriverStation.getAlliance()
 
 
     def button_bindings_configure(self):
@@ -291,3 +292,8 @@ class RobotContainer(Subsystem):
 
         SmartDashboard.putNumber("beambreak one", self.beambreak_one.get())
         SmartDashboard.putNumber("beambreak two", self.beambreak_two.get())
+
+        # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
+        if DriverStation.getAlliance() != self.prev_alliance:
+            self.auto_path = PathPlannerAuto("6 piece")
+            self.prev_alliance = DriverStation.getAlliance()

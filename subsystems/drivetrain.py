@@ -372,7 +372,13 @@ class DriveSubsystem(Subsystem):
         )
    
     def reset_yaw(self):
-        self.reset_pose(self.get_pose().rotateBy(self.get_pose().rotation() * -1))
+        if self.shouldFlipPath():
+            self.reset_pose(self.get_pose()
+                            .rotateBy(self.get_pose().rotation() * -1) # Subtract out current angle of robot
+                            .rotateBy(Rotation2d.fromDegrees(180))) # Rotate 180 for the red alliance
+        else:
+            self.reset_pose(self.get_pose()
+                            .rotateBy(self.get_pose().rotation() * -1)) # Subtract out current angle of robot
         
     def reset_yaw_cmd(self):
         return runOnce(lambda: self.reset_yaw())
@@ -398,6 +404,10 @@ class DriveSubsystem(Subsystem):
                 
     def drive(self, x, y, theta, field_relative, force_angle=False):                
         if field_relative:
+            if self.shouldFlipPath():
+                x *= -1
+                y *= -1    
+            
             chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
         else:
             chassis_speed = ChassisSpeeds(x, y, theta)
@@ -509,9 +519,13 @@ class DriveSubsystem(Subsystem):
         )
     
     def get_angle_to_speaker(self):
-        # TODO: Make this work for red alliance too.
         # TODO: Possible add a trim if this isn't perfect.
-        translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+        if self.shouldFlipPath():
+            translation_to_speaker = self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation()   
+        else:
+            translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+        
+        # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
         angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())
         return angle_to_speaker.degrees()
     
@@ -529,6 +543,7 @@ class DriveSubsystem(Subsystem):
         )
     
     def get_lateral_distance_amp(self):
+        # TODO: TODO: TODO: TODO: TODO:
         # TODO: Make this work for red alliance too.
         # TODO: Possible add a trim if this isn't perfect.
         # FIXME: Why do we have to fudge this 20cm?

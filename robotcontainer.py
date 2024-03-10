@@ -81,8 +81,8 @@ class RobotContainer(Subsystem):
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
         DataLogManager.start()
 
-        self.auto_path = PathPlannerAuto("6 piece")
-        self.prev_alliance = DriverStation.getAlliance()
+        self.auto_path = PathPlannerAuto("Red 6 piece")
+        self.prev_alliance = None
 
 
     def button_bindings_configure(self):
@@ -295,5 +295,9 @@ class RobotContainer(Subsystem):
 
         # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
         if DriverStation.getAlliance() != self.prev_alliance:
-            self.auto_path = PathPlannerAuto("6 piece")
+            # if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self.auto_path = PathPlannerAuto("Red 6 piece")
+            # else:
+                # self.auto_path = PathPlannerAuto("6 piece")
+
             self.prev_alliance = DriverStation.getAlliance()

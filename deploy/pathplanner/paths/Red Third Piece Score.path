@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.9980151143548195,
+        "y": 5.604189383319302
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.02517807668749,
+        "y": 6.671476618818412
+      },
+      "isLocked": false,
+      "linkedName": "red6p3e1"
+    },
+    {
+      "anchor": {
+        "x": 2.327425408521762,
+        "y": 5.896350913830608
+      },
+      "prevControl": {
+        "x": 3.1896355342430445,
+        "y": 5.936725880031189
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "red6p3score_end"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.55,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 7.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 24.227745317953943,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Matt's Dream Auto Red",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

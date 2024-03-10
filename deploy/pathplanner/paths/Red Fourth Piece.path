@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.398970526426981,
-        "y": 6.488728609058204
+        "x": 2.327425408521762,
+        "y": 5.896350913830608
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.400142623443846,
-        "y": 6.724854103637653
+        "x": 2.5068807844021435,
+        "y": 6.028581190795099
       },
       "isLocked": false,
-      "linkedName": "6p1ae1"
+      "linkedName": "red6p3score_end"
     },
     {
       "anchor": {
-        "x": 7.986905947017743,
-        "y": 6.97042461800028
+        "x": 2.685987286876546,
+        "y": 6.613474670540174
       },
       "prevControl": {
-        "x": 7.155744206098082,
-        "y": 6.762634182770364
+        "x": 2.5537570099120543,
+        "y": 6.509579452925217
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6p1e1"
+      "linkedName": "red6p4end"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "intake on",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -50,21 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 8.325650330426878,
-    "rotateFast": true
+    "rotation": 26.565051177078182,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Matt's Dream Auto",
+  "folder": "Matt's Dream Auto Red",
   "previewStartingState": {
-    "rotation": 9.246112745563268,
-    "velocity": 2.6
+    "rotation": 32.00538320808341,
+    "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

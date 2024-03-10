@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.115619932931643,
+        "y": 6.3376082925273565
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.097901990382153,
+        "y": 6.120372837514263
+      },
+      "isLocked": false,
+      "linkedName": "red6p2score_end"
+    },
+    {
+      "anchor": {
+        "x": 7.9980151143548195,
+        "y": 5.604189383319302
+      },
+      "prevControl": {
+        "x": 7.412423887797786,
+        "y": 5.783644759199683
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "red6p3e1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Start Intake",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.75,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -1.1017061152063408,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Matt's Dream Auto Red",
+  "previewStartingState": {
+    "rotation": 8.615648184163962,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

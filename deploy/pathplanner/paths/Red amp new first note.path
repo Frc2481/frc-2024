@@ -20,21 +20,15 @@
         "y": 6.488728609058204
       },
       "prevControl": {
-        "x": 4.501693647025074,
-        "y": 6.347053312310534
+        "x": 4.5148324352138935,
+        "y": 6.280215962717883
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6p1ae1"
+      "linkedName": "red6p1ae1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 6.397443100399723,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -47,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "prepare first shot"
+                "name": "prepare first amp shot"
               }
             }
           ]
@@ -56,7 +50,7 @@
     },
     {
       "name": "score first piece",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -80,11 +74,11 @@
   },
   "goalEndState": {
     "velocity": 2.6,
-    "rotation": 7.907162702958326,
+    "rotation": 18.81,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Matt's Dream Auto",
+  "folder": "Matt's Dream Auto Red",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

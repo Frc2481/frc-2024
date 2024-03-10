@@ -115,7 +115,7 @@ class AngulatorSubsystem(Subsystem):
             lambda: self.set_angulator_position(angulator_position),
             lambda: None,
             lambda interrupted: None,
-            lambda: math.fabs(self.get_error()) < 0.05,
+            lambda: math.fabs(self.get_error()) < 0.0005,
         ).withTimeout(0.5)
     
 

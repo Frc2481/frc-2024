@@ -131,7 +131,7 @@ kArmAcceleration =800
 kArmCruiseVelocity = 90
 kArmScorePosition = 34.916504
 kArmClimbPosition = 34
-kArmPickupPosition = 15.716
+kArmPickupPosition = 13.4
 kArmDownPosition = 1
 
 #angulator

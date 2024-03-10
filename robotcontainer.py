@@ -194,7 +194,7 @@ class RobotContainer(Subsystem):
                 self.feeder.feeder_on_cmd(0),
                 self.shooter.shooter_on_cmd(20),
                 self.angulator.angulator_set_pos_cmd(0),
-                self.arm.arm_pickup_pos_cmd(11.5),
+                self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
                 self.feeder.feeder_on_cmd(.9),
                 self.arm.gripper_close_cmd(),

@@ -149,7 +149,11 @@ class AngulatorSubsystem(Subsystem):
 
 
     def set_pos_from_range(self, range_cb):
-        HEIGHT_OF_TARGET = 1.98
+        HEIGHT_OF_TARGET = 2.08#2.044
+        #if range_cb() < 3.6:
+        #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (range_cb()*0.025-1*0.025)
+        #else:
+        #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
         angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 22
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0

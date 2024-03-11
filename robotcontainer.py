@@ -44,6 +44,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
         NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
+        NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait command', WaitCommand(0.25))
         NamedCommands.registerCommand('wait for second beam break', 
@@ -233,7 +234,11 @@ class RobotContainer(Subsystem):
         return(sequence(
             self.shooter.shooter_on_cmd(65),
             self.angulator.angulator_set_pos_cmd(0.011)))
-
+    
+    def prep_first_close_shot_auto(self):
+        return(sequence(
+            self.shooter.shooter_on_cmd(65),
+            self.angulator.angulator_set_pos_cmd(0.08)))
 
     def getAutonomousCommand(self):
         return self.auto_path
@@ -296,7 +301,7 @@ class RobotContainer(Subsystem):
         # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
         if DriverStation.getAlliance() != self.prev_alliance:
             # if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.auto_path = PathPlannerAuto("Red 6 piece")
+            self.auto_path = PathPlannerAuto("Close 4 Piece")
             # else:
                 # self.auto_path = PathPlannerAuto("6 piece")
 

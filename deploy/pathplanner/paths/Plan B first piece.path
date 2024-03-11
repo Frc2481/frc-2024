@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5359574351071954,
+        "y": 5.279766076811425
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9326482660006694,
+        "y": 4.949190384400196
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6788048288717285,
+        "y": 4.203033821529138
+      },
+      "prevControl": {
+        "x": 2.1687737605801187,
+        "y": 4.637504731555324
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "B1p1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "intake on",
+      "waypointRelativePos": 0.25,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.5,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -29.744881296942246,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Close 4 piece",
+  "previewStartingState": {
+    "rotation": -1.12330271407545,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

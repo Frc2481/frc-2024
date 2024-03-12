@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
+            "name": "prepare slow front auto first shot"
           }
         },
         {
@@ -24,19 +24,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "Plan B first piece"
+                  "pathName": "Slow 6 Piece1"
                 }
               },
               {
@@ -56,15 +56,9 @@
                       }
                     },
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.25
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare slow front auto second shot"
                       }
                     }
                   ]
@@ -76,25 +70,13 @@
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "wait for angulator on target"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
+            "waitTime": 0.5
           }
         },
         {
@@ -102,9 +84,15 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "Plan B Second Piece"
+                  "pathName": "Slow 6 Piece 2"
                 }
               },
               {
@@ -124,15 +112,9 @@
                       }
                     },
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.25
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare slow front auto third shot"
                       }
                     }
                   ]
@@ -144,31 +126,25 @@
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "wait for angulator on target"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
+            "waitTime": 0.25
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -192,15 +168,9 @@
                       }
                     },
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.25
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare slow front auto fourth shot"
                       }
                     }
                   ]
@@ -212,7 +182,70 @@
         {
           "type": "named",
           "data": {
-            "name": "prepare speaker shot"
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow 6 Piece 4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow 6 Piece 5"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare slow front auto fifth"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -222,21 +255,72 @@
           }
         },
         {
-          "type": "wait",
+          "type": "parallel",
           "data": {
-            "waitTime": 1.0
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow 6 Piece 6"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow 6 Piece 7"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare slow front auto sixth"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "speaker score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Drive Out"
           }
         }
       ]

@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.397798429410117,
+        "y": 6.384833391443246
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.502865744041938,
+        "y": 6.290383193611466
+      },
+      "isLocked": false,
+      "linkedName": "Slow 5"
+    },
+    {
+      "anchor": {
+        "x": 7.9774609272345645,
+        "y": 5.657566868138543
+      },
+      "prevControl": {
+        "x": 6.957398790651344,
+        "y": 5.8464672638021025
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Slow 6"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "intake ",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Slow 6 piece",
+  "previewStartingState": {
+    "rotation": 10.713123022791082,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

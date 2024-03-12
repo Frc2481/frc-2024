@@ -149,17 +149,18 @@ class AngulatorSubsystem(Subsystem):
 
 
     def set_pos_from_range(self, range_cb):
-        HEIGHT_OF_TARGET = 2.08#2.044
+        HEIGHT_OF_TARGET = 2.044
         #if range_cb() < 3.6:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (range_cb()*0.025-1*0.025)
         #else:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 22
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 20
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
         self.set_angulator_position(angulator_rotation)
+
 
 
     def angulator_set_pos_from_range_cmd(self, range_cb):

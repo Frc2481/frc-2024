@@ -38,15 +38,18 @@ class RobotContainer(Subsystem):
         self.auto_mode = False 
         
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_auto_speaker_shot_cmd())
+        NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
         NamedCommands.registerCommand('prepare second amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.004))
         NamedCommands.registerCommand('prepare third amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.08))
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
-        NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())
-        NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
+        NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
+        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.0125))
+        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.015))
+        NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.016))
+        NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.017))
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
-        NamedCommands.registerCommand('wait command', WaitCommand(0.25))
         NamedCommands.registerCommand('wait for second beam break', 
                                       WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(1.0))
         NamedCommands.registerCommand('wait for not second beam break', 
@@ -301,7 +304,7 @@ class RobotContainer(Subsystem):
         # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
         if DriverStation.getAlliance() != self.prev_alliance:
             # if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.auto_path = PathPlannerAuto("Close 4 Piece")
+            self.auto_path = PathPlannerAuto("Slow Source Auto")
             # else:
                 # self.auto_path = PathPlannerAuto("6 piece")
 

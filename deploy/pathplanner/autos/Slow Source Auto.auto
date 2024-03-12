@@ -1,0 +1,239 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.5642924944567294,
+      "y": 2.654050577087952
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "prepare source auto first shot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 3"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare source auto second shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 5"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare source auto third shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 6"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle 7"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare source auto fourth shot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker score"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,6 +1,6 @@
 import constants
 import wpilib
-from wpilib import SmartDashboard, DataLogManager, DriverStation
+from wpilib import SmartDashboard, DataLogManager, DriverStation, SendableChooser
 from commands2 import *
 from commands2.button import * 
 from commands2.cmd import * 
@@ -43,10 +43,10 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare third amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.08))
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
-        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.0125))
-        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.015))
-        NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.016))
-        NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.017))
+        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.015))
+        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0165))
+        NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.019))
+        NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0195))
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
@@ -62,6 +62,14 @@ class RobotContainer(Subsystem):
                                       sequence(
                                           RunCommand(lambda: self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)),
                                           RunCommand(lambda: self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker))))
+        
+        self.chooser = SendableChooser()
+        self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
+        self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
+        self.chooser.addOption("6 Piece Blue", PathPlannerAuto("6 piece"))
+        self.chooser.addOption("6 Piece Red", PathPlannerAuto("Red 6 piece"))
+
+        SmartDashboard.putData("Auto", self.chooser)
         
         self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
         self.beambreak_trigger_one = Trigger(self.beambreak_one.get)
@@ -244,7 +252,8 @@ class RobotContainer(Subsystem):
             self.angulator.angulator_set_pos_cmd(0.08)))
 
     def getAutonomousCommand(self):
-        return self.auto_path
+        return self.chooser.getSelected()
+    #self.auto_path
 
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical, auto=False):
@@ -274,7 +283,7 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.15))
+             self.feeder.feeder_on_cmd(0.1))
         )
 
 

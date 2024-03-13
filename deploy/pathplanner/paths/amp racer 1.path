@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.573737514239907,
-        "y": 6.0
+        "x": 1.5454024548903733,
+        "y": 5.752017065970323
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5560195716904155,
-        "y": 6.04481267924884
+        "x": 1.7248578307707543,
+        "y": 7.367115448893754
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.398970526426981,
-        "y": 6.488728609058204
+        "x": 7.986905947017743,
+        "y": 7.442675607159178
       },
       "prevControl": {
-        "x": 4.501693647025074,
-        "y": 6.347053312310534
+        "x": 6.0695669310326155,
+        "y": 7.584350903906847
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,16 +30,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 6.397443100399723,
-      "rotateFast": false
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 30.0,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "prepare first shot",
-      "waypointRelativePos": 0,
+      "name": "Intake",
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,7 +47,7 @@
             {
               "type": "named",
               "data": {
-                "name": "prepare first amp shot"
+                "name": "intake feeder on"
               }
             }
           ]
@@ -55,8 +55,8 @@
       }
     },
     {
-      "name": "score first piece",
-      "waypointRelativePos": 0.65,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -70,23 +70,40 @@
           ]
         }
       }
+    },
+    {
+      "name": "Intake2",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake feeder on"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.6,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 2.7,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.6,
-    "rotation": 7.907162702958326,
+    "velocity": 0.0,
+    "rotation": 15.945395900922716,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Matt's Dream Auto",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

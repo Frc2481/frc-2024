@@ -51,7 +51,7 @@
   "eventMarkers": [
     {
       "name": "Intake On",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -69,7 +69,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.75,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },

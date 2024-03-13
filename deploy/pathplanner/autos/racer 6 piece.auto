@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.573737514239907,
-      "y": 6.0
+      "x": 1.5454024548903733,
+      "y": 5.752017065970323
     },
     "rotation": 0
   },
@@ -12,59 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "amp new first note"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "amp First note"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Second Piece Score"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for second beam break"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.05
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare second amp speaker shot"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "prepare racer 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "wait for shooter on target"
+            "name": "wait for angulator on target"
           }
         },
         {
@@ -80,64 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Third Piece"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Third Piece Score"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare third amp speaker shot"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait for shooter on target"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Fourth Piece"
+                  "pathName": "amp racer 1"
                 }
               },
               {
@@ -159,7 +58,45 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare racer 2"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp racer 2"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare racer 3"
                       }
                     }
                   ]
@@ -175,9 +112,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "speaker score"
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp racer 3"
+                }
+              }
+            ]
           }
         },
         {
@@ -187,7 +143,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "amp Fifth Piece"
+                  "pathName": "amp racer 5"
                 }
               },
               {
@@ -209,7 +165,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare racer 4"
                       }
                     }
                   ]
@@ -225,9 +181,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "speaker score"
+            "waitTime": 0.01
           }
         },
         {
@@ -235,9 +191,15 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "amp sixth piece"
+                  "pathName": "amp racer 6"
                 }
               },
               {
@@ -259,13 +221,81 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "prepare speaker shot"
+                        "name": "prepare racer 5"
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker score"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp racer 7"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "wait for second beam break"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare racer 6"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait for angulator on target"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {

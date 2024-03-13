@@ -313,43 +313,48 @@ class DriveSubsystem(Subsystem):
     def dashboard_periodic(self):                                                       
         # SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         # SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
-        # SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
-        # SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
-        # SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
+        SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
+        SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
+        #SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
         
         # SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
         # SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
-        # SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
-        # SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
-        # SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
+        SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
+        SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
+        #SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
         
         # SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
         # SmartDashboard.putNumber("BL_Distance",self._bl.get_position().distance)
-        # SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
-        # SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
-        # SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
+        #SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
+        #SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
+        #SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
+        #SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
         
         # SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
         # SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
-        # SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
-        # SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
-        # SmartDashboard.putNumber("BR Duty Cycle", self._br.driveMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
+        #SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
+        #SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
+        #SmartDashboard.putNumber("BR Duty Cycle", self._br.driveMotor.get_duty_cycle().value)
+        #SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
         
-        # SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
-        # SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
-        # SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
-        # SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
+        #SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
+        #SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
+        #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
+        #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
         # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
         # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         # SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
-        SmartDashboard.putNumber("Angle to Speaker", self.get_angle_to_speaker())
-        SmartDashboard.putNumber("Distance to Speaker", self.get_range_to_speaker())
+        #SmartDashboard.putNumber("Angle to Speaker", self.get_angle_to_speaker())
+        #SmartDashboard.putNumber("Distance to Speaker", self.get_range_to_speaker())
+
+        #SmartDashboard.putNumber("FR Steer Velocity",self._fr.steerMotor.get_rotor_velocity())
+        #SmartDashboard.putNumber("Bl Steer Velocity",self._bl.steerMotor.get_rotor_velocity())
+        #SmartDashboard.putNumber("BR Steer Velocity",self._br.steerMotor.get_rotor_velocity())
+        #SmartDashboard.putNumber("FL Steer Velocity",self._fl.steerMotor.get_rotor_velocity())
                     
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
@@ -396,7 +401,8 @@ class DriveSubsystem(Subsystem):
     
     def get_range_to_speaker(self):
         if self.shouldFlipPath():
-            return self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation().norm()   
+            return self.get_pose().relativeTo(Pose2d(16.58, 5.319, Rotation2d())).translation().norm() 
+            #5.547 original  
         else:
             return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   
     

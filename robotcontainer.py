@@ -44,7 +44,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
         
-        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.015))
+        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.016))
         NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0165))
         NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.019))
         NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0195))
@@ -53,9 +53,15 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare slow front auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.036))
         NamedCommands.registerCommand('prepare slow front auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.041))
         NamedCommands.registerCommand('prepare slow front auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.03))
-        NamedCommands.registerCommand('prepare slow front auto fifth', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0135))
+        NamedCommands.registerCommand('prepare slow front auto fifth', self.prepare_auto_shooter_and_angulator_cmd(80, 0.026))
         NamedCommands.registerCommand('prepare slow front auto sixth', self.prepare_auto_shooter_and_angulator_cmd(80, 0.012))
-        
+
+        NamedCommands.registerCommand('prepare racer 1', self.prepare_auto_shooter_and_angulator_cmd(65, 0.082))
+        NamedCommands.registerCommand('prepare racer 2', self.prepare_auto_shooter_and_angulator_cmd(80, 0.002))
+        NamedCommands.registerCommand('prepare racer 3', self.prepare_auto_shooter_and_angulator_cmd(80, 0.009))
+        NamedCommands.registerCommand('prepare racer 4', self.prepare_auto_shooter_and_angulator_cmd(65, 0.09))
+        NamedCommands.registerCommand('prepare racer 5', self.prepare_auto_shooter_and_angulator_cmd(80, 0.041))
+        NamedCommands.registerCommand('prepare racer 6', self.prepare_auto_shooter_and_angulator_cmd(80, 0.036))
 
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
@@ -77,8 +83,8 @@ class RobotContainer(Subsystem):
         self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
         self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
-        self.chooser.addOption("6 Piece Blue", PathPlannerAuto("6 piece"))
-        self.chooser.addOption("6 Piece Red", PathPlannerAuto("Red 6 piece"))
+        self.chooser.addOption("6 Piece RB Racer", PathPlannerAuto("racer 6 piece"))
+
         
 
         SmartDashboard.putData("Auto", self.chooser)
@@ -127,7 +133,7 @@ class RobotContainer(Subsystem):
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
         self.driver_controller.rightBumper().whileTrue(self.vomit_cmd())        
         self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
-        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.8))        
+        self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kTeleopFeederSpeed, 0.9, 0.8))        
         self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
         

@@ -45,7 +45,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
         
         NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.016))
-        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0165))
+        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.016))
         NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.019))
         NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0195))
         
@@ -223,11 +223,11 @@ class RobotContainer(Subsystem):
                 self.set_align_state_cmd(constants.kAlignStateAmp),
                 self.intake.set_intake_cmd(0, 0),
                 self.feeder.feeder_on_cmd(0),
-                self.shooter.shooter_on_cmd(20),
+                self.shooter.shooter_on_cmd(25),
                 self.angulator.angulator_set_pos_cmd(0),
                 self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
-                self.feeder.feeder_on_cmd(.9),
+                self.feeder.feeder_on_cmd(.95),
                 self.arm.gripper_close_cmd(),
                 WaitCommand(.1),
                 self.arm.arm_score_pos_cmd().withTimeout(1.0),

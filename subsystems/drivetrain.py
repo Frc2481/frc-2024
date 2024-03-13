@@ -401,7 +401,7 @@ class DriveSubsystem(Subsystem):
     
     def get_range_to_speaker(self):
         if self.shouldFlipPath():
-            return self.get_pose().relativeTo(Pose2d(16.58, 5.319, Rotation2d())).translation().norm() 
+            return self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation().norm() 
             #5.547 original  
         else:
             return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   
@@ -527,7 +527,7 @@ class DriveSubsystem(Subsystem):
     def get_angle_to_speaker(self):
         # TODO: Possible add a trim if this isn't perfect.
         if self.shouldFlipPath():
-            translation_to_speaker = self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation()   
+            translation_to_speaker = self.get_pose().relativeTo(Pose2d(16.58, 5.247, Rotation2d())).translation()   
         else:
             translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
         

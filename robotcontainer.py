@@ -25,6 +25,7 @@ from commands2 import sysid
 from wpilib.sysid import SysIdRoutineLog
 from wpilib import DigitalInput
 from phoenix6.controls import VoltageOut, VelocityDutyCycle
+from phoenix5.led import CANdle
 
 class RobotContainer(Subsystem):
 
@@ -44,10 +45,10 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
         
-        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.016))
-        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.016))
-        NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.019))
-        NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.0195))
+        NamedCommands.registerCommand('prepare source auto first shot', self.prepare_auto_shooter_and_angulator_cmd(83, 0.014))
+        NamedCommands.registerCommand('prepare source auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.013))
+        NamedCommands.registerCommand('prepare source auto third shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.015))
+        NamedCommands.registerCommand('prepare source auto fourth shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.016))
         
         NamedCommands.registerCommand('prepare slow front auto first shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.082))
         NamedCommands.registerCommand('prepare slow front auto second shot', self.prepare_auto_shooter_and_angulator_cmd(80, 0.036))
@@ -96,6 +97,8 @@ class RobotContainer(Subsystem):
         self.beambreak_two = DigitalInput(constants.kFeederBeambreakStageTwoPort)
         self.beambreak_trigger_two = Trigger(self.beambreak_two.get)
         self.beambreak_trigger_two.onFalse(self.beambreak_two_false_cmd())
+        
+        self.candle = CANdle(1, '2481')
         
         self.align_state = constants.kAlignStateSpeaker       
          
@@ -336,3 +339,8 @@ class RobotContainer(Subsystem):
                 # self.auto_path = PathPlannerAuto("6 piece")
 
             self.prev_alliance = DriverStation.getAlliance()
+            
+        if self.beambreak_one.get() == False:
+            self.candle.setLEDs(255, 255, 255) # LED's On Green 0 - 8
+        else:
+            self.candle.setLEDs(0, 0, 0) # LED's Off 0 - 8

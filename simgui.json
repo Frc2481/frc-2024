@@ -24,6 +24,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/+shoot speed": "Command",
+      "/SmartDashboard/-shoot speed": "Command",
       "/SmartDashboard/Amp Handoff": "Command",
       "/SmartDashboard/Angulator Down": "Command",
       "/SmartDashboard/Angulator Up": "Command",
@@ -31,6 +33,7 @@
       "/SmartDashboard/Arm Down": "Command",
       "/SmartDashboard/Arm Pick Up": "Command",
       "/SmartDashboard/Arm Up": "Command",
+      "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Calibrate Wheel Circumference": "Command",
       "/SmartDashboard/Feeder Off": "Command",
       "/SmartDashboard/Feeder On": "Command",

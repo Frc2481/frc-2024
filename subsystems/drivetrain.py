@@ -105,7 +105,6 @@ class SwerveModule(object):
         self.steerEncoder.configurator.apply(self.canCoderConfig)
 
         self.wheel_circumference = 0
-        
 
 
     def zero_steer_encoder(self):
@@ -201,7 +200,7 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putData("Field", self.field) 
 
         self._gyro = Pigeon2(constants.kPigeonCANID, "2481")
-        
+        self.bot_pose = [0,0,0,0,0,0,0,0,0,0,0] 
         
         self.__kinematics = SwerveDrive4Kinematics(
             Translation2d(constants.kWheelBase / 2.0, constants.kWheelTrack / 2.0),
@@ -276,14 +275,15 @@ class DriveSubsystem(Subsystem):
     def limelight_periodic(self):       
         #checks if april tag is visible
         if self.ll_rear_table.getNumber("tv",0) > 0:
-            bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0,0])
-            num_targets = bot_pose[7]
+            self.bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0,0])
+            num_targets = self.bot_pose[7]
             total_latency_ms = self.ll_rear_table.getNumber("cl",0) + \
                                self.ll_rear_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
-            vision_pose = Pose2d(x=bot_pose[0],
-                                 y=bot_pose[1],
-                                 rotation=Rotation2d.fromDegrees(bot_pose[5]))
+            vision_pose = Pose2d(x=self.bot_pose[0],
+                                 y=self.bot_pose[1],
+                                 rotation=Rotation2d.fromDegrees(self.bot_pose[5]))
+
 
             if (vision_pose.X() == 0.0): 
                 return
@@ -307,56 +307,23 @@ class DriveSubsystem(Subsystem):
                 if xyStds > 0:
                     self.__odometry.setVisionMeasurementStdDevs((xyStds, xyStds, math.radians(degStds)))
                     self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
-        
-      
+
      
     def dashboard_periodic(self):                                                       
-        # SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
-        # SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
-        SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
-        SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
-        SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
-        #SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
+        SmartDashboard.putNumber("Gyro Yaw", self._gyro.get_yaw().value)
+        SmartDashboard.putNumber("Swerve Pose X", self.get_pose().x)
+        SmartDashboard.putNumber("Swerve Pose Y", self.get_pose().y)
         
-        # SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
-        # SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
-        SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
-        SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
-        SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
-        #SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
-        
-        # SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
-        # SmartDashboard.putNumber("BL_Distance",self._bl.get_position().distance)
-        #SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
-        #SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
-        #SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
-        #SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
-        
-        # SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
-        # SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
-        #SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
-        #SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
-        #SmartDashboard.putNumber("BR Duty Cycle", self._br.driveMotor.get_duty_cycle().value)
-        #SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
-        
-        #SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
-        
-        # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
-        # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
-        # SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
-        
-        #SmartDashboard.putNumber("Angle to Speaker", self.get_angle_to_speaker())
-        #SmartDashboard.putNumber("Distance to Speaker", self.get_range_to_speaker())
+        SmartDashboard.putNumber("IMU Accel X", self._gyro.get_acceleration_x().value) 
+        SmartDashboard.putNumber("IMU Accel Y", self._gyro.get_acceleration_y().value) 
+        SmartDashboard.putNumber("IMU Angular Accel", self._gyro.get_angular_velocity_z_device().value) 
 
-        #SmartDashboard.putNumber("FR Steer Velocity",self._fr.steerMotor.get_rotor_velocity())
-        #SmartDashboard.putNumber("Bl Steer Velocity",self._bl.steerMotor.get_rotor_velocity())
-        #SmartDashboard.putNumber("BR Steer Velocity",self._br.steerMotor.get_rotor_velocity())
-        #SmartDashboard.putNumber("FL Steer Velocity",self._fl.steerMotor.get_rotor_velocity())
+        cs = self.get_robot_relative_speed() 
+        SmartDashboard.putNumber("Kinematics Omega", cs.omega)
+        SmartDashboard.putNumber("Kinematics Vx", cs.vx)
+        SmartDashboard.putNumber("Kinematics Vy", cs.vy)
                     
-        self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
+        self.field.setRobotPose(self.__odometry.getEstimatedPosition())
         
     # Odometry   
     def get_pose(self) -> Pose2d:        
@@ -466,10 +433,6 @@ class DriveSubsystem(Subsystem):
                 self._br.get_state() 
             )
         )
-        
-        SmartDashboard.putNumber("Actual Omega", cs.omega)
-        SmartDashboard.putNumber("Actual Vx", cs.vx)
-        SmartDashboard.putNumber("Actual Vy", cs.vy)
         
         return cs
     

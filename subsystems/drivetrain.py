@@ -11,8 +11,6 @@ from wpimath.estimator import SwerveDrive4PoseEstimator
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
 from wpilib import DriverStation
-from pathplannerlib.auto import PathPlannerAuto
-from wpilib import DriverStation
 
 from commands2 import WaitCommand, InstantCommand, FunctionalCommand, PrintCommand
 from commands2 import *
@@ -21,7 +19,7 @@ from commands2.cmd import *
 
 from commands2.button import CommandXboxController 
 
-from ntcore import NetworkTableInstance
+from ntcore import NetworkTableInstance, NetworkTable
 
 from phoenix6.controls import VelocityVoltage, MotionMagicVoltage, VoltageOut, DutyCycleOut
 
@@ -236,7 +234,7 @@ class DriveSubsystem(Subsystem):
                 PIDConstants(3.0, 0.0, 0.0), # Rotation PID constants
                 5.58, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
-                ReplanningConfig() # Default path replanning config. See the API for the options here
+                ReplanningConfig(enableInitialReplanning=False) # Default path replanning config. See the API for the options here
             ),
             self.shouldFlipPath, # Supplier to control path flipping based on alliance color
             self # Reference to this subsystem to set requirements
@@ -249,7 +247,11 @@ class DriveSubsystem(Subsystem):
         
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
-        self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
+        #self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
+        self.ll_top_front_table = NetworkTableInstance.getDefault().getTable("limelight-front")
+        self.ll_top_back_table = NetworkTableInstance.getDefault().getTable("limelight-back")
+        self.ll_top_left_table = NetworkTableInstance.getDefault().getTable("limelight-left")
+        self.ll_top_right_table = NetworkTableInstance.getDefault().getTable("limelight-right")
     
         self.drive_state = True
         
@@ -272,41 +274,66 @@ class DriveSubsystem(Subsystem):
         self.limelight_periodic()
         self.dashboard_periodic()
         
-    # Lime Light Update 
-    def limelight_periodic(self):       
-        #checks if april tag is visible
-        if self.ll_rear_table.getNumber("tv",0) > 0:
-            bot_pose = self.ll_rear_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0,0])
+    def add_pose_from_limelight(self, nt_table : NetworkTable, ll_name):
+        if nt_table.getNumber("tv",0) > 0:
+            # 0.tx
+            # 1.ty,
+            # 2.tz
+            # 3.roll
+            # 4.pitch
+            # 5.yaw
+            # 6.latency
+            # 7.tag count
+            # 8. tag span meters
+            # 9. average distance meters
+            # 10. average area % of image
+            # 11 + n*7, tag id
+            # 12 + n*7 tx nc
+            # 13 + n*7 ty nc
+            # 14 + n*7 ta
+            # 15 + n*7 distance to camera
+            # 16 + n*7 distance to robot
+            # 17 + n*7 ambiguity
+            
+            bot_pose = nt_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0])
             num_targets = bot_pose[7]
-            total_latency_ms = self.ll_rear_table.getNumber("cl",0) + \
-                               self.ll_rear_table.getNumber("tl",0) 
+            total_latency_ms = nt_table.getNumber("cl",0) + \
+                               nt_table.getNumber("tl",0) 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[5]))
+            # try:
+            single_tag_ambiguity = bot_pose[17] if len(bot_pose) >= 18 else 0
+            single_tag_distance = bot_pose[15] if len(bot_pose) >= 16 else 0
+            # except Exception as e:
+                # print(e)
+            bad_pose = Pose2d(-100, -100, Rotation2d())
 
             if (vision_pose.X() == 0.0): 
-                return
+                self.field.getObject(ll_name).setPose(bad_pose) 
+                return 
 
-            distance_to_pose = self.get_pose().relativeTo(vision_pose).translation().norm()
-            if num_targets:
-                xyStds = 0
-                degStds = 0
+            if num_targets >= 2:
+                self.__odometry.setVisionMeasurementStdDevs((0.7, 0.7, 99999999))
+                self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
+                self.field.getObject(ll_name).setPose(vision_pose)
                 
-                if (num_targets >= 2): 
-                    xyStds = 0.5
-                    degStds = 6
-      
-                elif self.ll_rear_table.getNumber("ta",0) > 0.8 and distance_to_pose < 0.5:
-                    xyStds = 1.0;                    degStds = 10
-                    
-                elif self.ll_rear_table.getNumber("ta",0) > 0.1 and distance_to_pose < 0.3:
-                    xyStds = 2.0
-                    degStds = 30           
-                
-                if xyStds > 0:
-                    self.__odometry.setVisionMeasurementStdDevs((xyStds, xyStds, math.radians(degStds)))
-                    self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
+            elif num_targets == 1 and single_tag_ambiguity < 0.85 and single_tag_distance <= 5:
+                self.__odometry.setVisionMeasurementStdDevs((2.0, 2.0, 99999999))
+                self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
+                self.field.getObject(ll_name).setPose(vision_pose)
+            else: 
+                self.field.getObject(ll_name).setPose(bad_pose)
+                   
+    # Lime Light Update 
+    def limelight_periodic(self):       
+        #checks if april tag is visible
+        self.add_pose_from_limelight(self.ll_top_front_table, "ll_top_front")
+        self.add_pose_from_limelight(self.ll_top_back_table, "ll_top_back")
+        self.add_pose_from_limelight(self.ll_top_left_table, "ll_top_left")
+        self.add_pose_from_limelight(self.ll_top_right_table, "ll_top_right")
+        #self.add_pose_from_limelight(self.ll_rear_table, "ll_rear")
         
       
      
@@ -652,10 +679,10 @@ class DriveSubsystem(Subsystem):
         self.__loggerState.append(sysid.SysIdRoutine.stateEnumToString(state))    
                   
     def driveVoltage(self, v):
-        self._fl.driveMotor.set_control(VoltageOut(v, enable_foc=False)) 
-        self._fr.driveMotor.set_control(VoltageOut(v, enable_foc=False))
-        self._bl.driveMotor.set_control(VoltageOut(v, enable_foc=False))
-        self._br.driveMotor.set_control(VoltageOut(v, enable_foc=False))
+        self._fl.driveMotor.set_control(VoltageOut(v, enable_foc=True)) 
+        self._fr.driveMotor.set_control(VoltageOut(v, enable_foc=True))
+        self._bl.driveMotor.set_control(VoltageOut(v, enable_foc=True))
+        self._br.driveMotor.set_control(VoltageOut(v, enable_foc=True))
     
     def sysid_quasistatic_cmd(self, direction):
         return self.__sysid.quasistatic(direction)

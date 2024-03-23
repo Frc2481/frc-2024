@@ -72,7 +72,7 @@ kSwerveSteerAcceleration = 24
 kSwerveSteerJerk = 0
 
 kSwerveReductionSteer = 30
-kSwerveReductionDrive = 4.31
+kSwerveReductionDrive = 3.33 #4.31
 
 kDriverControllerPort = 0
 kOperatorControllerPort = 1
@@ -132,7 +132,7 @@ kArmAcceleration =800
 kArmCruiseVelocity = 90
 kArmScorePosition = 34.916504
 kArmClimbPosition = 34
-kArmPickupPosition = 13.4
+kArmPickupPosition = 11.7
 kArmDownPosition = 1
 
 #angulator

@@ -115,9 +115,21 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "disable_face_speaker"
                       }
                     }
                   ]
@@ -160,9 +172,21 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 7"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "disable_face_speaker"
                       }
                     }
                   ]

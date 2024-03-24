@@ -38,6 +38,7 @@ from phoenix6.signals.spn_enums import *
 
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
+from pathplannerlib.controller import PPHolonomicDriveController
 
 from wpilib.sysid import SysIdRoutineLog
 from wpiutil.log import StringLogEntry
@@ -224,6 +225,9 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("limelight lateral gain", 1.0)
         SmartDashboard.putNumber("limelight angle gain", 0.2)
         
+        if wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.0) == 0:
+            wpilib.Preferences.setDouble("NOTE_LATERAL_GAIN", 0.1)
+        
         AutoBuilder.configureHolonomic(
             self.get_pose, # Robot pose supplier
             self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
@@ -239,6 +243,8 @@ class DriveSubsystem(Subsystem):
             self.shouldFlipPath, # Supplier to control path flipping based on alliance color
             self # Reference to this subsystem to set requirements
         )
+        PPHolonomicDriveController.setRotationTargetOverride(self.getRotationTargetOverride)
+        
           
         self.__loggerState = None
         
@@ -252,14 +258,30 @@ class DriveSubsystem(Subsystem):
         self.ll_top_back_table = NetworkTableInstance.getDefault().getTable("limelight-back")
         self.ll_top_left_table = NetworkTableInstance.getDefault().getTable("limelight-left")
         self.ll_top_right_table = NetworkTableInstance.getDefault().getTable("limelight-right")
+        self.ll_note_table = NetworkTableInstance.getDefault().getTable("limelight-note")
     
         self.drive_state = True
+        self.note_correction = False
+        self.auto_face_goal = False
+        
+        SmartDashboard.putNumber("Angle Override", 0)
         
     def shouldFlipPath(self):
-            # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         return DriverStation.getAlliance() == DriverStation.Alliance.kRed
+    
+    def getRotationTargetOverride(self):
+        if self.auto_face_goal:
+            return self.get_path_override_angle_to_speaker()
+        return None
+    
+    def set_auto_face_goal(self, enabled):
+        self.auto_face_goal = enabled
+        
+    def set_auto_face_goal_cmd(self, enabled):
+        return runOnce(lambda: self.set_auto_face_goal(enabled))
     
     def periodic(self):
         self.__odometry.update(
@@ -429,10 +451,10 @@ class DriveSubsystem(Subsystem):
     
     def get_range_to_speaker(self):
         if self.shouldFlipPath():
-            return self.get_pose().relativeTo(Pose2d(16.58, 5.947, Rotation2d())).translation().norm() 
+            return self.get_pose().relativeTo(constants.kRedSpeakerPose).translation().norm() 
             #5.547 original  
         else:
-            return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   
+            return self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation().norm()   
     
     # Drive Controls
                 
@@ -462,13 +484,39 @@ class DriveSubsystem(Subsystem):
         
     def robot_centric_cmd(self):
         return runOnce(lambda: self.set_field_centric(False))
-            
+    
+    def set_correct_path_to_note(self, note_correction):
+        self.note_correction = note_correction
+        self.has_seen_note = False
+        
+    def set_correct_path_to_note_cmd(self, enabled):
+        return runOnce(lambda: self.set_correct_path_to_note(enabled))
+    
+    def get_note_correction_speed(self):
+        if self.is_note_visible():
+            self.has_seen_note = True
+            return -self.ll_note_table.getNumber('tx', 0) * wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.1)
+        else:
+            return 0.0
+    
+    def is_note_visible(self):
+        return self.ll_note_table.getNumber('tv', 0)
+          
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
-
+    
         #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) -Should be using
+        
+        # Only override the y velocity vector when note correction is avtive and we see a note.
+        note_correction_speed = 0.0 
+        if self.note_correction:
+            note_correction_speed = self.get_note_correction_speed()
+            if self.has_seen_note and abs(chassis_speed.vx) > 0.1:
+                chassis_speed.vy = note_correction_speed
+            
+        SmartDashboard.putNumber("Note Correction Speed", note_correction_speed)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -552,12 +600,24 @@ class DriveSubsystem(Subsystem):
             self
         )
     
+    def get_path_override_angle_to_speaker(self):
+            # TODO: Possible add a trim if this isn't perfect.
+        if self.shouldFlipPath():
+            translation_to_speaker = self.get_pose().relativeTo(constants.kRedSpeakerPose).translation()   
+        else:
+            translation_to_speaker = self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation()
+        
+        SmartDashboard.putNumber("Angle Override", translation_to_speaker.angle().degrees())
+        
+        # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+        return translation_to_speaker.angle()
+    
     def get_angle_to_speaker(self):
         # TODO: Possible add a trim if this isn't perfect.
         if self.shouldFlipPath():
-            translation_to_speaker = self.get_pose().relativeTo(Pose2d(16.58, 5.247, Rotation2d())).translation()   
+            translation_to_speaker = self.get_pose().relativeTo(constants.kRedSpeakerPose).translation()   
         else:
-            translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+            translation_to_speaker = self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation()
         
         # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
         angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())

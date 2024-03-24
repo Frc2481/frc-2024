@@ -96,6 +96,7 @@ class ShooterSubsystem(object):
             rps = constants.kShooterSpeedMaxRPS
         if range_cb() < 1: 
             rps = constants.kShooterSpeedSubwooferRPS
+        self.setpoint = rps
         self.shooterMotor.set_control(VelocityDutyCycle(rps))
 
 

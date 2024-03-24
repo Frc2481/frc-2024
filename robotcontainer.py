@@ -83,6 +83,12 @@ class RobotContainer(Subsystem):
                                           RunCommand(lambda: self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)),
                                           RunCommand(lambda: self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker))))
         
+        NamedCommands.registerCommand('enable_note_correction', self.drivetrain.set_correct_path_to_note_cmd(True))
+        NamedCommands.registerCommand('disable_note_correction', self.drivetrain.set_correct_path_to_note_cmd(False))
+        
+        NamedCommands.registerCommand('enable_face_speaker', self.drivetrain.set_auto_face_goal_cmd(True))
+        NamedCommands.registerCommand('disable_face_speaker', self.drivetrain.set_auto_face_goal_cmd(False))
+        
         self.chooser = SendableChooser()
         self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
         self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
@@ -164,6 +170,10 @@ class RobotContainer(Subsystem):
         SmartDashboard.putData("+shoot speed", self.shooter.increase_shooter_speed_cmd()) 
         SmartDashboard.putData("-shoot speed", self.shooter.decrease_shooter_speed_cmd())       
         SmartDashboard.putData("Zero Angulator", self.angulator.zero_angulator_encoder_cmd().ignoringDisable(True))
+        
+        SmartDashboard.putData("Note Correct Enable", self.drivetrain.set_correct_path_to_note_cmd(True))
+        SmartDashboard.putData("Note Correct Disable", self.drivetrain.set_correct_path_to_note_cmd(False))
+        
         
         
     def get_align_state(self):
@@ -322,23 +332,24 @@ class RobotContainer(Subsystem):
 
 
     def beambreak_one_false_cmd(self):
-        return self.beambreak_during_intake_cmd()
-
+        return self.beambreak_during_intake_cmd() #.alongWith(self.drivetrain.set_correct_path_to_note_cmd(False))
     
     def beambreak_two_false_cmd(self):
         return InstantCommand(lambda: self.feeder.feederMotor.set_control(VoltageOut(0))).alongWith(
                        InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
                        InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))))
+                       
 
     ##AUTO COMMANDS
     
     def auto_intake_cmd(self):
         return sequence(
+                        # self.drivetrain.set_correct_path_to_note_cmd(True),
                         self.angulator.angulator_set_pos_cmd(0),
                         self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycle, constants.kVerticalIntakeMotorDutyCycle),
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeed),
                         #beambreak trigger will turn off intake
-                        WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(1.0))
+                        WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(1.0))                        
                         
     def auto_prep_shoot_cmd(self, shooter_speed, angulator_position):
         return sequence(sequence(

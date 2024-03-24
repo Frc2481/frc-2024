@@ -1,5 +1,6 @@
 import math
 import wpimath.units
+from wpimath.geometry import Pose2d, Rotation2d
 
 kSwerveFrontLeftDriveMotorCANID = 1
 kSwerveFrontLeftSteerMotorCANID = 2
@@ -165,3 +166,6 @@ kSteerGearReduction = 4
 #intake
 kVerticalIntakeMotorDutyCycle = 0.8
 kHorizontalIntakeMotorDutyCycle = 0.9
+
+kRedSpeakerPose = Pose2d(16.58, 5.547, Rotation2d())
+kBlueSpeakerPose = Pose2d(-0.0381, 5.547, Rotation2d())

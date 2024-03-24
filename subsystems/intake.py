@@ -12,7 +12,7 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VoltageOut, DutyCycleOut
 from phoenix6.signals.spn_enums import *
 
-from wpilib import DigitalInput
+from wpilib import DigitalInput, SmartDashboard
 
 
 class IntakeSubsystem(commands2.SubsystemBase):
@@ -55,3 +55,10 @@ class IntakeSubsystem(commands2.SubsystemBase):
     def intake_off_cmd(self):
         return commands2.cmd.runOnce(
             lambda: self.intake_off())
+        
+    def periodic(self):
+        SmartDashboard.putNumber("intake horizontal duty cycle", self.horizontalMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("intake vertical duty cycle", self.verticalMotor.get_duty_cycle().value)
+        SmartDashboard.putNumber("horizontal intake current", self.horizontalMotor.get_supply_current().value)
+        SmartDashboard.putNumber("vertical intake current", self.verticalMotor.get_supply_current().value)
+

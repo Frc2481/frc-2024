@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2443339188455425,
-        "y": 5.846467263802103
+        "x": 2.452124354075458,
+        "y": 5.855912283585281
       },
       "isLocked": false,
       "linkedName": "Slow 2"
@@ -20,8 +20,8 @@
         "y": 6.989314657566635
       },
       "prevControl": {
-        "x": 2.2632239584118983,
-        "y": 6.517063668407737
+        "x": 2.3576741562436783,
+        "y": 6.611513866239517
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,34 +30,16 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake On",
-      "waypointRelativePos": 0.4,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intake feeder on"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 25.86635679409438,
+    "rotation": 22.10944834375171,
     "rotateFast": false
   },
   "reversed": false,

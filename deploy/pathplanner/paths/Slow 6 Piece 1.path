@@ -16,24 +16,30 @@
     },
     {
       "anchor": {
-        "x": 2.7827000464866862,
-        "y": 4.269148960011383
+        "x": 2.801590086053042,
+        "y": 4.193588801745959
       },
       "prevControl": {
-        "x": 2.2726689781950764,
-        "y": 4.703619870037569
+        "x": 2.2915590177614322,
+        "y": 4.628059711772145
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Slow 1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.45,
+      "rotationDegrees": -17.545728745696238,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "intake on",
-      "waypointRelativePos": 0.25,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.4,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +47,24 @@
             {
               "type": "named",
               "data": {
-                "name": "intake feeder on"
+                "name": "auto speaker score"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.55,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "prepare slow front auto second shot"
               }
             }
           ]
@@ -51,7 +74,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },

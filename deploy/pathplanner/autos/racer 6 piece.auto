@@ -12,6 +12,31 @@
     "data": {
       "commands": [
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "amp racer 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "barf first piece"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp racer 1"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "prepare racer 1"

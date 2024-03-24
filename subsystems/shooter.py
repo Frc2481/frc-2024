@@ -22,7 +22,7 @@ class ShooterSubsystem(object):
         self.shooterMotor = TalonFX(constants.kShooterMotorCANID, "2481")
 
         self.shooterMotorConfig = TalonFXConfiguration()
-        self.shooterMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
+        self.shooterMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.shooterMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.shooterMotorConfig.slot0.k_p = constants.kShooterP
         self.shooterMotorConfig.slot0.k_i = constants.kShooterI
@@ -105,6 +105,10 @@ class ShooterSubsystem(object):
 
     def wait_for_shooter_on_target(self):    
         return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_reference().value - constants.kShooterOnTarget < self.shooterMotor.get_velocity().value),
+                        PrintCommand('Shooter On Target')))
+        
+    def wait_for_shooter_on_target_auto(self):    
+        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_reference().value - constants.kShooterOnTarget < self.shooterMotor.get_velocity().value).withTimeout(0.5),
                         PrintCommand('Shooter On Target')))
     
         

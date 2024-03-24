@@ -14,6 +14,7 @@ from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, DutyCycleOut
 from phoenix6.signals.spn_enums import *
+from wpilib import SmartDashboard
 
 
 class FeederSubsystem(object):

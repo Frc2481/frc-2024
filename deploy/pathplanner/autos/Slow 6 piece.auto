@@ -12,33 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "prepare slow front auto first shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait for angulator on target"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece1"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -46,55 +22,25 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "wait for not second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare slow front auto second shot"
+                        "name": "prepare slow front auto first shot"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow 6 Piece 1"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "wait for angulator on target"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 2"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -102,69 +48,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "wait for not second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for second beam break"
+                        "name": "auto speaker score"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
                         "name": "prepare slow front auto third shot"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait for angulator on target"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 3"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for not second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for second beam break"
                       }
                     },
                     {
@@ -175,50 +65,6 @@
                     }
                   ]
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait for angulator on target"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.6
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker score"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 4"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 5"
-                }
               },
               {
                 "type": "sequential",
@@ -231,15 +77,21 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "path",
                       "data": {
-                        "name": "wait for second beam break"
+                        "pathName": "Slow 6 Piece 2"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "prepare slow front auto fifth"
+                        "name": "wait for not second beam break"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Slow 6 Piece 3"
                       }
                     }
                   ]
@@ -249,9 +101,35 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "wait for angulator on target"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Slow 6 Piece 4"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Slow 6 Piece 5"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "prepare slow front auto fifth"
+                }
+              }
+            ]
           }
         },
         {
@@ -261,13 +139,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker score"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 6"
+                  "name": "auto speaker score"
                 }
               }
             ]
@@ -278,34 +150,28 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Slow 6 Piece 7"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "path",
                       "data": {
-                        "name": "wait for not second beam break"
+                        "pathName": "Slow 6 Piece 6"
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "path",
                       "data": {
-                        "name": "wait for second beam break"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare slow front auto sixth"
+                        "pathName": "Slow 6 Piece 7"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "prepare slow front auto sixth"
                 }
               }
             ]
@@ -314,13 +180,7 @@
         {
           "type": "named",
           "data": {
-            "name": "wait for angulator on target"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker score"
+            "name": "auto speaker score"
           }
         }
       ]

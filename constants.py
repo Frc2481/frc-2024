@@ -49,10 +49,10 @@ kdriveP = 1.5
 kdriveI = 0
 kdriveD = 0.0
 #kdriveV = 2.0825
-kdriveV = 2.0496 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveV = 1.8647 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
 #kdriveA = 0.24925
-kdriveA = 0.077519 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
-kdriveS = 0.1891
+kdriveA = 0.312 * wpimath.units.inchesToMeters(kDistanceTraveledOneRotation)
+kdriveS = 0.07
 kDriveGearReduction = 125
 
 kAlignStateNone = 0
@@ -108,7 +108,7 @@ kShooterPeakCurrent = 40
 kShooterCruiseVelocity = 0
 kShooterAcceleration = 0
 kShooterJerk = 0
-kShooterOnTarget = 1 
+kShooterOnTarget = 1
 
 #Gripper
 kGripperSolenoidModule = 0
@@ -161,3 +161,7 @@ kArmLength = 16 / 39.37
 
 #steer
 kSteerGearReduction = 4
+
+#intake
+kVerticalIntakeMotorDutyCycle = 0.8
+kHorizontalIntakeMotorDutyCycle = 0.9

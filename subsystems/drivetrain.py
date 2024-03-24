@@ -359,6 +359,7 @@ class DriveSubsystem(Subsystem):
         #SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
         
+        
         # SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
         # SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
         #SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
@@ -428,7 +429,7 @@ class DriveSubsystem(Subsystem):
     
     def get_range_to_speaker(self):
         if self.shouldFlipPath():
-            return self.get_pose().relativeTo(Pose2d(16.58, 5.547, Rotation2d())).translation().norm() 
+            return self.get_pose().relativeTo(Pose2d(16.58, 5.947, Rotation2d())).translation().norm() 
             #5.547 original  
         else:
             return self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation().norm()   

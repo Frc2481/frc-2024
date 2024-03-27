@@ -64,6 +64,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.55,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "enable auto aim"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -75,7 +92,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -19.855214369320993,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Slow 6 piece",

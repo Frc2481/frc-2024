@@ -235,7 +235,7 @@ class DriveSubsystem(Subsystem):
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
                 PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
-                PIDConstants(1.7, 0.0, 0.5), # Rotation PID constants
+                PIDConstants(2.2, 0.0, 0.1), # Rotation PID constants
                 7.01, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig(enableInitialReplanning=False) # Default path replanning config. See the API for the options here

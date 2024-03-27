@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "enable_face_speaker"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [

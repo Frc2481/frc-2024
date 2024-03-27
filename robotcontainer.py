@@ -70,6 +70,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare racer 6', self.auto_shoot_fast(80, 0.036))
         NamedCommands.registerCommand('barf first piece', self.auto_barf_command())
         NamedCommands.registerCommand('intake and shoot', self.intake_and_shoot())
+        NamedCommands.registerCommand('enable auto aim', self.angulator.set_auto_aim_enable_cmd(True))
 
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())

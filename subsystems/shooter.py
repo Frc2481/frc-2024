@@ -12,12 +12,14 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, VelocityDutyCycle, MotionMagicVelocityVoltage
 from phoenix6.signals.spn_enums import *
 
-class ShooterSubsystem(object):
+class ShooterSubsystem(Subsystem):
 
     def __init__(self):
         super().__init__()
 
         self.setpoint = 0
+        
+        self.auto_set_shooter = False
 
         self.shooterMotor = TalonFX(constants.kShooterMotorCANID, "2481")
 
@@ -50,9 +52,9 @@ class ShooterSubsystem(object):
 
     def shooter_off_cmd(self):
         #return InstantCommand(lambda: None)
-        return runOnce(
-            lambda: self.shooterMotor.set_control(VoltageOut(0))
-        ).andThen(self.shooter_set_setpoint(0))
+        return runOnce(lambda: self.set_shooter_auto_enable(False))\
+            .alongWith(runOnce(lambda: self.shooterMotor.set_control(VoltageOut(0))))\
+            .andThen(self.shooter_set_setpoint(0))
 
 
     def shooter_inc_speed_target(self, delta):
@@ -75,6 +77,22 @@ class ShooterSubsystem(object):
         )
 
 
+    def is_auto_enabled(self):
+        return self.auto_set_shooter
+    
+    def shooter_default_thing(self, range_cb):
+            if self.auto_set_shooter:
+                self.set_speed_from_range(range_cb)
+           
+        
+    def shooter_default_cmd(self, range_cb):
+        return runEnd(lambda: self.shooter_default_thing(range_cb),
+                      lambda: None,
+                      self)
+        
+    def set_shooter_auto_enable(self, enable):
+        self.auto_set_shooter = enable
+    
     def decrease_shooter_speed_cmd(self):
         return FunctionalCommand(
             lambda: self.shooter_inc_speed_target(-1),
@@ -98,6 +116,7 @@ class ShooterSubsystem(object):
             rps = constants.kShooterSpeedSubwooferRPS
         self.setpoint = rps
         self.shooterMotor.set_control(VelocityDutyCycle(rps))
+
 
 
     def shooter_set_speed_from_range_cmd(self, range_cb):

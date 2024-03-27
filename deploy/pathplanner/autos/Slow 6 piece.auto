@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5359574351071954,
-      "y": 5.279766076811425
+      "x": 1.62,
+      "y": 5.28
     },
     "rotation": 0
   },
@@ -12,20 +12,19 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "enable_face_speaker"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare slow front auto first shot"
-                      }
-                    }
-                  ]
+                  "name": "prepare slow front auto first shot"
                 }
               },
               {
@@ -46,46 +45,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "auto speaker score"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare slow front auto third shot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "prepare slow front auto fourth shot"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for not second beam break"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "wait for not second beam break"
                       }
                     },
                     {
@@ -109,27 +71,21 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter off"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 4"
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "enable_face_speaker"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 5"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "disable_face_speaker"
                       }
                     }
                   ]
@@ -166,27 +122,21 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter off"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 6"
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "enable_face_speaker"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 7"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "disable_face_speaker"
                       }
                     }
                   ]

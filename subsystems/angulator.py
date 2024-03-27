@@ -56,6 +56,7 @@ class AngulatorSubsystem(Subsystem):
         self.__loggerState = None
         self.setpoint = 0
         
+        self.auto_aim_enable = False
         self.angulatorMotor = TalonFXExtended(constants.kAngulatorMotorCANID, "2481")
         
         self.__sysid_config = sysid.SysIdRoutine.Config(recordState=self.log_state)
@@ -161,10 +162,24 @@ class AngulatorSubsystem(Subsystem):
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
         self.set_angulator_position(angulator_rotation)
 
+    def is_auto_aim_enabled(self):
+        return self.auto_aim_enable
 
+    def angulator_default_thing(self, range_cb):
+        if self.auto_aim_enable:
+            self.set_pos_from_range(range_cb)
 
+        
     def angulator_set_pos_from_range_cmd(self, range_cb):
-        return runOnce(lambda: self.set_pos_from_range(range_cb))
+        return runEnd(lambda: self.angulator_default_thing(range_cb),
+                      lambda: None,
+                      self)
+        
+    def set_auto_aim_enable(self, enable):
+        self.auto_aim_enable = enable
+        
+    def set_auto_aim_enable_cmd(self, enable):
+        return InstantCommand(lambda: self.set_auto_aim_enable(enable))
 
 
     def angulator_off_cmd (self):

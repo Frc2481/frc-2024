@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5359574351071954,
+        "x": 1.62,
         "y": 5.279766076811425
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9326482660006694,
+        "x": 2.016690830893474,
         "y": 4.949190384400196
       },
       "isLocked": false,
@@ -16,30 +16,24 @@
     },
     {
       "anchor": {
-        "x": 2.801590086053042,
-        "y": 4.193588801745959
+        "x": 2.7354749475707965,
+        "y": 4.212478841312315
       },
       "prevControl": {
-        "x": 2.2915590177614322,
-        "y": 4.628059711772145
+        "x": 2.2254438792791866,
+        "y": 4.646949751338501
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Slow 1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.45,
-      "rotationDegrees": -17.545728745696238,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -56,7 +50,7 @@
     },
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -64,7 +58,7 @@
             {
               "type": "named",
               "data": {
-                "name": "prepare slow front auto second shot"
+                "name": "intake and shoot"
               }
             }
           ]
@@ -80,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -23.569999999999993,
+    "rotation": -19.855214369320993,
     "rotateFast": false
   },
   "reversed": false,

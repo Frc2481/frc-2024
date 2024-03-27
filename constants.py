@@ -23,8 +23,8 @@ kSwerveBackrightSteerEncoderCANID = 8
 kAngulatorEncoderCANID = 31
 kPigeonCANID = 1
 
-kDriveMaxSpeed = 6.4 
-kDrivePeriod = 20
+kDriveMaxSpeed = 7 #6.4 
+kDrivePeriod = 0.2
 
 kWheelTrack = wpimath.units.inchesToMeters(18.5)
 kWheelBase = wpimath.units.inchesToMeters(16.5)
@@ -85,8 +85,8 @@ kFeederP = 5
 kFeederI = 1
 kFeederD = 0
 kFeederV = 1.0
-kFeederSpeed = 0.1
-kTeleopFeederSpeed = 0.2
+kTeleopFeederSpeed = 0.2 #0.2
+kTeleopFeederSpeedRaisedAuto = 0.5
 
 #BeamBrake
 kFeederBeambreakStageTwoPort = 9
@@ -99,7 +99,7 @@ kShooterSpeedHappyDonutRPS = 82
 kShooterSpeedMaxRPS = 82
 kShooterReverseSpeed = -10
 kShooterToArmSpeedRPS = 10
-kShooterP = 0.01
+kShooterP = 0.1
 kShooterI = 0
 kShooterD = 0
 kShooterV = 0.0125
@@ -109,7 +109,7 @@ kShooterPeakCurrent = 40
 kShooterCruiseVelocity = 0
 kShooterAcceleration = 0
 kShooterJerk = 0
-kShooterOnTarget = 1
+kShooterOnTarget = 10
 
 #Gripper
 kGripperSolenoidModule = 0
@@ -164,8 +164,10 @@ kArmLength = 16 / 39.37
 kSteerGearReduction = 4
 
 #intake
-kVerticalIntakeMotorDutyCycle = 0.8
+kVerticalIntakeMotorDutyCycle = 0.7 #0.8
 kHorizontalIntakeMotorDutyCycle = 0.9
+kHorizontalIntakeMotorDutyCycleRaisedAuto = 0.9
+kVerticalIntakeMotorDutyCycleRaisedAuto = 0.9
 
 kRedSpeakerPose = Pose2d(16.58, 5.547, Rotation2d())
 kBlueSpeakerPose = Pose2d(-0.0381, 5.547, Rotation2d())

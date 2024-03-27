@@ -26,6 +26,7 @@ from wpilib.sysid import SysIdRoutineLog
 from wpilib import DigitalInput
 from phoenix6.controls import VoltageOut, VelocityDutyCycle
 from phoenix5.led import CANdle
+from commands2 import ConditionalCommand
 
 class RobotContainer(Subsystem):
 
@@ -38,11 +39,12 @@ class RobotContainer(Subsystem):
         self.angulator = AngulatorSubsystem()    
         self.auto_mode = False 
         
+        self.IgnoreBeamBreaks = False
+        
         NamedCommands.registerCommand('prepare speaker shot', self.prepare_auto_speaker_shot_cmd())
         NamedCommands.registerCommand('prepare first amp shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.010))
         NamedCommands.registerCommand('prepare second amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(82, 0.004))
         NamedCommands.registerCommand('prepare third amp speaker shot', self.prepare_auto_shooter_and_angulator_cmd(65, 0.08))
-        NamedCommands.registerCommand('intake feeder on', self.intake_feeder_cmd(constants.kFeederSpeed, 0.9, 0.3, True))
         NamedCommands.registerCommand('speaker score', self.speaker_score_cmd())        
         NamedCommands.registerCommand('auto speaker score', self.auto_shoot_cmd())
         NamedCommands.registerCommand('no wait speaker score', self.no_wait_auto_shoot_cmd()) 
@@ -52,12 +54,13 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare source auto third shot', self.auto_prep_fast(76, 0.02))
         NamedCommands.registerCommand('prepare source auto fourth shot', self.auto_prep_fast(76, 0.02))
         
-        NamedCommands.registerCommand('prepare slow front auto first shot', self.auto_prep_shoot_cmd(65, 0.055))
-        NamedCommands.registerCommand('prepare slow front auto second shot', self.auto_prep_fast(76, 0.036))
-        NamedCommands.registerCommand('prepare slow front auto third shot', self.auto_shoot_fast(76, 0.036))
-        NamedCommands.registerCommand('prepare slow front auto fourth shot', self.auto_shoot_fast(76, 0.027))
-        NamedCommands.registerCommand('prepare slow front auto fifth', self.auto_prep_fast(80, 0.0035))
-        NamedCommands.registerCommand('prepare slow front auto sixth', self.auto_prep_fast(80, 0.004))
+        NamedCommands.registerCommand('prepare slow front auto first shot', self.auto_prep_shoot_cmd(65, 0.05))
+        NamedCommands.registerCommand('prepare slow front auto second shot', self.auto_prep_fast_raised(76, 0.036))
+        NamedCommands.registerCommand('prepare slow front auto third shot', self.auto_prep_fast_raised(76, 0.041))
+        NamedCommands.registerCommand('prepare slow front auto fourth shot', self.auto_prep_fast_raised(76, 0.032))
+        NamedCommands.registerCommand('slow front auto fourth shot angle drop', self.angulator.angulator_set_pos_cmd(0.036))
+        NamedCommands.registerCommand('prepare slow front auto fifth', self.auto_prep_fast(80, 0.008))
+        NamedCommands.registerCommand('prepare slow front auto sixth', self.auto_prep_fast(80, 0.005))
 
         NamedCommands.registerCommand('prepare racer 1', self.auto_prep_fast(65, 0.082))
         NamedCommands.registerCommand('prepare racer 2', self.auto_prep_fast(80, 0.002))
@@ -66,15 +69,18 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare racer 5', self.auto_shoot_fast(80, 0.041))
         NamedCommands.registerCommand('prepare racer 6', self.auto_shoot_fast(80, 0.036))
         NamedCommands.registerCommand('barf first piece', self.auto_barf_command())
+        NamedCommands.registerCommand('intake and shoot', self.intake_and_shoot())
 
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait for second beam break', 
                                       WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(1.0))
+        NamedCommands.registerCommand('wait for first beam break', 
+                                      WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(2.0))
         NamedCommands.registerCommand('wait for not second beam break', 
                                       WaitUntilCommand(lambda: 
-                                                       (self.beambreak_two.get() == True) and 
+                                                       #(self.beambreak_two.get() == True) and 
                                                        (self.beambreak_one.get() == True)).withTimeout(1.0))
         NamedCommands.registerCommand('wait for shooter on target', self.shooter.wait_for_shooter_on_target_auto())
         NamedCommands.registerCommand('wait for angulator on target', self.angulator.wait_for_angulator_on_target())
@@ -88,6 +94,7 @@ class RobotContainer(Subsystem):
         
         NamedCommands.registerCommand('enable_face_speaker', self.drivetrain.set_auto_face_goal_cmd(True))
         NamedCommands.registerCommand('disable_face_speaker', self.drivetrain.set_auto_face_goal_cmd(False))
+        NamedCommands.registerCommand('RaisedIntakeOn', self.auto_intake_cmd_raised())
         
         self.chooser = SendableChooser()
         self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
@@ -121,6 +128,8 @@ class RobotContainer(Subsystem):
     
         self.button_bindings_configure()
         self.drivetrain.setDefaultCommand(self.drivetrain.drive_with_joystick_cmd(self.driver_controller))
+        self.angulator.setDefaultCommand(self.angulator.angulator_set_pos_from_range_cmd(self.drivetrain.get_range_to_speaker))
+        self.shooter.setDefaultCommand(self.shooter.shooter_default_cmd(self.drivetrain.get_range_to_speaker))
         
         SmartDashboard.putNumber("shooter_cmd_angle", 0)
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
@@ -136,6 +145,9 @@ class RobotContainer(Subsystem):
         self.operator_controller.a().onTrue(self.prepare_happy_donut_cmd())
         self.operator_controller.x().onTrue(self.prepare_subwoofer_shot_cmd())
         self.operator_controller.rightBumper().whileTrue(self.prepare_speaker_shot_cmd())
+        self.operator_controller.rightBumper().onFalse(self.angulator.set_auto_aim_enable_cmd(False)\
+            .alongWith(self.shooter.shooter_off_cmd())\
+            .alongWith(self.angulator.angulator_set_pos_cmd(constants.kAngulatorDownPosition)))
         self.operator_controller.rightTrigger().onTrue(self.score_amp_stow_arm_cmd())
         self.operator_controller.leftTrigger().onTrue(self.amp_handoff_cmd())
         self.operator_controller.leftBumper().onTrue(self.shooter.shooter_off_cmd())
@@ -174,7 +186,11 @@ class RobotContainer(Subsystem):
         SmartDashboard.putData("Note Correct Enable", self.drivetrain.set_correct_path_to_note_cmd(True))
         SmartDashboard.putData("Note Correct Disable", self.drivetrain.set_correct_path_to_note_cmd(False))
         
-        
+    def change_beam_break_cmd(self, enabled):
+        return InstantCommand(lambda: self.change_beam_break(enabled))
+    
+    def change_beam_break(self, enabled):
+        self.IgnoreBeamBreaks = enabled
         
     def get_align_state(self):
         return self.align_state
@@ -203,6 +219,8 @@ class RobotContainer(Subsystem):
 
 
     def set_angle_speed_from_range(self):
+        self.angulator.set_auto_aim_enable(True)
+        self.shooter.set_shooter_auto_enable(True)
         self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
         self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
     
@@ -302,7 +320,8 @@ class RobotContainer(Subsystem):
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical, auto=False):
         return sequence(
-                        self.angulator.angulator_set_pos_cmd(0),
+                        self.change_beam_break_cmd(False),
+                        self.angulator.angulator_set_pos_cmd(0.0),
                         self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
                         self.feeder.feeder_on_cmd(feeder_cmd)
@@ -318,6 +337,7 @@ class RobotContainer(Subsystem):
 
     def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto=False):
         return(sequence(
+            self.change_beam_break_cmd(False),
             self.set_align_state_cmd(constants.kAlignStateNote),
             self.intake_sequence_cmd(feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto))
             )
@@ -327,29 +347,53 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.1))
+             self.feeder.feeder_on_cmd(0.1)) #0.1
         )
 
+    def is_beam_break_ignored(self) -> bool:
+        return self.IgnoreBeamBreaks == True
 
     def beambreak_one_false_cmd(self):
-        return self.beambreak_during_intake_cmd() #.alongWith(self.drivetrain.set_correct_path_to_note_cmd(False))
+        return ConditionalCommand(InstantCommand(lambda: None),
+                                  self.beambreak_during_intake_cmd(), 
+                                  self.is_beam_break_ignored)
     
     def beambreak_two_false_cmd(self):
-        return InstantCommand(lambda: self.feeder.feederMotor.set_control(VoltageOut(0))).alongWith(
-                       InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
-                       InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0))))
-                       
+        return ConditionalCommand(InstantCommand(lambda: None),
+                                  InstantCommand(lambda: self.feeder.feederMotor.set_control(VoltageOut(0))).alongWith(
+                                  InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0)))).alongWith(
+                                  InstantCommand(lambda: self.intake.verticalMotor.set_control(VoltageOut(0)))),
+                                  self.is_beam_break_ignored)
 
     ##AUTO COMMANDS
     
     def auto_intake_cmd(self):
         return sequence(
                         # self.drivetrain.set_correct_path_to_note_cmd(True),
+                        self.change_beam_break_cmd(False),
                         self.angulator.angulator_set_pos_cmd(0),
                         self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycle, constants.kVerticalIntakeMotorDutyCycle),
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeed),
                         #beambreak trigger will turn off intake
-                        WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(1.0))                        
+                        WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(1.0))  
+        
+    def intake_and_shoot(self):
+        return sequence(
+                        # self.drivetrain.set_correct_path_to_note_cmd(True),
+                        self.change_beam_break_cmd(True),
+                        self.angulator.angulator_set_pos_cmd(0.04),
+                        self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycleRaisedAuto, constants.kVerticalIntakeMotorDutyCycleRaisedAuto),
+                        self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeedRaisedAuto),
+                        self.shooter.shooter_on_cmd(65))
+        
+    def auto_intake_cmd_raised(self):
+        return sequence(
+                        # self.drivetrain.set_correct_path_to_note_cmd(True),
+                        self.angulator.angulator_set_pos_cmd(0.04),
+                        self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycleRaisedAuto, constants.kVerticalIntakeMotorDutyCycleRaisedAuto),
+                        self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeedRaisedAuto),
+                        #beambreak trigger will turn off intake
+                        WaitUntilCommand(lambda: self.beambreak_one.get() == False).withTimeout(1.0))                     
                         
     def auto_prep_shoot_cmd(self, shooter_speed, angulator_position):
         return sequence(sequence(
@@ -386,12 +430,13 @@ class RobotContainer(Subsystem):
         return sequence(self.auto_intake_cmd(),
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
+    def auto_prep_fast_raised(self, shooter_speed, angulator_position):
+        return sequence(self.auto_intake_cmd_raised(),
+                        self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
+        
     def auto_barf_command(self):
         return self.shooter.shooter_on_cmd(5).alongWith(self.feeder.feeder_on_cmd(0.1))         
-            
-        
                       
-
     def periodic(self):
         SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
         SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
@@ -419,3 +464,6 @@ class RobotContainer(Subsystem):
             self.candle.setLEDs(255, 255, 255) # LED's On Green 0 - 8
         else:
             self.candle.setLEDs(0, 0, 0) # LED's Off 0 - 8
+
+
+    

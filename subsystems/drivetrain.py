@@ -5,7 +5,7 @@ import ntcore
 import wpimath.units
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry, \
 ChassisSpeeds
-from wpimath.geometry import Rotation2d, Translation2d, Pose2d
+from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Twist2d
 from wpimath.estimator import SwerveDrive4PoseEstimator
 #Pathplanner stuff
 from pathplannerlib.auto import AutoBuilder
@@ -223,11 +223,11 @@ class DriveSubsystem(Subsystem):
         self.robot_relative_driving = False
 
         SmartDashboard.putNumber("limelight lateral gain", 1.0)
-        SmartDashboard.putNumber("limelight angle gain", 0.2)
+        SmartDashboard.putNumber("limelight angle gain", 0.12)
         
         if wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.0) == 0:
             wpilib.Preferences.setDouble("NOTE_LATERAL_GAIN", 0.1)
-        
+                    
         AutoBuilder.configureHolonomic(
             self.get_pose, # Robot pose supplier
             self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
@@ -235,8 +235,8 @@ class DriveSubsystem(Subsystem):
             self.drive_robot_relative_speed, # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             HolonomicPathFollowerConfig( # HolonomicPathFollowerConfig, this should likely live in your Constants class
                 PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
-                PIDConstants(3.0, 0.0, 0.0), # Rotation PID constants
-                5.58, # Max module speed, in m/s
+                PIDConstants(1.7, 0.0, 0.5), # Rotation PID constants
+                7.01, # Max module speed, in m/s
                 0.45, # Drive base radius in meters. Distance from robot center to furthest module.
                 ReplanningConfig(enableInitialReplanning=False) # Default path replanning config. See the API for the options here
             ),
@@ -281,9 +281,10 @@ class DriveSubsystem(Subsystem):
         self.auto_face_goal = enabled
         
     def set_auto_face_goal_cmd(self, enabled):
-        return runOnce(lambda: self.set_auto_face_goal(enabled))
+        return InstantCommand(lambda: self.set_auto_face_goal(enabled))
     
     def periodic(self):
+        start_time = wpilib.Timer.getFPGATimestamp()     
         self.__odometry.update(
             Rotation2d.fromDegrees(self._gyro.get_yaw().value),
              [
@@ -295,6 +296,9 @@ class DriveSubsystem(Subsystem):
         )
         self.limelight_periodic()
         self.dashboard_periodic()
+        
+        end_time = wpilib.Timer.getFPGATimestamp()
+        SmartDashboard.putNumber("drive_loop", end_time - start_time)
         
     def add_pose_from_limelight(self, nt_table : NetworkTable, ll_name):
         if nt_table.getNumber("tv",0) > 0:
@@ -394,7 +398,7 @@ class DriveSubsystem(Subsystem):
         #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
         #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
-        # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
+        SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
         # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         # SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
@@ -409,9 +413,18 @@ class DriveSubsystem(Subsystem):
         self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
         
     # Odometry   
-    def get_pose(self) -> Pose2d:        
-        return self.__odometry.getEstimatedPosition()
-           
+    def get_pose(self, delta=0.0) -> Pose2d:        
+        if delta == 0.0:
+            return self.__odometry.getEstimatedPosition()
+        
+        cs = self.get_robot_relative_speed()
+        cs = cs.fromRobotRelativeSpeeds(cs, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
+        twist = Twist2d(cs.vx, cs.vy, cs.omega) # meters per second
+        twist *= delta
+        pose = self.__odometry.getEstimatedPosition()
+        pose = pose.exp(twist)
+        return pose
+
     def reset_pose(self, pose=Pose2d()):         
         self._gyro.set_yaw(pose.rotation().degrees())
             
@@ -450,25 +463,29 @@ class DriveSubsystem(Subsystem):
         return runOnce (self.reset_odom_to_vision)
     
     def get_range_to_speaker(self):
+        look_ahead_time = wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
         if self.shouldFlipPath():
-            return self.get_pose().relativeTo(constants.kRedSpeakerPose).translation().norm() 
+            return self.get_pose(look_ahead_time).relativeTo(constants.kRedSpeakerPose).translation().norm() 
             #5.547 original  
         else:
-            return self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation().norm()   
+            return self.get_pose(look_ahead_time).relativeTo(constants.kBlueSpeakerPose).translation().norm()   
     
     # Drive Controls
                 
-    def drive(self, x, y, theta, field_relative, force_angle=False):                
+    def drive(self, x, y, theta, field_relative, force_angle=False):
+                   
         if field_relative:
             if self.shouldFlipPath():
                 x *= -1
                 y *= -1    
             
-            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
+            #yaw_comped = self._gyro.get_yaw().value + (self._gyro.get_angular_velocity_z_world().value / 5.0)
+            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value)) #  self._gyro.get_yaw().value
         else:
             chassis_speed = ChassisSpeeds(x, y, theta)
 
         self.drive_robot_relative_speed(chassis_speed, force_angle, True)
+        
 
     def toggle_robot_relative_driving(self):
         self.robot_relative_driving = not self.robot_relative_driving
@@ -488,7 +505,7 @@ class DriveSubsystem(Subsystem):
     def set_correct_path_to_note(self, note_correction):
         self.note_correction = note_correction
         self.has_seen_note = False
-        
+    
     def set_correct_path_to_note_cmd(self, enabled):
         return runOnce(lambda: self.set_correct_path_to_note(enabled))
     
@@ -503,11 +520,12 @@ class DriveSubsystem(Subsystem):
         return self.ll_note_table.getNumber('tv', 0)
           
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
+        
         SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
     
-        #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) -Should be using
+        chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) #-Should be using
         
         # Only override the y velocity vector when note correction is avtive and we see a note.
         note_correction_speed = 0.0 
@@ -627,7 +645,7 @@ class DriveSubsystem(Subsystem):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
-                                self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
+                                 self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
                                 #-NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
                                 #SmartDashboard.getNumber("limelight gain", 0),
                                 True

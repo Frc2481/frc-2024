@@ -164,7 +164,7 @@ class RobotContainer(Subsystem):
         self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kTeleopFeederSpeed,
                                                                             constants.kHorizontalIntakeMotorDutyCycle, 
                                                                             constants.kVerticalIntakeMotorDutyCycle))        
-        self.driver_controller.leftTrigger().whileTrue(self.drivetrain.limelight_align_cmd(self.driver_controller, self.get_align_state))
+        self.driver_controller.leftTrigger().whileTrue(self.drivetrain.drive_speaker_aligned_cmd(self.driver_controller))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
         
         #Use for sysID Test
@@ -348,7 +348,7 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.1)) #0.1
+             self.feeder.feeder_on_cmd(0.05)) #0.1
         )
 
     def is_beam_break_ignored(self) -> bool:
@@ -439,8 +439,8 @@ class RobotContainer(Subsystem):
         return self.shooter.shooter_on_cmd(5).alongWith(self.feeder.feeder_on_cmd(0.1))         
                       
     def periodic(self):
-        SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
-        SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
+        # SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
+        # SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
         SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)
         SmartDashboard.putNumber("shoot speed ref", self.shooter.shooterMotor.get_closed_loop_reference().value)
         SmartDashboard.putNumber("shoot speed motor voltage", self.shooter.shooterMotor.get_motor_voltage().value)
@@ -453,13 +453,13 @@ class RobotContainer(Subsystem):
         SmartDashboard.putNumber("beambreak two", self.beambreak_two.get())
 
         # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
-        if DriverStation.getAlliance() != self.prev_alliance:
-            # if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.auto_path = PathPlannerAuto("Slow Source Auto")
-            # else:
-                # self.auto_path = PathPlannerAuto("6 piece")
+        # if DriverStation.getAlliance() != self.prev_alliance:
+        #     # if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+        #     self.auto_path = PathPlannerAuto("Slow Source Auto")
+        #     # else:
+        #         # self.auto_path = PathPlannerAuto("6 piece")
 
-            self.prev_alliance = DriverStation.getAlliance()
+        #     self.prev_alliance = DriverStation.getAlliance()
             
         if self.beambreak_one.get() == False:
             self.candle.setLEDs(255, 255, 255) # LED's On Green 0 - 8

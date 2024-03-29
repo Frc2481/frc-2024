@@ -7,6 +7,7 @@ from wpimath.kinematics import SwerveModulePosition, SwerveModuleState, SwerveDr
 ChassisSpeeds
 from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Twist2d
 from wpimath.estimator import SwerveDrive4PoseEstimator
+from wpimath.controller import PIDController
 #Pathplanner stuff
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import HolonomicPathFollowerConfig, ReplanningConfig, PIDConstants
@@ -195,6 +196,12 @@ class DriveSubsystem(Subsystem):
         self._bl.wheel_circumference = abs(wpilib.Preferences.getDouble("BL_WHEEL_CIRCUMFERENCE", 9.425))
         self._br.wheel_circumference = abs(wpilib.Preferences.getDouble("BR_WHEEL_CIRCUMFERENCE", 9.425))
         
+        self.yaw_pid = PIDController(
+            Kp=wpilib.Preferences.getDouble("SPEAKER_YAW_P", 0.1),
+            Ki=wpilib.Preferences.getDouble("SPEAKER_YAW_I", 0.0),
+            Kd=wpilib.Preferences.getDouble("SPEAKER_YAW_D", 0.0)
+        )
+        
         self.field = Field2d()
         
         SmartDashboard.putData("Field", self.field) 
@@ -223,7 +230,7 @@ class DriveSubsystem(Subsystem):
         self.robot_relative_driving = False
 
         SmartDashboard.putNumber("limelight lateral gain", 1.0)
-        SmartDashboard.putNumber("limelight angle gain", 0.12)
+        SmartDashboard.putNumber("limelight angle gain", 0.1)
         
         if wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.0) == 0:
             wpilib.Preferences.setDouble("NOTE_LATERAL_GAIN", 0.1)
@@ -345,13 +352,13 @@ class DriveSubsystem(Subsystem):
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
                 self.field.getObject(ll_name).setPose(vision_pose)
                 
-            elif num_targets == 1 and single_tag_ambiguity < 0.85 and single_tag_distance <= 5:
+            elif num_targets == 1 and single_tag_ambiguity < 0.3 and single_tag_distance <= 5:
                 self.__odometry.setVisionMeasurementStdDevs((2.0, 2.0, 99999999))
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
                 self.field.getObject(ll_name).setPose(vision_pose)
             else: 
                 self.field.getObject(ll_name).setPose(bad_pose)
-                   
+    
     # Lime Light Update 
     def limelight_periodic(self):       
         #checks if april tag is visible
@@ -361,7 +368,6 @@ class DriveSubsystem(Subsystem):
         self.add_pose_from_limelight(self.ll_top_right_table, "ll_top_right")
         #self.add_pose_from_limelight(self.ll_rear_table, "ll_rear")
         
-      
      
     def dashboard_periodic(self):                                                       
         # SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
@@ -410,7 +416,14 @@ class DriveSubsystem(Subsystem):
         #SmartDashboard.putNumber("BR Steer Velocity",self._br.steerMotor.get_rotor_velocity())
         #SmartDashboard.putNumber("FL Steer Velocity",self._fl.steerMotor.get_rotor_velocity())
                     
-        self.field.setRobotPose(self.__odometry.getEstimatedPosition())      
+        self.field.setRobotPose(self.__odometry.getEstimatedPosition())   
+        
+        if DriverStation.isDisabled():
+            self.yaw_pid.setPID(
+                wpilib.Preferences.getDouble("SPEAKER_YAW_P", 0.0),
+                wpilib.Preferences.getDouble("SPEAKER_YAW_I", 0.0),
+                wpilib.Preferences.getDouble("SPEAKER_YAW_D", 0.0),
+            )
         
     # Odometry   
     def get_pose(self, delta=0.0) -> Pose2d:        
@@ -463,7 +476,7 @@ class DriveSubsystem(Subsystem):
         return runOnce (self.reset_odom_to_vision)
     
     def get_range_to_speaker(self):
-        look_ahead_time = wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
+        look_ahead_time = 0.1 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
         if self.shouldFlipPath():
             return self.get_pose(look_ahead_time).relativeTo(constants.kRedSpeakerPose).translation().norm() 
             #5.547 original  
@@ -525,7 +538,7 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
         SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
     
-        chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) #-Should be using
+        #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) #-Should be using
         
         # Only override the y velocity vector when note correction is avtive and we see a note.
         note_correction_speed = 0.0 
@@ -633,19 +646,30 @@ class DriveSubsystem(Subsystem):
     def get_angle_to_speaker(self):
         # TODO: Possible add a trim if this isn't perfect.
         if self.shouldFlipPath():
-            translation_to_speaker = self.get_pose().relativeTo(constants.kRedSpeakerPose).translation()   
+            translation_to_speaker = self.get_pose(0.2).relativeTo(constants.kRedSpeakerPose).translation()   
         else:
-            translation_to_speaker = self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation()
+            translation_to_speaker = self.get_pose(0.2).relativeTo(constants.kBlueSpeakerPose).translation()
         
         # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
+        SmartDashboard.putNumber("Speaker Target Angle", translation_to_speaker.angle().degrees())
         angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())
-        return angle_to_speaker.degrees()
+        SmartDashboard.putNumber("Speaker Angle Error", angle_to_speaker.degrees())
+        return translation_to_speaker.angle().degrees()
+        
+    def get_omega_from_angle_to_speaker(self):        
+        self.yaw_pid.setSetpoint(self.get_angle_to_speaker())
+        pid_output = self.yaw_pid.calculate(self.get_pose().rotation().degrees())
+        cs = self.get_robot_relative_speed()
+        speed = (cs.vx ** 2 + cs.vy ** 2) ** 0.5
+        return pid_output * (1 - (speed / constants.kDriveMaxSpeed))
+        
     
     def drive_speaker_aligned_cmd(self, joystick: CommandXboxController):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
-                                 self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
+                                self.get_omega_from_angle_to_speaker(),
+                                # self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
                                 #-NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
                                 #SmartDashboard.getNumber("limelight gain", 0),
                                 True

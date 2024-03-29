@@ -109,7 +109,7 @@ kShooterPeakCurrent = 40
 kShooterCruiseVelocity = 0
 kShooterAcceleration = 0
 kShooterJerk = 0
-kShooterOnTarget = 10
+kShooterOnTarget = 5
 
 #Gripper
 kGripperSolenoidModule = 0
@@ -131,7 +131,7 @@ kArmA = 0.0
 kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
-kArmScorePosition = 34.916504
+kArmScorePosition = 31.0
 kArmClimbPosition = 34
 kArmPickupPosition = 11.7
 kArmDownPosition = 1
@@ -170,4 +170,4 @@ kHorizontalIntakeMotorDutyCycleRaisedAuto = 0.9
 kVerticalIntakeMotorDutyCycleRaisedAuto = 0.9
 
 kRedSpeakerPose = Pose2d(16.58, 5.547, Rotation2d())
-kBlueSpeakerPose = Pose2d(-0.0381, 5.547, Rotation2d())
+kBlueSpeakerPose = Pose2d(-0.0381, 5.547, Rotation2d()) #5.547

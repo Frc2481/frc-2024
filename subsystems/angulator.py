@@ -155,7 +155,7 @@ class AngulatorSubsystem(Subsystem):
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (range_cb()*0.025-1*0.025)
         #else:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 20
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 19
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)

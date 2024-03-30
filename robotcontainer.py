@@ -275,11 +275,11 @@ class RobotContainer(Subsystem):
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
+                self.ignore_beam_break_cmd(True),
                 self.intake.set_intake_cmd(0, 0),
                 self.feeder.feeder_on_cmd(0),
                 self.shooter.shooter_on_cmd(25),
                 self.angulator.angulator_set_pos_cmd_amp_only(0.0),
-                self.ignore_beam_break_cmd(True),
                 self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
                 self.feeder.feeder_on_cmd(.95),

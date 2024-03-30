@@ -48,122 +48,9 @@ from wpilib import SmartDashboard, Field2d
 
 from utils import *
 
-   # hi from 2024 
+from subsystems.swervemodule import SwerveModule
 
-class SwerveModule(object):
-
-    def __init__(self, driveCANID, steerCANID, steerCANCoderID, steerInverted):
-        self.id = driveCANID
-
-        self.driveMotor = TalonFX(driveCANID, "2481")
-        self.steerMotor = TalonFX(steerCANID, "2481")
-        self.steerEncoder = CANcoder(steerCANCoderID, "2481")
-
-        self.driveMotorConfig = TalonFXConfiguration()
-        self.driveMotorConfig.current_limits.stator_current_limit = 80
-        
-        self.driveMotorConfig.current_limits.stator_current_limit_enable
-        self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-        self.driveMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
-        self.driveMotorConfig.slot0.k_p = constants.kdriveP
-        self.driveMotorConfig.slot0.k_i = constants.kdriveI 
-        self.driveMotorConfig.slot0.k_d = constants.kdriveD
-        self.driveMotorConfig.slot0.k_v = constants.kdriveV
-        self.driveMotorConfig.slot0.k_a = constants.kdriveA
-        self.driveMotorConfig.slot0.k_s = constants.kdriveS
-        self.driveMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kSwerveSteerCruiseVelocity
-        self.driveMotorConfig.motion_magic.motion_magic_acceleration = constants.kSwerveSteerAcceleration 
-        self.driveMotorConfig.feedback.sensor_to_mechanism_ratio = constants.kSwerveReductionDrive
-        self.driveMotor.configurator.apply(self.driveMotorConfig)
-        
-        self.steerMotorConfig = TalonFXConfiguration()
-        self.steerMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
-        self.steerMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE if steerInverted else InvertedValue.COUNTER_CLOCKWISE_POSITIVE
-        self.steerMotorConfig.motor_output.peak_forward_duty_cycle = 0.2
-        self.steerMotorConfig.motor_output.peak_reverse_duty_cycle = -0.2
-        self.steerMotorConfig.slot0.k_p = constants.ksteerP
-        self.steerMotorConfig.slot0.k_i = constants.ksteerI
-        self.steerMotorConfig.slot0.k_d = constants.ksteerD
-        self.steerMotorConfig.slot0.k_v = constants.ksteerV
-        self.steerMotorConfig.slot0.k_a = constants.ksteerA
-        self.steerMotorConfig.slot0.k_s = constants.ksteerS
-        self.steerMotorConfig.motion_magic.motion_magic_cruise_velocity = constants.kSwerveSteerCruiseVelocity
-        self.steerMotorConfig.motion_magic.motion_magic_acceleration = constants.kSwerveSteerAcceleration
-        self.steerMotorConfig.motion_magic.motion_magic_jerk = constants.kSwerveSteerJerk
-        self.steerMotorConfig.closed_loop_general.continuous_wrap = True
-
-        self.steerMotorConfig.feedback.feedback_sensor_source = FeedbackSensorSourceValue.FUSED_CANCODER
-        self.steerMotorConfig.feedback.feedback_remote_sensor_id = steerCANCoderID 
-        self.steerMotorConfig.feedback.sensor_to_mechanism_ratio = 1.0
-        self.steerMotorConfig.feedback.rotor_to_sensor_ratio = constants.kSwerveReductionSteer
-        self.steerMotor.configurator.apply(self.steerMotorConfig)
-
-        self.canCoderConfig = CANcoderConfiguration()
-        self.canCoderConfig.magnet_sensor.absolute_sensor_range = AbsoluteSensorRangeValue.SIGNED_PLUS_MINUS_HALF
-        self.canCoderConfig.magnet_sensor.sensor_direction = SensorDirectionValue.COUNTER_CLOCKWISE_POSITIVE
-        self.canCoderConfig.magnet_sensor.magnet_offset = 0.4
-        self.steerEncoder.configurator.apply(self.canCoderConfig)
-
-        self.wheel_circumference = 0
-        
-
-
-    def zero_steer_encoder(self):
-        print("Zero Encoder Start")
-        #zeros the offset so we dont have to deal with the previous one
-        self.canCoderConfig.magnet_sensor.magnet_offset = 0
-        self.steerEncoder.configurator.apply(self.canCoderConfig)
-        
-        #Wait for fresh data after offset
-        steer_offset = self.steerEncoder.get_absolute_position()
-        steer_offset.wait_for_update(1)
-        self.canCoderConfig.magnet_sensor.magnet_offset = -steer_offset.value
-        self.steerEncoder.configurator.apply(self.canCoderConfig)
-        print("Zero Encoder Finish")
-        return -steer_offset.value
-        
-    def set_steer_offset(self, steer_offset:float):
-        self.canCoderConfig.magnet_sensor.magnet_offset = steer_offset
-        self.steerEncoder.configurator.apply(self.canCoderConfig)
-       
-    def distance(self):
-        return wpimath.units.inchesToMeters(self.driveMotor.get_position().value * self.wheel_circumference)
-    
-    
-    def angle(self):
-        return Rotation2d(self.steerEncoder.get_absolute_position().value * 2 * math.pi)
-    
-    def set_state(self, state: SwerveModuleState, voltage_only):
-        state = SwerveModuleState.optimize(state, self.angle())
-        if voltage_only:
-            self.driveMotor.set_control(DutyCycleOut(state.speed / constants.kDriveMaxSpeed, True))
-        else:
-            self.driveMotor.set_control(VelocityVoltage(wpimath.units.metersToInches(state.speed) / self.wheel_circumference))        
-        
-        if abs(state.speed) < 0.05:
-            self.steerMotor.set_control(VoltageOut(0.0)) 
-        else:   
-            self.steerMotor.set_control(MotionMagicVoltage(state.angle.degrees() / 360))
-    
-    def get_position(self):
-        return SwerveModulePosition(
-            #negative sign is to fix inverted Odometry
-            distance=self.distance(),
-            angle=self.angle()
-        )
-   
-    def get_state(self): 
-        return SwerveModuleState(
-            speed=wpimath.units.inchesToMeters(self.driveMotor.get_velocity().value * (self.wheel_circumference)),
-            angle=self.angle()
-        )
-    
-    def zero_drive_encoder(self):
-       self.driveMotor.set_position(0)
-    
-    def get_voltage(self):
-        return self.driveMotor.get_motor_voltage().value
-       
+   # hi from 2024        
 
 class DriveSubsystem(Subsystem):
 
@@ -270,6 +157,8 @@ class DriveSubsystem(Subsystem):
         self.drive_state = True
         self.note_correction = False
         self.auto_face_goal = False
+        self.__cached_range_to_speaker = 0
+        self.speaker_end_time_prev = 0
         
         SmartDashboard.putNumber("Angle Override", 0)
         
@@ -303,6 +192,8 @@ class DriveSubsystem(Subsystem):
         )
         self.limelight_periodic()
         self.dashboard_periodic()
+        
+        self.get_range_to_speaker(cached=False)
         
         end_time = wpilib.Timer.getFPGATimestamp()
         SmartDashboard.putNumber("drive_loop", end_time - start_time)
@@ -372,16 +263,16 @@ class DriveSubsystem(Subsystem):
     def dashboard_periodic(self):                                                       
         # SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         # SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
-        SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
-        SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
-        SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
+        # SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
+        # SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
+        # SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
         
         # SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
         # SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
-        SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
-        SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
-        SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
+        # SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
+        # SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
+        # SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
         
         # SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
@@ -404,7 +295,7 @@ class DriveSubsystem(Subsystem):
         #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
         #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
-        SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
+        # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
         # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         # SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
@@ -475,13 +366,26 @@ class DriveSubsystem(Subsystem):
     def reset_odom_to_vision_cmd(self):
         return runOnce (self.reset_odom_to_vision)
     
-    def get_range_to_speaker(self):
-        look_ahead_time = 0.1 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
-        if self.shouldFlipPath():
-            return self.get_pose(look_ahead_time).relativeTo(constants.kRedSpeakerPose).translation().norm() 
-            #5.547 original  
+    def get_range_to_speaker(self, cached=True):
+        if cached:
+            return self.__cached_range_to_speaker
+    
         else:
-            return self.get_pose(look_ahead_time).relativeTo(constants.kBlueSpeakerPose).translation().norm()   
+            start_time = wpilib.Timer.getFPGATimestamp()
+            
+            look_ahead_time = 0.1 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
+            if self.shouldFlipPath():
+                self.__cached_range_to_speaker = self.get_pose(look_ahead_time).relativeTo(constants.kRedSpeakerPose).translation().norm() 
+                #5.547 original  
+            else:
+                self.__cached_range_to_speaker = self.get_pose(look_ahead_time).relativeTo(constants.kBlueSpeakerPose).translation().norm()   
+            
+            end_time = wpilib.Timer.getFPGATimestamp()
+            dt = end_time - start_time
+            if dt < 0.2:
+                SmartDashboard.putNumber("range_loop", dt)
+            
+            return self.__cached_range_to_speaker
     
     # Drive Controls
                 
@@ -534,9 +438,9 @@ class DriveSubsystem(Subsystem):
           
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
         
-        SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
-        SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
-        SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
+        # SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
+        # SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
+        # SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
     
         #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) #-Should be using
         
@@ -547,7 +451,7 @@ class DriveSubsystem(Subsystem):
             if self.has_seen_note and abs(chassis_speed.vx) > 0.1:
                 chassis_speed.vy = note_correction_speed
             
-        SmartDashboard.putNumber("Note Correction Speed", note_correction_speed)
+        # SmartDashboard.putNumber("Note Correction Speed", note_correction_speed)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -574,9 +478,9 @@ class DriveSubsystem(Subsystem):
             )
         )
         
-        SmartDashboard.putNumber("Actual Omega", cs.omega)
-        SmartDashboard.putNumber("Actual Vx", cs.vx)
-        SmartDashboard.putNumber("Actual Vy", cs.vy)
+        # SmartDashboard.putNumber("Actual Omega", cs.omega)
+        # SmartDashboard.putNumber("Actual Vx", cs.vx)
+        # SmartDashboard.putNumber("Actual Vy", cs.vy)
         
         return cs
     
@@ -638,7 +542,7 @@ class DriveSubsystem(Subsystem):
         else:
             translation_to_speaker = self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation()
         
-        SmartDashboard.putNumber("Angle Override", translation_to_speaker.angle().degrees())
+        # SmartDashboard.putNumber("Angle Override", translation_to_speaker.angle().degrees())
         
         # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
         return translation_to_speaker.angle()
@@ -651,12 +555,19 @@ class DriveSubsystem(Subsystem):
             translation_to_speaker = self.get_pose(0.2).relativeTo(constants.kBlueSpeakerPose).translation()
         
         # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
-        SmartDashboard.putNumber("Speaker Target Angle", translation_to_speaker.angle().degrees())
+        # SmartDashboard.putNumber("Speaker Target Angle", translation_to_speaker.angle().degrees())
         angle_to_speaker = translation_to_speaker.angle().rotateBy(-self.get_pose().rotation())
         SmartDashboard.putNumber("Speaker Angle Error", angle_to_speaker.degrees())
         return translation_to_speaker.angle().degrees()
         
-    def get_omega_from_angle_to_speaker(self):        
+    def get_omega_from_angle_to_speaker(self):    
+        
+        end_time = wpilib.Timer.getFPGATimestamp()
+        dt = end_time - self.speaker_end_time_prev
+        if dt < 0.2:
+            SmartDashboard.putNumber("speaker_loop", dt)
+        self.speaker_end_time_prev = end_time
+        
         self.yaw_pid.setSetpoint(self.get_angle_to_speaker())
         pid_output = self.yaw_pid.calculate(self.get_pose().rotation().degrees())
         cs = self.get_robot_relative_speed()

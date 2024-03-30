@@ -23,7 +23,7 @@ kSwerveBackrightSteerEncoderCANID = 8
 kAngulatorEncoderCANID = 31
 kPigeonCANID = 1
 
-kDriveMaxSpeed = 7 #6.4 
+kDriveMaxSpeed = 5.7 #6.4 
 kDrivePeriod = 0.2
 
 kWheelTrack = wpimath.units.inchesToMeters(18.5)
@@ -94,6 +94,7 @@ kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
+kShooterSpeedFeedRPS = 45
 kShooterSpeedSubwooferRPS = 65
 kShooterSpeedHappyDonutRPS = 82
 kShooterSpeedMaxRPS = 82
@@ -139,11 +140,12 @@ kArmDownPosition = 1
 #angulator
 kAngulatorHappyDonutAngleDeg = 0.002
 kAngulatorSubwooferAngleDeg = 31.64 / 360
+kAngulatorFeedAngleDeg = 0.05
 kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   
 kAngulatorUpPosition =  0.112 #/360
 kAngulatorP = 150
-kAngulatorI = 0.02# .01
+kAngulatorI = 20# .01
 kAngulatorD = 0
 kAngulatorV = 30.7 # 0.041
 kAngulatorA = 0.00 # 0.0025
@@ -152,7 +154,7 @@ kAngulatorJerk = 0
 kAngulatorAcceleration = 2.0
 kAngulatorCruiseVelocity = 0.31
 kMotorResistance = 6
-kAngulatorForwardSoftLimitRot = 0.13 # 70 / 360
+kAngulatorForwardSoftLimitRot = 0.133 # 70 / 360
 kAngulatorReverseSoftLimitRot = 0.00488 # 22.5 / 360
 kAngulatorOnTarget = 0.001
 

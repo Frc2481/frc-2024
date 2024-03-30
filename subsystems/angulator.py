@@ -66,7 +66,7 @@ class AngulatorSubsystem(Subsystem):
         self.encoder_offset = wpilib.Preferences.getDouble("ANGULATOR_OFFSET", 0.0)
 
         self.angulatorMotorConfig = TalonFXConfiguration()
-        self.angulatorMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
+        self.angulatorMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.angulatorMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.angulatorMotorConfig.slot0.k_p = constants.kAngulatorP
         self.angulatorMotorConfig.slot0.k_i = constants.kAngulatorI
@@ -108,7 +108,10 @@ class AngulatorSubsystem(Subsystem):
     def set_angulator_position(self, position):
         position += self.encoder_offset
         self.setpoint = position
-        self.angulatorMotor.set_control(MotionMagicVoltage(position=position))
+        if position == 0:
+            self.angulatorMotor.set_control(MotionMagicVoltage(position=position))
+        else:
+            self.angulatorMotor.set_control(MotionMagicVoltage(position=position, override_brake_dur_neutral=True))
     
 
     def angulator_set_pos_cmd(self, angulator_position):
@@ -118,6 +121,15 @@ class AngulatorSubsystem(Subsystem):
             lambda interrupted: None,
             lambda: math.fabs(self.get_error()) < 0.0005,
         ).withTimeout(0.5)
+    
+    # New version for amp arm only with longer timeout
+    def angulator_set_pos_cmd_amp_only(self, angulator_position):
+        return FunctionalCommand(
+            lambda: self.set_angulator_position(angulator_position),
+            lambda: None,
+            lambda interrupted: None,
+            lambda: math.fabs(self.get_error()) < 0.0015,
+        ).withTimeout(2.0)
     
 
     def angulator_inc_pos_target(self, delta):
@@ -146,19 +158,19 @@ class AngulatorSubsystem(Subsystem):
 
    
     def angulator_amp_handoff_cmd(self):
-        return self.angulator_set_pos_cmd(0.13)
+        return self.angulator_set_pos_cmd(0.133)
 
 
     def set_pos_from_range(self, range_cb):
-        HEIGHT_OF_TARGET = 2.044
+        HEIGHT_OF_TARGET = 2.03 #2.044
         #if range_cb() < 3.6:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (range_cb()*0.025-1*0.025)
         #else:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_cb())) - 19
+        range_m = range_cb()
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 21.5 + 2.5*(range_m/6)
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
-        SmartDashboard.putNumber("Angulator Angle for Speaker", angulator_angle)
         SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
         self.set_angulator_position(angulator_rotation)
 
@@ -184,7 +196,7 @@ class AngulatorSubsystem(Subsystem):
 
     def angulator_off_cmd (self):
         return runOnce(
-           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0 + self.encoder_offset))  
+           lambda: self.angulatorMotor.set_control(MotionMagicVoltage(position=0 + self.encoder_offset, override_brake_dur_neutral=True))  
         )
 
 
@@ -218,7 +230,7 @@ class AngulatorSubsystem(Subsystem):
 
     def periodic(self):
        SmartDashboard.putNumber("Angulator Position",self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
-       SmartDashboard.putNumber("Angulator Error", self.get_error())
+    #    SmartDashboard.putNumber("Angulator Error", self.get_error())
        
 
         

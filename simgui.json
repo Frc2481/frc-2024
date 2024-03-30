@@ -43,6 +43,8 @@
       "/SmartDashboard/Gripper Sim": "Mechanism2d",
       "/SmartDashboard/Intake Off": "Command",
       "/SmartDashboard/Intake On": "Command",
+      "/SmartDashboard/Note Correct Disable": "Command",
+      "/SmartDashboard/Note Correct Enable": "Command",
       "/SmartDashboard/Reset Arm and Angulator": "Command",
       "/SmartDashboard/Reset Odom": "Command",
       "/SmartDashboard/Reset Odom To Vision": "Command",

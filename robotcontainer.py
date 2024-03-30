@@ -103,8 +103,6 @@ class RobotContainer(Subsystem):
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
         self.chooser.addOption("6 Piece RB Racer", PathPlannerAuto("racer 6 piece"))
 
-        
-
         SmartDashboard.putData("Auto", self.chooser)
         
         self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
@@ -134,17 +132,20 @@ class RobotContainer(Subsystem):
         
         SmartDashboard.putNumber("shooter_cmd_angle", 0)
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
-        DataLogManager.start()
+        # DataLogManager.start()
 
         self.auto_path = PathPlannerAuto("Red 6 piece")
         self.prev_alliance = None
+        
+        self.__prev_beam_break = True
+        self.robot_loop_time_prev = 0
 
 
     def button_bindings_configure(self):
-        print("Here 3")
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.prepare_happy_donut_cmd())
         self.operator_controller.x().onTrue(self.prepare_subwoofer_shot_cmd())
+        self.operator_controller.y().onTrue(self.prepare_feed_shot_cmd())
         self.operator_controller.rightBumper().whileTrue(self.prepare_speaker_shot_cmd())
         self.operator_controller.rightBumper().onFalse(self.angulator.set_auto_aim_enable_cmd(False)\
             .alongWith(self.shooter.shooter_off_cmd())\
@@ -187,7 +188,7 @@ class RobotContainer(Subsystem):
         SmartDashboard.putData("Note Correct Enable", self.drivetrain.set_correct_path_to_note_cmd(True))
         SmartDashboard.putData("Note Correct Disable", self.drivetrain.set_correct_path_to_note_cmd(False))
         
-    def change_beam_break_cmd(self, enabled):
+    def ignore_beam_break_cmd(self, enabled):
         return InstantCommand(lambda: self.change_beam_break(enabled))
     
     def change_beam_break(self, enabled):
@@ -209,7 +210,12 @@ class RobotContainer(Subsystem):
                self.angulator.angulator_set_pos_cmd(constants.kAngulatorSubwooferAngleDeg)
                # shooter on to subwoofer persentage
                .alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedSubwooferRPS)))
-
+    
+    def prepare_feed_shot_cmd(self):
+        return(# angulator to feed position 
+               self.angulator.angulator_set_pos_cmd(constants.kAngulatorFeedAngleDeg)
+               # shooter on to feed persentage
+               .alongWith(self.shooter.shooter_on_cmd(constants.kShooterSpeedFeedRPS)))
 
     def set_align_state(self, state):
         self.align_state = state
@@ -222,8 +228,8 @@ class RobotContainer(Subsystem):
     def set_angle_speed_from_range(self):
         self.angulator.set_auto_aim_enable(True)
         self.shooter.set_shooter_auto_enable(True)
-        self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
-        self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
+        # self.angulator.set_pos_from_range(self.drivetrain.get_range_to_speaker)
+        # self.shooter.set_speed_from_range(self.drivetrain.get_range_to_speaker)
     
 
     def prepare_speaker_shot_cmd(self):
@@ -231,8 +237,9 @@ class RobotContainer(Subsystem):
             FunctionalCommand(lambda: self.set_align_state(constants.kAlignStateSpeaker),
                               lambda: self.set_angle_speed_from_range(),
                               lambda interrupted: None,
-                              lambda: self.driver_controller.leftBumper().getAsBoolean(),
-                                self.angulator)
+                              lambda: None, #self.driver_controller.leftBumper().getAsBoolean()
+                                # self.angulator  We may need to put this back.
+                            )
                 )
     
     def prepare_auto_speaker_shot_cmd(self):
@@ -256,8 +263,10 @@ class RobotContainer(Subsystem):
             return (sequence(
                 # self.angulator.wait_for_angulator_on_target(),
                 self.shooter.wait_for_shooter_on_target(),
+                self.ignore_beam_break_cmd(True),
                 self.feeder.feeder_on_cmd(.9),
                 WaitCommand(0.2),
+                self.ignore_beam_break_cmd(False),
                 self.feeder.feeder_off_cmd(),
                 self.shooter.shooter_off_cmd(),
                 self.angulator.angulator_set_pos_cmd(0)
@@ -269,7 +278,8 @@ class RobotContainer(Subsystem):
                 self.intake.set_intake_cmd(0, 0),
                 self.feeder.feeder_on_cmd(0),
                 self.shooter.shooter_on_cmd(25),
-                self.angulator.angulator_set_pos_cmd(0),
+                self.angulator.angulator_set_pos_cmd_amp_only(0.0),
+                self.ignore_beam_break_cmd(True),
                 self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
                 self.feeder.feeder_on_cmd(.95),
@@ -277,9 +287,10 @@ class RobotContainer(Subsystem):
                 WaitCommand(.1),
                 self.arm.arm_score_pos_cmd().withTimeout(1.0),
                 WaitCommand(0.5),
+                self.ignore_beam_break_cmd(False),
                 self.shooter.shooter_off_cmd(),
                 self.feeder.feeder_off_cmd(),
-                self.angulator.angulator_set_pos_cmd(0)))
+                self.angulator.angulator_set_pos_cmd_amp_only(0)))
 
 
     def prepare_to_climb_cmd(self):
@@ -321,9 +332,8 @@ class RobotContainer(Subsystem):
     
     def intake_sequence_cmd(self, feeder_cmd, horizontal, vertical, auto=False):
         return sequence(
-                        self.change_beam_break_cmd(False),
+                        self.ignore_beam_break_cmd(False),
                         self.angulator.angulator_set_pos_cmd(0.0),
-                        self.arm.arm_stow_pos_cmd(),
                         self.intake.set_intake_cmd(horizontal, vertical),
                         self.feeder.feeder_on_cmd(feeder_cmd)
                         )
@@ -338,7 +348,7 @@ class RobotContainer(Subsystem):
 
     def intake_feeder_cmd(self, feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto=False):
         return(sequence(
-            self.change_beam_break_cmd(False),
+            self.ignore_beam_break_cmd(False),
             self.set_align_state_cmd(constants.kAlignStateNote),
             self.intake_sequence_cmd(feeder_cmd, intake_cmd_horizontal, intake_cmd_vertical, auto))
             )
@@ -348,7 +358,7 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.05)) #0.1
+             self.feeder.feeder_on_cmd(0.07)) #0.1
         )
 
     def is_beam_break_ignored(self) -> bool:
@@ -371,7 +381,7 @@ class RobotContainer(Subsystem):
     def auto_intake_cmd(self):
         return sequence(
                         # self.drivetrain.set_correct_path_to_note_cmd(True),
-                        self.change_beam_break_cmd(False),
+                        self.ignore_beam_break_cmd(False),
                         self.angulator.angulator_set_pos_cmd(0),
                         self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycle, constants.kVerticalIntakeMotorDutyCycle),
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeed),
@@ -381,7 +391,7 @@ class RobotContainer(Subsystem):
     def intake_and_shoot(self):
         return sequence(
                         # self.drivetrain.set_correct_path_to_note_cmd(True),
-                        self.change_beam_break_cmd(True),
+                        self.ignore_beam_break_cmd(True),
                         self.angulator.angulator_set_pos_cmd(0.04),
                         self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycleRaisedAuto, constants.kVerticalIntakeMotorDutyCycleRaisedAuto),
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeedRaisedAuto),
@@ -441,16 +451,16 @@ class RobotContainer(Subsystem):
     def periodic(self):
         # SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
         # SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
-        SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)
-        SmartDashboard.putNumber("shoot speed ref", self.shooter.shooterMotor.get_closed_loop_reference().value)
-        SmartDashboard.putNumber("shoot speed motor voltage", self.shooter.shooterMotor.get_motor_voltage().value)
-        SmartDashboard.putNumber("shoot supply voltage", self.shooter.shooterMotor.get_supply_voltage().value)
+        # SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)
+        # SmartDashboard.putNumber("shoot speed ref", self.shooter.shooterMotor.get_closed_loop_reference().value)
+        # SmartDashboard.putNumber("shoot speed motor voltage", self.shooter.shooterMotor.get_motor_voltage().value)
+        # SmartDashboard.putNumber("shoot supply voltage", self.shooter.shooterMotor.get_supply_voltage().value)
 
-        SmartDashboard.putNumber("feeder duty cycle", self.feeder.feederMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("shooter current", self.shooter.shooterMotor.get_supply_current().value)
+        # SmartDashboard.putNumber("feeder duty cycle", self.feeder.feederMotor.get_duty_cycle().value)
+        # SmartDashboard.putNumber("shooter current", self.shooter.shooterMotor.get_supply_current().value)
 
-        SmartDashboard.putNumber("beambreak one", self.beambreak_one.get())
-        SmartDashboard.putNumber("beambreak two", self.beambreak_two.get())
+        # SmartDashboard.putNumber("beambreak one", self.beambreak_one.get())
+        # SmartDashboard.putNumber("beambreak two", self.beambreak_two.get())
 
         # Make sure we are connected to FMS / DS before building auto so we get the alliance color correct.
         # if DriverStation.getAlliance() != self.prev_alliance:
@@ -460,11 +470,20 @@ class RobotContainer(Subsystem):
         #         # self.auto_path = PathPlannerAuto("6 piece")
 
         #     self.prev_alliance = DriverStation.getAlliance()
-            
-        if self.beambreak_one.get() == False:
-            self.candle.setLEDs(255, 255, 255) # LED's On Green 0 - 8
-        else:
-            self.candle.setLEDs(0, 0, 0) # LED's Off 0 - 8
+        beam_break = self.beambreak_one.get()
+        if beam_break != self.__prev_beam_break:
+            if not beam_break:
+                self.candle.setLEDs(255, 255, 255) # LED's On Green 0 - 8
+            else:
+                self.candle.setLEDs(0, 0, 0) # LED's Off 0 - 8  
+        self.__prev_beam_break = beam_break   
+        
+        end_time = wpilib.Timer.getFPGATimestamp()
+        dt = end_time - self.robot_loop_time_prev
+        if dt < 0.2:
+            SmartDashboard.putNumber("robot_loop", dt)
+        self.robot_loop_time_prev = end_time   
+        
 
 
     

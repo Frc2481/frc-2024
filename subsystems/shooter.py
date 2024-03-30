@@ -39,6 +39,8 @@ class ShooterSubsystem(Subsystem):
 
         self.shooterMotor.configurator.apply(self.shooterMotorConfig)
 
+        self.velocity_control_request = VelocityDutyCycle(0)
+        self.off_control_request = VoltageOut(0)
 
     def shooter_set_setpoint(self, sp):
         self.setpoint = sp
@@ -46,15 +48,15 @@ class ShooterSubsystem(Subsystem):
 
     def shooter_on_cmd(self, shooter_speed_rps = constants.kShooterSpeedHappyDonutRPS):
         return runOnce(
-            lambda: self.shooterMotor.set_control(VelocityDutyCycle(shooter_speed_rps))
-        ).andThen(self.shooter_set_setpoint(shooter_speed_rps))
+            lambda: self.shooterMotor.set_control(self.velocity_control_request.with_velocity(shooter_speed_rps))
+        ).andThen(InstantCommand(lambda: self.shooter_set_setpoint(shooter_speed_rps)))
 
 
     def shooter_off_cmd(self):
         #return InstantCommand(lambda: None)
         return runOnce(lambda: self.set_shooter_auto_enable(False))\
-            .alongWith(runOnce(lambda: self.shooterMotor.set_control(VoltageOut(0))))\
-            .andThen(self.shooter_set_setpoint(0))
+            .alongWith(runOnce(lambda: self.shooterMotor.set_control(self.off_control_request)))\
+            .andThen(InstantCommand(self.shooter_set_setpoint(0)))
 
 
     def shooter_inc_speed_target(self, delta):
@@ -64,7 +66,7 @@ class ShooterSubsystem(Subsystem):
 
         elif self.setpoint < 0:
             self.setpoint = 0
-        self.shooterMotor.set_control(VelocityDutyCycle(velocity=self.setpoint))
+        self.shooterMotor.set_control(self.velocity_control_request.with_velocity(velocity=self.setpoint))
 
 
     def increase_shooter_speed_cmd(self):
@@ -115,7 +117,7 @@ class ShooterSubsystem(Subsystem):
         if range_cb() < 1: 
             rps = constants.kShooterSpeedSubwooferRPS
         self.setpoint = rps
-        self.shooterMotor.set_control(VelocityDutyCycle(rps))
+        self.shooterMotor.set_control(self.velocity_control_request.with_velocity(rps))
 
 
 

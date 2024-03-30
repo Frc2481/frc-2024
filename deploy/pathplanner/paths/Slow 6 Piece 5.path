@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.750780452438293,
-        "y": 5.884247342934814
+        "x": 7.878494488236559,
+        "y": 5.85651070512452
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.787388434554143,
-        "y": 6.177042956213331
+        "x": 6.915102470352409,
+        "y": 6.1493063184030365
       },
       "isLocked": false,
       "linkedName": "Slow 4"
@@ -29,19 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.55,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 6.0,
-        "maxAcceleration": 1.5,
-        "maxAngularVelocity": 360.0,
-        "maxAngularAcceleration": 360.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
@@ -52,7 +40,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 7.1250163489019425,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Slow 6 piece",

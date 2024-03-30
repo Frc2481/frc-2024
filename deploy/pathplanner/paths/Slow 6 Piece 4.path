@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.750780452438293,
-        "y": 5.884247342934814
+        "x": 7.878494488236559,
+        "y": 5.85651070512452
       },
       "prevControl": {
-        "x": 6.5040378410588024,
-        "y": 6.195932995779687
+        "x": 6.631751876857068,
+        "y": 6.168196357969393
       },
       "nextControl": null,
       "isLocked": false,
@@ -40,7 +40,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -11.633633998940503,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Slow 6 piece",

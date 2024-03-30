@@ -32,12 +32,14 @@ class IntakeSubsystem(commands2.SubsystemBase):
         self.verticalMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
         self.verticalMotor.configurator.apply(self.verticalMotorConfig)
 
+        self.duty_cycle_control_request = DutyCycleOut(0)
+        self.off_signal = VoltageOut(0)
 
     def set_intake(self, horizontal=None, vertical=None):
         if horizontal is not None:
-            self.horizontalMotor.set_control(DutyCycleOut(horizontal))
+            self.horizontalMotor.set_control(self.duty_cycle_control_request.with_output(horizontal))
         if vertical is not None:
-            self.verticalMotor.set_control(DutyCycleOut(vertical))
+            self.verticalMotor.set_control(self.duty_cycle_control_request.with_output(vertical))
 
 
     def set_intake_cmd(self, horizontal=None, vertical=None):
@@ -48,17 +50,17 @@ class IntakeSubsystem(commands2.SubsystemBase):
 
 
     def intake_off(self):
-        self.horizontalMotor.set_control(VoltageOut(0))
-        self.verticalMotor.set_control(VoltageOut(0))
+        self.horizontalMotor.set_control(self.off_signal)
+        self.verticalMotor.set_control(self.off_signal)
 
 
     def intake_off_cmd(self):
         return commands2.cmd.runOnce(
             lambda: self.intake_off())
         
-    def periodic(self):
-        SmartDashboard.putNumber("intake horizontal duty cycle", self.horizontalMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("intake vertical duty cycle", self.verticalMotor.get_duty_cycle().value)
-        SmartDashboard.putNumber("horizontal intake current", self.horizontalMotor.get_supply_current().value)
-        SmartDashboard.putNumber("vertical intake current", self.verticalMotor.get_supply_current().value)
+    # def periodic(self):
+    #     SmartDashboard.putNumber("intake horizontal duty cycle", self.horizontalMotor.get_duty_cycle().value)
+    #     SmartDashboard.putNumber("intake vertical duty cycle", self.verticalMotor.get_duty_cycle().value)
+    #     SmartDashboard.putNumber("horizontal intake current", self.horizontalMotor.get_supply_current().value)
+    #     SmartDashboard.putNumber("vertical intake current", self.verticalMotor.get_supply_current().value)
 

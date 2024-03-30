@@ -18,6 +18,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "enable_face_speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "prepare slow front auto first shot"
                 }
               },
@@ -71,9 +77,21 @@
                       }
                     },
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "disable_face_speaker"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
                       }
                     },
                     {
@@ -118,6 +136,12 @@
                     {
                       "type": "named",
                       "data": {
+                        "name": "disable_face_speaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
                         "name": "shooter off"
                       }
                     },
@@ -125,6 +149,12 @@
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 6"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
                       }
                     },
                     {

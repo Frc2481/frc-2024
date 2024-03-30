@@ -53,6 +53,8 @@ class ArmSubsystem(Subsystem):
             forwardChannel = constants.kGripperDoubleSolenoidForwardPort,
             reverseChannel = constants.kGripperDoubleSolenoidReversePort
         ) 
+        
+        self.prev_zero_switch = True
 
 
     def get_error(self):
@@ -116,9 +118,11 @@ class ArmSubsystem(Subsystem):
 
     def periodic(self):
         SmartDashboard.putNumber("Arm Position", self.armMotor.get_position().value)
-        if self.zero_arm_switch.get() == 0:
-            if self.armMotor.get_position().value == 0:
+        zero_switch = self.zero_arm_switch.get()
+        if zero_switch != self.prev_zero_switch and zero_switch:
+            if abs(self.armMotor.get_position().value) > 2:
                 self.armMotor.set_position(0) 
+        self.prev_zero_switch = zero_switch
     
     
     # Climber up

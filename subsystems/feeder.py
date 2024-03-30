@@ -32,17 +32,20 @@ class FeederSubsystem(object):
         self.feederMotorConfig.slot0.k_v = constants.kFeederV
         self.feederMotorConfig.torque_current.peak_forward_torque_current
         self.feederMotor.configurator.apply(self.feederMotorConfig)
+        
+        self.voltage_control_signal = VoltageOut(0)
+        self.off_signal = VoltageOut(0)
 
 
     def feeder_on_cmd (self, duty):
        return runOnce(
-            lambda:  self.feederMotor.set_control((VoltageOut(duty * 12.0)))
+            lambda:  self.feederMotor.set_control((self.voltage_control_signal.with_output(duty * 12.0)))
             )
 
 
     def feeder_off_cmd (self):
         return runOnce(
-           lambda: self.feederMotor.set_control(VoltageOut(0))
+           lambda: self.feederMotor.set_control(self.off_signal)
         )
     
 

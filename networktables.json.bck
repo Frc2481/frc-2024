@@ -34,7 +34,7 @@
   {
     "name": "/Preferences/FL_WHEEL_CIRCUMFERENCE",
     "type": "double",
-    "value": 0.9396383091586642,
+    "value": 9.413456301867875,
     "properties": {
       "persistent": true
     }
@@ -42,7 +42,7 @@
   {
     "name": "/Preferences/FR_WHEEL_CIRCUMFERENCE",
     "type": "double",
-    "value": 0.9396383091586642,
+    "value": 9.413456301867875,
     "properties": {
       "persistent": true
     }
@@ -50,7 +50,7 @@
   {
     "name": "/Preferences/BL_WHEEL_CIRCUMFERENCE",
     "type": "double",
-    "value": 0.9396383091586642,
+    "value": 9.413456301867875,
     "properties": {
       "persistent": true
     }
@@ -58,7 +58,7 @@
   {
     "name": "/Preferences/BR_WHEEL_CIRCUMFERENCE",
     "type": "double",
-    "value": 0.9396383091586642,
+    "value": 9.413456301867875,
     "properties": {
       "persistent": true
     }

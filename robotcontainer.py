@@ -59,8 +59,9 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare slow front auto third shot', self.auto_prep_fast_raised(76, 0.041))
         NamedCommands.registerCommand('prepare slow front auto fourth shot', self.auto_prep_fast_raised(76, 0.032))
         NamedCommands.registerCommand('slow front auto fourth shot angle drop', self.angulator.angulator_set_pos_cmd(0.036))
-        NamedCommands.registerCommand('prepare slow front auto fifth', self.auto_prep_fast(80, 0.008))
-        NamedCommands.registerCommand('prepare slow front auto sixth', self.auto_prep_fast(80, 0.005))
+        NamedCommands.registerCommand('prepare slow front auto fifth', self.auto_intake_cmd())
+        NamedCommands.registerCommand('prepare slow front auto sixth', self.auto_intake_cmd())
+        NamedCommands.registerCommand('auto intake', self.auto_intake_cmd())
 
         NamedCommands.registerCommand('prepare racer 1', self.auto_prep_fast(65, 0.082))
         NamedCommands.registerCommand('prepare racer 2', self.auto_prep_fast(80, 0.002))
@@ -74,6 +75,7 @@ class RobotContainer(Subsystem):
 
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
         NamedCommands.registerCommand('prepare first close shot', self.prep_first_close_shot_auto())
+        NamedCommands.registerCommand('shooter on', self.shooter.shooter_on_cmd(76))
         NamedCommands.registerCommand('shooter off', self.shooter.shooter_off_cmd())
         NamedCommands.registerCommand('wait for second beam break', 
                                       WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(1.0))

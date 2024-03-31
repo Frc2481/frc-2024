@@ -2,15 +2,33 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.413172177925882,
-      "y": 1.22785258982808
+      "x": 1.5,
+      "y": 3.39
     },
-    "rotation": -29.878999942986063
+    "rotation": -45.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "enable auto aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "enable_face_speaker"
+          }
+        },
         {
           "type": "parallel",
           "data": {
@@ -33,6 +51,18 @@
                 "data": {
                   "pathName": "Middle 3"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "enable_face_speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooter on"
+                }
               }
             ]
           }
@@ -52,9 +82,33 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "disable_face_speaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter off"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Middle 4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter on"
                       }
                     },
                     {
@@ -69,7 +123,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "prepare source auto third shot"
+                  "name": "auto intake"
                 }
               }
             ]
@@ -90,9 +144,33 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "disable_face_speaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter off"
+                      }
+                    },
+                    {
                       "type": "path",
                       "data": {
                         "pathName": "Middle 6"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter on"
                       }
                     },
                     {
@@ -107,7 +185,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "prepare source auto fourth shot"
+                  "name": "auto intake"
                 }
               }
             ]

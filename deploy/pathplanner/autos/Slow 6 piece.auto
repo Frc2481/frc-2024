@@ -73,19 +73,26 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "shooter off"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
                         "name": "disable_face_speaker"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "parallel",
                       "data": {
-                        "pathName": "Slow 6 Piece 4"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Slow 6 Piece 4"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "prepare slow front auto fifth"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -101,12 +108,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "prepare slow front auto fifth"
                 }
               }
             ]
@@ -140,15 +141,22 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "parallel",
                       "data": {
-                        "name": "shooter off"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Slow 6 Piece 6"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Slow 6 Piece 6"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "prepare slow front auto sixth"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -165,12 +173,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "prepare slow front auto sixth"
-                }
               }
             ]
           }
@@ -179,6 +181,12 @@
           "type": "named",
           "data": {
             "name": "auto speaker score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Slow 6 Piece 8"
           }
         }
       ]

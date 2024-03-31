@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.123892855697957,
-        "y": 5.270321057028246
+        "x": 4.850638626573942,
+        "y": 4.687864583079301
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.011724715316684,
-        "y": 3.9007931884674423
+        "x": 6.351286487836555,
+        "y": 3.6520191567210363
       },
       "isLocked": false,
       "linkedName": "Mid 5"
     },
     {
       "anchor": {
-        "x": 8.015241006367276,
-        "y": 2.4651501814243932
+        "x": 7.838654279530471,
+        "y": 2.682574078206251
       },
       "prevControl": {
-        "x": 7.325754562195286,
-        "y": 3.7685629115029506
+        "x": 6.577047670504381,
+        "y": 3.5192184610340793
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
@@ -45,8 +45,8 @@
   "reversed": false,
   "folder": "Middle 3",
   "previewStartingState": {
-    "rotation": -1.5074357587747105,
-    "velocity": 0
+    "rotation": -8.130102354156094,
+    "velocity": 1.0
   },
   "useDefaultConstraints": false
 }

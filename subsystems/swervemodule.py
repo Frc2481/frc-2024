@@ -26,8 +26,8 @@ class SwerveModule(object):
 
         self.driveMotorConfig = TalonFXConfiguration()
         self.driveMotorConfig.current_limits.stator_current_limit = 80
+        self.driveMotorConfig.current_limits.stator_current_limit_enable = True
         
-        self.driveMotorConfig.current_limits.stator_current_limit_enable
         self.driveMotorConfig.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self.driveMotorConfig.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
         self.driveMotorConfig.slot0.k_p = constants.kdriveP

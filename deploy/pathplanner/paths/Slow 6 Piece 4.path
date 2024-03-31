@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8960402838848216,
-        "y": 6.998759677349813
+        "x": 2.7125474260139373,
+        "y": 6.892356131482783
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.718929102038167,
-        "y": 6.5831788068899835
+        "x": 4.826506603527406,
+        "y": 6.825792794321841
       },
       "isLocked": false,
       "linkedName": "Slow 3"
@@ -20,8 +20,8 @@
         "y": 5.85651070512452
       },
       "prevControl": {
-        "x": 6.631751876857068,
-        "y": 6.168196357969393
+        "x": 6.816088922740903,
+        "y": 6.427553696578434
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,12 +33,12 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
-    "maxAcceleration": 5.0,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -11.633633998940503,
     "rotateFast": false
   },

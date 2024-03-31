@@ -88,6 +88,7 @@ class DriveSubsystem(Subsystem):
             Ki=wpilib.Preferences.getDouble("SPEAKER_YAW_I", 0.0),
             Kd=wpilib.Preferences.getDouble("SPEAKER_YAW_D", 0.0)
         )
+        self.yaw_pid.enableContinuousInput(0, 360)
         
         self.field = Field2d()
         
@@ -159,6 +160,7 @@ class DriveSubsystem(Subsystem):
         self.auto_face_goal = False
         self.__cached_range_to_speaker = 0
         self.speaker_end_time_prev = 0
+        self.note_correction_gain = 0
         
         SmartDashboard.putNumber("Angle Override", 0)
         
@@ -263,21 +265,21 @@ class DriveSubsystem(Subsystem):
     def dashboard_periodic(self):                                                       
         # SmartDashboard.putNumber("FL_Angle_Actual", self._fl.get_position().angle.degrees())
         # SmartDashboard.putNumber("FL_Distance",self._fl.get_position().distance)
-        # SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("FL_Velocity",self._fl.driveMotor.get_rotor_velocity().value)
         # SmartDashboard.putNumber("FL_Voltage",self._fl.get_voltage())
         # SmartDashboard.putNumber("FL Duty Cycle", self._fl.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("FL Current", self._fl.driveMotor.get_supply_current().value)        
         
         # SmartDashboard.putNumber("FR_Angle_Actual", self._fr.get_position().angle.degrees())
         # SmartDashboard.putNumber("FR_Distance",self._fr.get_position().distance)
-        # SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("FR_Velocity",self._fr.driveMotor.get_rotor_velocity().value)
         # SmartDashboard.putNumber("FR_Voltage",self._fr.get_voltage())
         # SmartDashboard.putNumber("FR Duty Cycle", self._fr.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("FR Current", self._fr.driveMotor.get_supply_current().value)
         
         # SmartDashboard.putNumber("BL_Angle_Actual", self._bl.get_position().angle.degrees())
         # SmartDashboard.putNumber("BL_Distance",self._bl.get_position().distance)
-        #SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("BL_Velocity",self._bl.driveMotor.get_rotor_velocity().value)
         #SmartDashboard.putNumber("BL_Voltage",self._bl.get_voltage())
         #SmartDashboard.putNumber("BL Duty Cycle", self._bl.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("BL Current", self._bl.driveMotor.get_supply_current().value)
@@ -285,15 +287,15 @@ class DriveSubsystem(Subsystem):
         
         # SmartDashboard.putNumber("BR_Angle_Actual", self._br.get_position().angle.degrees())      
         # SmartDashboard.putNumber("BR_Distance",self._br.get_position().distance)
-        #SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
+        SmartDashboard.putNumber("BR_Velocity",self._br.driveMotor.get_rotor_velocity().value)
         #SmartDashboard.putNumber("BR_Voltage",self._br.get_voltage())
         #SmartDashboard.putNumber("BR Duty Cycle", self._br.driveMotor.get_duty_cycle().value)
         #SmartDashboard.putNumber("BR Current", self._fr.driveMotor.get_supply_current().value)
         
-        #SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
-        #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("BR Supply Voltage", self._br.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("FR Supply Voltage", self._fr.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
+        SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
         # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
         # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
@@ -315,15 +317,20 @@ class DriveSubsystem(Subsystem):
                 wpilib.Preferences.getDouble("SPEAKER_YAW_I", 0.0),
                 wpilib.Preferences.getDouble("SPEAKER_YAW_D", 0.0),
             )
+            
+            self.note_correction_gain = wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.1)
         
     # Odometry   
-    def get_pose(self, delta=0.0) -> Pose2d:        
+    def get_pose(self, delta=0.0, is_blue=True) -> Pose2d:        
         if delta == 0.0:
             return self.__odometry.getEstimatedPosition()
         
         cs = self.get_robot_relative_speed()
         cs = cs.fromRobotRelativeSpeeds(cs, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
-        twist = Twist2d(cs.vx, cs.vy, cs.omega) # meters per second
+        if is_blue:
+            twist = Twist2d(cs.vx, cs.vy, cs.omega) # meters per second
+        else:
+            twist = Twist2d(-cs.vx, -cs.vy, cs.omega) # meters per second
         twist *= delta
         pose = self.__odometry.getEstimatedPosition()
         pose = pose.exp(twist)
@@ -373,12 +380,12 @@ class DriveSubsystem(Subsystem):
         else:
             start_time = wpilib.Timer.getFPGATimestamp()
             
-            look_ahead_time = 0.1 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
+            look_ahead_time = 0.05 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
             if self.shouldFlipPath():
-                self.__cached_range_to_speaker = self.get_pose(look_ahead_time).relativeTo(constants.kRedSpeakerPose).translation().norm() 
+                self.__cached_range_to_speaker = self.get_pose(look_ahead_time, is_blue=False).relativeTo(constants.kRedSpeakerPose).translation().norm() 
                 #5.547 original  
             else:
-                self.__cached_range_to_speaker = self.get_pose(look_ahead_time).relativeTo(constants.kBlueSpeakerPose).translation().norm()   
+                self.__cached_range_to_speaker = self.get_pose(look_ahead_time, is_blue=True).relativeTo(constants.kBlueSpeakerPose).translation().norm()   
             
             end_time = wpilib.Timer.getFPGATimestamp()
             dt = end_time - start_time
@@ -429,7 +436,7 @@ class DriveSubsystem(Subsystem):
     def get_note_correction_speed(self):
         if self.is_note_visible():
             self.has_seen_note = True
-            return -self.ll_note_table.getNumber('tx', 0) * wpilib.Preferences.getDouble("NOTE_LATERAL_GAIN", 0.1)
+            return -self.ll_note_table.getNumber('tx', 0) * self.note_correction_gain
         else:
             return 0.0
     
@@ -439,8 +446,7 @@ class DriveSubsystem(Subsystem):
     def drive_robot_relative_speed(self, chassis_speed: ChassisSpeeds, force_angle=False, voltage_only=False):
         
         # SmartDashboard.putNumber("Target Omega", chassis_speed.omega)
-        # SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
-        # SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
+
     
         #chassis_speed = ChassisSpeeds.discretize(chassis_speed, constants.kDrivePeriod) #-Should be using
         
@@ -452,6 +458,9 @@ class DriveSubsystem(Subsystem):
                 chassis_speed.vy = note_correction_speed
             
         # SmartDashboard.putNumber("Note Correction Speed", note_correction_speed)
+        
+        # SmartDashboard.putNumber("Chassis Speed X", chassis_speed.vx)
+        # SmartDashboard.putNumber("Chassis Speed Y", chassis_speed.vy)
 
         module_states = self.__kinematics.toSwerveModuleStates(chassis_speed)
 
@@ -538,9 +547,9 @@ class DriveSubsystem(Subsystem):
     def get_path_override_angle_to_speaker(self):
             # TODO: Possible add a trim if this isn't perfect.
         if self.shouldFlipPath():
-            translation_to_speaker = self.get_pose().relativeTo(constants.kRedSpeakerPose).translation()   
+            translation_to_speaker = self.get_pose(0.3).relativeTo(constants.kRedSpeakerPose).translation()   
         else:
-            translation_to_speaker = self.get_pose().relativeTo(constants.kBlueSpeakerPose).translation()
+            translation_to_speaker = self.get_pose(0.3).relativeTo(constants.kBlueSpeakerPose).translation()
         
         # SmartDashboard.putNumber("Angle Override", translation_to_speaker.angle().degrees())
         
@@ -550,9 +559,9 @@ class DriveSubsystem(Subsystem):
     def get_angle_to_speaker(self):
         # TODO: Possible add a trim if this isn't perfect.
         if self.shouldFlipPath():
-            translation_to_speaker = self.get_pose(0.2).relativeTo(constants.kRedSpeakerPose).translation()   
+            translation_to_speaker = self.get_pose(0.3, is_blue=False).relativeTo(constants.kRedSpeakerPose).translation()   
         else:
-            translation_to_speaker = self.get_pose(0.2).relativeTo(constants.kBlueSpeakerPose).translation()
+            translation_to_speaker = self.get_pose(0.3, is_blue=True).relativeTo(constants.kBlueSpeakerPose).translation()
         
         # translation_to_speaker = self.get_pose().relativeTo(Pose2d(-0.0381, 5.547, Rotation2d())).translation()
         # SmartDashboard.putNumber("Speaker Target Angle", translation_to_speaker.angle().degrees())
@@ -572,7 +581,8 @@ class DriveSubsystem(Subsystem):
         pid_output = self.yaw_pid.calculate(self.get_pose().rotation().degrees())
         cs = self.get_robot_relative_speed()
         speed = (cs.vx ** 2 + cs.vy ** 2) ** 0.5
-        return pid_output * (1 - (speed / constants.kDriveMaxSpeed))
+        return pid_output
+        return ((0.5 * pid_output) *(1 - (speed / constants.kDriveMaxSpeed))) + (pid_output * 0.5)
         
     
     def drive_speaker_aligned_cmd(self, joystick: CommandXboxController):

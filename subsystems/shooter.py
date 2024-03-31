@@ -24,6 +24,8 @@ class ShooterSubsystem(Subsystem):
         self.shooterMotor = TalonFX(constants.kShooterMotorCANID, "2481")
 
         self.shooterMotorConfig = TalonFXConfiguration()
+        self.shooterMotorConfig.current_limits.stator_current_limit = 80
+        self.shooterMotorConfig.current_limits.stator_current_limit_enable = True
         self.shooterMotorConfig.motor_output.neutral_mode = NeutralModeValue.COAST
         self.shooterMotorConfig.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         self.shooterMotorConfig.slot0.k_p = constants.kShooterP

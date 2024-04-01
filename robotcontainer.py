@@ -28,6 +28,8 @@ from phoenix6.controls import VoltageOut, VelocityDutyCycle
 from phoenix5.led import CANdle
 from commands2 import ConditionalCommand
 
+from phoenix6.signal_logger import SignalLogger
+
 class RobotContainer(Subsystem):
 
     def __init__(self):
@@ -141,6 +143,8 @@ class RobotContainer(Subsystem):
         
         self.__prev_beam_break = True
         self.robot_loop_time_prev = 0
+        
+        SignalLogger.stop()
 
 
     def button_bindings_configure(self):

@@ -20,7 +20,7 @@ from commands2.cmd import *
 
 from commands2.button import CommandXboxController 
 
-from ntcore import NetworkTableInstance, NetworkTable
+from ntcore import NetworkTableInstance, NetworkTable, NetworkTableEntry
 
 from phoenix6.controls import VelocityVoltage, MotionMagicVoltage, VoltageOut, DutyCycleOut
 
@@ -149,10 +149,10 @@ class DriveSubsystem(Subsystem):
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
         #self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
-        self.ll_top_front_table = NetworkTableInstance.getDefault().getTable("limelight-front")
-        self.ll_top_back_table = NetworkTableInstance.getDefault().getTable("limelight-back")
-        self.ll_top_left_table = NetworkTableInstance.getDefault().getTable("limelight-left")
-        self.ll_top_right_table = NetworkTableInstance.getDefault().getTable("limelight-right")
+        self.ll_top_front_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose_wpiblue")
+        self.ll_top_back_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("botpose_wpiblue")
+        self.ll_top_left_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_wpiblue")
+        self.ll_top_right_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_wpiblue")
         self.ll_note_table = NetworkTableInstance.getDefault().getTable("limelight-note")
     
         self.drive_state = True
@@ -183,7 +183,9 @@ class DriveSubsystem(Subsystem):
     
     def periodic(self):
 
-        start_time = wpilib.Timer.getFPGATimestamp()     
+        start_time = wpilib.Timer.getFPGATimestamp()   
+        
+        BaseStatusSignal.refresh_all(self._fl.allSignals + self._fr.allSignals + self._bl.allSignals + self._br.allSignals)  
 
         self._fl.update()
         self._fr.update()
@@ -207,8 +209,11 @@ class DriveSubsystem(Subsystem):
         end_time = wpilib.Timer.getFPGATimestamp()
         SmartDashboard.putNumber("drive_loop", end_time - start_time)
         
-    def add_pose_from_limelight(self, nt_table : NetworkTable, ll_name):
-        if nt_table.getNumber("tv",0) > 0:
+    def add_pose_from_limelight(self, nt_entry : NetworkTableEntry, ll_name):
+        
+        bot_pose = nt_entry.getDoubleArray([0,0,0,0,0,0,0,0,0,0])
+        
+        if bot_pose[7] > 0:
             # 0.tx
             # 1.ty,
             # 2.tz
@@ -228,10 +233,11 @@ class DriveSubsystem(Subsystem):
             # 16 + n*7 distance to robot
             # 17 + n*7 ambiguity
             
-            bot_pose = nt_table.getEntry("botpose_wpiblue").getDoubleArray([0,0,0,0,0,0,0,0,0,0])
+            
             num_targets = bot_pose[7]
-            total_latency_ms = nt_table.getNumber("cl",0) + \
-                               nt_table.getNumber("tl",0) 
+            # total_latency_ms = nt_table.getNumber("cl",0) + \
+            #                    nt_table.getNumber("tl",0)
+            total_latency_ms = bot_pose[6] 
             capture_timestamp_sec = wpilib.Timer.getFPGATimestamp() - total_latency_ms / 1000.0
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
@@ -262,10 +268,10 @@ class DriveSubsystem(Subsystem):
     # Lime Light Update 
     def limelight_periodic(self):       
         #checks if april tag is visible
-        self.add_pose_from_limelight(self.ll_top_front_table, "ll_top_front")
-        self.add_pose_from_limelight(self.ll_top_back_table, "ll_top_back")
-        self.add_pose_from_limelight(self.ll_top_left_table, "ll_top_left")
-        self.add_pose_from_limelight(self.ll_top_right_table, "ll_top_right")
+        self.add_pose_from_limelight(self.ll_top_front_entry, "ll_top_front")
+        self.add_pose_from_limelight(self.ll_top_back_entry, "ll_top_back")
+        self.add_pose_from_limelight(self.ll_top_left_entry, "ll_top_left")
+        self.add_pose_from_limelight(self.ll_top_right_entry, "ll_top_right")
         #self.add_pose_from_limelight(self.ll_rear_table, "ll_rear")
         
      

@@ -11,6 +11,7 @@ from phoenix6.configs.cancoder_configs import CANcoderConfiguration
 from phoenix6.hardware.cancoder import CANcoder
 from phoenix6.hardware import TalonFX
 from phoenix6.signals.spn_enums import *
+from phoenix6.status_signal import BaseStatusSignal
 
 import constants
 from utils import *
@@ -81,7 +82,7 @@ class SwerveModule(object):
 
         self.state_drive_pos = 0
         self.state_drive_vel = 0
-        self.state_steer_ang = 0
+        self.state_steer_ang = Rotation2d()
 
     def zero_steer_encoder(self):
         print("Zero Encoder Start")
@@ -140,12 +141,13 @@ class SwerveModule(object):
         return self.driveMotor.get_motor_voltage().value
 
     def update(self):
-        BaseStatusSignal.refresh_all(self.allSignals)
+        # BaseStatusSignal.refresh_all(self.allSignals)
 
         self.state_drive_pos = BaseStatusSignal.get_latency_compensated_value(self.drivePositionSignal,
                                                                               self.driveVelocitySignal)
         state_steer_ang = BaseStatusSignal.get_latency_compensated_value(self.steerPositionSignal,
-                                                                         self.steerVelocitySignal)
+                                                                         self.steerVelocitySignal)                                                                
+        
         self.state_drive_vel = self.driveVelocitySignal.value
 
         self.state_steer_ang = Rotation2d(state_steer_ang * 2 * math.pi)

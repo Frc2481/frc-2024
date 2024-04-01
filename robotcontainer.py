@@ -103,7 +103,7 @@ class RobotContainer(Subsystem):
         self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
         self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
-        self.chooser.addOption("6 Piece RB Racer", PathPlannerAuto("racer 6 piece"))
+        self.chooser.addOption("Racer 5 Piece", PathPlannerAuto("Racer 5 Piece"))
 
         SmartDashboard.putData("Auto", self.chooser)
         
@@ -448,7 +448,9 @@ class RobotContainer(Subsystem):
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
     def auto_barf_command(self):
-        return self.shooter.shooter_on_cmd(5).alongWith(self.feeder.feeder_on_cmd(0.1))         
+        return sequence(self.shooter.shooter_on_cmd(5),
+                        WaitCommand(0.2),
+                        self.shooter.shooter_off_cmd())         
                       
     def periodic(self):
         # SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())

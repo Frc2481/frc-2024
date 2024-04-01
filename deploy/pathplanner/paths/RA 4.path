@@ -1,0 +1,88 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.024686026150453,
+        "y": 5.789797145103035
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.4532964510965556,
+        "y": 8.028266833720052
+      },
+      "isLocked": false,
+      "linkedName": "RA3"
+    },
+    {
+      "anchor": {
+        "x": 2.036543483612333,
+        "y": 6.469838569494122
+      },
+      "prevControl": {
+        "x": 2.0900433886736183,
+        "y": 8.36908519912347
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RA4"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.35,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Shooter on",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 35.13419305691557,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 Piece Racer Amp Auto",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 1.0
+  },
+  "useDefaultConstraints": false
+}

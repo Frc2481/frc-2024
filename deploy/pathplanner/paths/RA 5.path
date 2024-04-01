@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.036543483612333,
+        "y": 6.469838569494122
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4710143936418136,
+        "y": 6.7059640640712965
+      },
+      "isLocked": false,
+      "linkedName": "RA4"
+    },
+    {
+      "anchor": {
+        "x": 2.886595264101644,
+        "y": 6.998759677349813
+      },
+      "prevControl": {
+        "x": 2.6126896903894825,
+        "y": 6.819304301469432
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RA5"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 29.475889003245776,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 Piece Racer Amp Auto",
+  "previewStartingState": {
+    "rotation": 30.762719533787187,
+    "velocity": 1.0
+  },
+  "useDefaultConstraints": false
+}

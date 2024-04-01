@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
+      "x": 1.6,
       "y": 3.39
     },
-    "rotation": -45.0
+    "rotation": -48.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "enable auto aim"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -26,7 +20,7 @@
         {
           "type": "named",
           "data": {
-            "name": "enable_face_speaker"
+            "name": "enable auto aim"
           }
         },
         {

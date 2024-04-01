@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.642152295822635,
-        "y": 2.7489744260497297
+        "x": 3.668712434960026,
+        "y": 2.191211504164511
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.61159737433742,
-        "y": 4.316022635155821
+        "x": 4.970159252692203,
+        "y": 4.767545000491474
       },
       "isLocked": false,
       "linkedName": "Mid3"
@@ -20,8 +20,8 @@
         "y": 4.116821591625385
       },
       "prevControl": {
-        "x": 6.723128435760033,
-        "y": 4.143381730762776
+        "x": 6.816088922740903,
+        "y": 4.063701313350602
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,23 +42,41 @@
       }
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake on"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 0,
+    "rotation": -27.552811576717662,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Middle 3",
   "previewStartingState": {
     "rotation": -39.28940686250035,
-    "velocity": 0.25
+    "velocity": 0.5
   },
   "useDefaultConstraints": false
 }

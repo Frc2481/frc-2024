@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6032446706063053,
-        "y": 5.544226630740407
+        "x": 2.726029927787618,
+        "y": 4.240813900661848
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0459885033988052,
-        "y": 5.591451729656297
+        "x": 1.9515383055670252,
+        "y": 4.779180028302992
       },
       "isLocked": false,
       "linkedName": "RA7"
     },
     {
       "anchor": {
-        "x": 2.6032446706063053,
-        "y": 4.212478841312315
+        "x": 2.8960402838848216,
+        "y": 1.7284386383365118
       },
       "prevControl": {
-        "x": 2.0837685825315173,
-        "y": 4.278593979794561
+        "x": 2.1876638001464745,
+        "y": 1.18062749091219
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +46,7 @@
   "folder": "5 Piece Racer Amp Auto",
   "previewStartingState": {
     "rotation": 0,
-    "velocity": 1.0
+    "velocity": 0.0
   },
   "useDefaultConstraints": false
 }

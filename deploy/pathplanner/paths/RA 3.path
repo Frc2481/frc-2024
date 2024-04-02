@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.474530684692406,
-        "y": 6.498173628841382
+        "x": 4.898384477918549,
+        "y": 6.356498332093712
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.702383256505541,
-        "y": 6.148707896863797
+        "x": 6.230132267346642,
+        "y": 6.2148230353460425
       },
       "isLocked": false,
       "linkedName": "RA 2"
     },
     {
       "anchor": {
-        "x": 8.024686026150453,
-        "y": 5.789797145103035
+        "x": 7.901900768969142,
+        "y": 5.874802323151635
       },
       "prevControl": {
-        "x": 6.919618711518633,
-        "y": 6.0920377781647295
+        "x": 6.674048197157542,
+        "y": 6.0920377781628385
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,23 +30,41 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter off"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": 0,
+    "velocity": 0.0,
+    "rotation": -15.422161318738661,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "5 Piece Racer Amp Auto",
   "previewStartingState": {
     "rotation": 19.13,
-    "velocity": 0.5
+    "velocity": 0.0
   },
   "useDefaultConstraints": false
 }

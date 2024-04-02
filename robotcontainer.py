@@ -462,8 +462,9 @@ class RobotContainer(Subsystem):
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
     def auto_barf_command(self):
-        return sequence(self.shooter.shooter_on_cmd(5),
-                        WaitCommand(0.2),
+        return sequence(WaitCommand(0.15),
+                        self.shooter.shooter_on_cmd(80),
+                        WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())         
                       
     def periodic(self):

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.024686026150453,
-        "y": 5.789797145103035
+        "x": 7.901900768969142,
+        "y": 5.874802323151635
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4532964510965556,
-        "y": 8.028266833720052
+        "x": 7.014068909350414,
+        "y": 6.403723431009602
       },
       "isLocked": false,
       "linkedName": "RA3"
     },
     {
       "anchor": {
-        "x": 2.036543483612333,
-        "y": 6.469838569494122
+        "x": 2.8582602047521095,
+        "y": 6.054257699032017
       },
       "prevControl": {
-        "x": 2.0900433886736183,
-        "y": 8.36908519912347
+        "x": 4.643368943772744,
+        "y": 6.46039354970867
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,11 +38,11 @@
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.35,
+      "minWaypointRelativePos": 0.25,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 3.0,
-        "maxAcceleration": 2.0,
+        "maxAcceleration": 1.5,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 720.0
       }
@@ -51,7 +51,7 @@
   "eventMarkers": [
     {
       "name": "Shooter on",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -65,24 +65,41 @@
           ]
         }
       }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake and shoot"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 35.13419305691557,
+    "rotation": 7.125016348901798,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "5 Piece Racer Amp Auto",
   "previewStartingState": {
-    "rotation": 0,
-    "velocity": 1.0
+    "rotation": -16.46001481204004,
+    "velocity": 0.0
   },
   "useDefaultConstraints": false
 }

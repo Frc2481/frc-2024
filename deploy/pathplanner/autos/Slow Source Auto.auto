@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.6,
+      "x": 1.5,
       "y": 3.39
     },
-    "rotation": -48.0
+    "rotation": -45.0
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shooter on"
+            "name": "enable auto aim"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "enable auto aim"
+            "name": "shooter on"
           }
         },
         {

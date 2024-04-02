@@ -56,7 +56,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare source auto third shot', self.auto_prep_fast(76, 0.02))
         NamedCommands.registerCommand('prepare source auto fourth shot', self.auto_prep_fast(76, 0.02))
         
-        NamedCommands.registerCommand('prepare slow front auto first shot', self.auto_prep_shoot_cmd(65, 0.05))
+        NamedCommands.registerCommand('prepare slow front auto first shot', self.auto_prep_shoot_cmd(65, 0.06))
         NamedCommands.registerCommand('prepare slow front auto second shot', self.auto_prep_fast_raised(76, 0.036))
         NamedCommands.registerCommand('prepare slow front auto third shot', self.auto_prep_fast_raised(76, 0.041))
         NamedCommands.registerCommand('prepare slow front auto fourth shot', self.auto_prep_fast_raised(76, 0.032))
@@ -73,6 +73,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare racer 6', self.auto_shoot_fast(80, 0.036))
         NamedCommands.registerCommand('barf first piece', self.auto_barf_command())
         NamedCommands.registerCommand('intake and shoot', self.intake_and_shoot())
+        NamedCommands.registerCommand('intake and shoot off', self.intake_and_shoot_off())
         NamedCommands.registerCommand('enable auto aim', self.angulator.set_auto_aim_enable_cmd(True))
 
         NamedCommands.registerCommand('prepare first feeder shot', self.prep_first_feeder_shot_auto())
@@ -403,6 +404,15 @@ class RobotContainer(Subsystem):
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeedRaisedAuto),
                         self.shooter.shooter_on_cmd(65))
         
+    def intake_and_shoot_off(self):
+        return sequence(
+                        # self.drivetrain.set_correct_path_to_note_cmd(True),
+                        self.ignore_beam_break_cmd(False),
+                        self.angulator.angulator_set_pos_cmd(0.01),
+                        self.intake.set_intake_cmd(0, 0),
+                        self.feeder.feeder_on_cmd(0),
+                        self.shooter.shooter_on_cmd(0))
+        
     def auto_intake_cmd_raised(self):
         return sequence(
                         # self.drivetrain.set_correct_path_to_note_cmd(True),
@@ -457,6 +467,12 @@ class RobotContainer(Subsystem):
                         self.shooter.shooter_off_cmd())         
                       
     def periodic(self):
+        end_time = wpilib.Timer.getFPGATimestamp()
+        dt = end_time - self.robot_loop_time_prev
+        if dt < 0.2:
+            SmartDashboard.putNumber("robot_loop", dt)
+        self.robot_loop_time_prev = end_time  
+        
         # SmartDashboard.putData("Scheduler", CommandScheduler.getInstance())
         # SmartDashboard.putNumber("speak range", self.drivetrain.get_range_to_speaker())
         # SmartDashboard.putNumber("shoot speed", self.shooter.shooterMotor.get_velocity().value)
@@ -485,12 +501,7 @@ class RobotContainer(Subsystem):
             else:
                 self.candle.setLEDs(0, 0, 0) # LED's Off 0 - 8  
         self.__prev_beam_break = beam_break   
-        
-        end_time = wpilib.Timer.getFPGATimestamp()
-        dt = end_time - self.robot_loop_time_prev
-        if dt < 0.2:
-            SmartDashboard.putNumber("robot_loop", dt)
-        self.robot_loop_time_prev = end_time   
+         
         
 
 

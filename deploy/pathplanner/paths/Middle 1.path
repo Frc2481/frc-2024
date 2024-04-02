@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6,
+        "x": 1.5,
         "y": 3.39
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4204393660932064,
-        "y": 2.0186025871705073
+        "x": 2.8183086086817637,
+        "y": 2.2282510171836414
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.7722539316869925,
-        "y": 0.7968041994514637
+        "x": 7.826340610703716,
+        "y": 0.8594968182841383
       },
       "prevControl": {
-        "x": 6.05912495732525,
-        "y": 0.9428849647071158
+        "x": 6.1132116363419735,
+        "y": 1.0055775835397904
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,12 +31,12 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.2,
-      "rotationDegrees": -51.0,
+      "rotationDegrees": -43.0,
       "rotateFast": false
     },
     {
       "waypointRelativePos": 0.45,
-      "rotationDegrees": -45.31629979971974,
+      "rotationDegrees": -41.0,
       "rotateFast": false
     }
   ],
@@ -104,23 +104,40 @@
           ]
         }
       }
+    },
+    {
+      "name": "disable face speaker",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "disable_face_speaker"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 6.0,
-    "maxAcceleration": 4.25,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 450.0
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -21.250505507133077,
+    "velocity": 0.25,
+    "rotation": -14.420773127511012,
     "rotateFast": true
   },
   "reversed": false,
   "folder": "Middle 3",
   "previewStartingState": {
-    "rotation": -48.0,
+    "rotation": -45.0,
     "velocity": 0.0
   },
   "useDefaultConstraints": false

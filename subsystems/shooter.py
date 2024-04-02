@@ -13,6 +13,8 @@ from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVolt
 from phoenix6.signals.spn_enums import *
 from phoenix6.status_signal import BaseStatusSignal
 
+from wpilib import SmartDashboard
+
 class ShooterSubsystem(Subsystem):
 
     def __init__(self):
@@ -144,4 +146,6 @@ class ShooterSubsystem(Subsystem):
     
     def periodic(self) -> None:
         BaseStatusSignal.refresh_all(self.allSignals)
+        
+        SmartDashboard.putNumber("Shooter Speed", self.velocity_signal.value)
         

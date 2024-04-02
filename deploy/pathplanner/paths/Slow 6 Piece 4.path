@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.835785630486894,
-        "y": 5.893692362717991
+        "x": 7.930235828318675,
+        "y": 5.770907105536678
       },
       "prevControl": {
-        "x": 6.589043019107405,
-        "y": 6.328163272744178
+        "x": 6.683493216939185,
+        "y": 6.205378015562865
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,10 +30,45 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake and shoot off"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "auto intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 6.0,
-    "maxAcceleration": 3.25,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },

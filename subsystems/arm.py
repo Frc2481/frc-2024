@@ -7,7 +7,6 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import *
 from phoenix6.controls import MotionMagicVoltage, VelocityTorqueCurrentFOC, VoltageOut
 from phoenix6.configs import TalonFXConfiguration
-from phoenix6.status_signal import BaseStatusSignal
 from wpilib import SmartDashboard, DigitalInput
 
 import constants

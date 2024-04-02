@@ -100,9 +100,10 @@ class AngulatorSubsystem(Subsystem):
 
         # self.angulatorEncoder.set_position(0)
 
+        self.absolute_position =  self.angulatorEncoder.get_absolute_position()
           
     def get_error(self):
-        return self.setpoint - self.angulatorEncoder.get_absolute_position().value
+        return self.setpoint - self.absolute_position.value
 
 
     def set_angulator_position(self, position):
@@ -171,7 +172,7 @@ class AngulatorSubsystem(Subsystem):
         angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 22.5 + 3.5*(range_m/6)
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
-        SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
+        # SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
         self.set_angulator_position(angulator_rotation)
 
     def is_auto_aim_enabled(self):
@@ -209,7 +210,7 @@ class AngulatorSubsystem(Subsystem):
 
     def zero_encoder(self):
         # Wait for a new reading after applying the offset.
-        angulator_offset = self.angulatorEncoder.get_absolute_position()
+        angulator_offset = self.absolute_position
         angulator_offset.wait_for_update(1)
 
         self.encoder_offset = angulator_offset.value
@@ -229,7 +230,8 @@ class AngulatorSubsystem(Subsystem):
 
 
     def periodic(self):
-       SmartDashboard.putNumber("Angulator Position",self.angulatorEncoder.get_absolute_position().value - self.encoder_offset)
+        self.absolute_position.refresh()
+        SmartDashboard.putNumber("Angulator Position",self.absolute_position.value - self.encoder_offset)
     #    SmartDashboard.putNumber("Angulator Error", self.get_error())
        
 

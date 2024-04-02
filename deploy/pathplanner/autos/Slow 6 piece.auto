@@ -63,19 +63,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "disable_face_speaker"
-                      }
-                    },
                     {
                       "type": "parallel",
                       "data": {
@@ -89,22 +83,35 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "prepare slow front auto fifth"
+                              "name": "disable_face_speaker"
                             }
                           }
                         ]
                       }
-                    },
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
                     {
                       "type": "named",
                       "data": {
-                        "name": "enable_face_speaker"
+                        "name": "shooter on"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
                         "pathName": "Slow 6 Piece 5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enable_face_speaker"
                       }
                     }
                   ]
@@ -127,19 +134,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "disable_face_speaker"
-                      }
-                    },
                     {
                       "type": "parallel",
                       "data": {
@@ -153,10 +154,35 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "prepare slow front auto sixth"
+                              "name": "disable_face_speaker"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "shooter off"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "auto intake"
                             }
                           }
                         ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Slow 6 Piece 7"
                       }
                     },
                     {
@@ -166,9 +192,9 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "Slow 6 Piece 7"
+                        "name": "shooter on"
                       }
                     }
                   ]

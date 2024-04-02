@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.92232947929047,
-        "y": 7.011876757601045
+        "x": 6.910173691735454,
+        "y": 6.875974420168499
       },
       "isLocked": false,
       "linkedName": "Slow 6"
     },
     {
       "anchor": {
-        "x": 3.53591173927307,
-        "y": 6.215072583479304
+        "x": 4.822824319653125,
+        "y": 6.167597936430154
       },
       "prevControl": {
-        "x": 4.465516609081767,
-        "y": 6.294753000891478
+        "x": 5.701211159488675,
+        "y": 6.479283589275027
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 15.068488159492212,
+    "velocity": 0.5,
+    "rotation": 18.886087369709173,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Slow 6 piece",
   "previewStartingState": {
     "rotation": 15.75,
-    "velocity": 1.0
+    "velocity": 0.25
   },
   "useDefaultConstraints": false
 }

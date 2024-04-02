@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.878494488236559,
-        "y": 5.85651070512452
+        "x": 7.835785630486894,
+        "y": 5.893692362717991
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.975449757565251,
-        "y": 6.400993557441042
+        "x": 6.932740899815586,
+        "y": 6.438175215034514
       },
       "isLocked": false,
       "linkedName": "Slow 4"
     },
     {
       "anchor": {
-        "x": 3.84135333935307,
-        "y": 6.454113835715825
+        "x": 4.860604398785838,
+        "y": 6.195932995779687
       },
       "prevControl": {
-        "x": 4.824078487436551,
-        "y": 6.7728355053645215
+        "x": 5.8433295468693185,
+        "y": 6.514654665428384
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,15 +38,15 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 13.49573328079589,
+    "velocity": 0.5,
+    "rotation": -8.13010235415611,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Slow 6 piece",
   "previewStartingState": {
     "rotation": -11.629999999999995,
-    "velocity": 1.0
+    "velocity": 0.25
   },
   "useDefaultConstraints": false
 }

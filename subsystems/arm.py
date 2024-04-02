@@ -7,6 +7,7 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import *
 from phoenix6.controls import MotionMagicVoltage, VelocityTorqueCurrentFOC, VoltageOut
 from phoenix6.configs import TalonFXConfiguration
+from phoenix6.status_signal import BaseStatusSignal
 from wpilib import SmartDashboard, DigitalInput
 
 import constants
@@ -55,10 +56,12 @@ class ArmSubsystem(Subsystem):
         ) 
         
         self.prev_zero_switch = True
+        
+        self.posiiton_signal = self.armMotor.get_position()
 
 
     def get_error(self):
-        return self.setpoint - self.armMotor.get_position().value
+        return self.setpoint - self.posiiton_signal.value
 
 
     def set_arm_position(self, position):
@@ -108,7 +111,7 @@ class ArmSubsystem(Subsystem):
 
 
     def close_gripper_safe(self):
-        if self.armMotor.get_position().value > 7: # Position at which we can hit electronics.
+        if self.posiiton_signal.value > 7: # Position at which we can hit electronics.
             self.gripperSolenoid.set(DoubleSolenoid.Value.kReverse)
 
 
@@ -117,23 +120,23 @@ class ArmSubsystem(Subsystem):
 
 
     def periodic(self):
-        SmartDashboard.putNumber("Arm Position", self.armMotor.get_position().value)
+        SmartDashboard.putNumber("Arm Position", self.posiiton_signal.value)
         zero_switch = self.zero_arm_switch.get()
         if zero_switch != self.prev_zero_switch and zero_switch:
-            if abs(self.armMotor.get_position().value) > 2:
+            if abs(self.posiiton_signal.value) > 2:
                 self.armMotor.set_position(0) 
         self.prev_zero_switch = zero_switch
     
     
     # Climber up
     def kill_the_beast(self):
-        if self.armMotor.get_position().value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
+        if self.posiiton_signal.value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
             self.climberSolenoid.set(DoubleSolenoid.Value.kReverse)
 
     
     # Climber down    
     def batman_grapling_hook(self):
-        if self.armMotor.get_position().value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
+        if self.posiiton_signal.value >= (constants.kArmClimbPosition * .55) and self.gripperSolenoid.Value.kReverse:
             self.climberSolenoid.set(DoubleSolenoid.Value.kForward)
 
 
@@ -143,3 +146,7 @@ class ArmSubsystem(Subsystem):
     
     def batman_grappling_hook_cmd(self):
         return runOnce(lambda: self.batman_grapling_hook())
+    
+    def periodic(self) -> None:
+        self.posiiton_signal.refresh()
+        

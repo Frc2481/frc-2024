@@ -11,6 +11,7 @@ from phoenix6.hardware import TalonFX
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.controls import VelocityTorqueCurrentFOC, VoltageOut, VelocityVoltage, VelocityDutyCycle, MotionMagicVelocityVoltage
 from phoenix6.signals.spn_enums import *
+from phoenix6.status_signal import BaseStatusSignal
 
 class ShooterSubsystem(Subsystem):
 
@@ -43,6 +44,12 @@ class ShooterSubsystem(Subsystem):
 
         self.velocity_control_request = VelocityDutyCycle(0)
         self.off_control_request = VoltageOut(0)
+        
+        self.closed_loop_error_signal = self.shooterMotor.get_closed_loop_reference()
+        self.velocity_signal = self.shooterMotor.get_velocity()
+        
+        self.allSignals = [self.closed_loop_error_signal,
+                           self.velocity_signal]
 
     def shooter_set_setpoint(self, sp):
         self.setpoint = sp
@@ -108,7 +115,7 @@ class ShooterSubsystem(Subsystem):
 
 
     def get_error(self):
-        return self.setpoint - self.shooterMotor.get_velocity().value
+        return self.setpoint - self.velocity_signal.value
 
 
     def set_speed_from_range(self, range_cb):
@@ -128,11 +135,13 @@ class ShooterSubsystem(Subsystem):
 
 
     def wait_for_shooter_on_target(self):    
-        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_reference().value - constants.kShooterOnTarget < self.shooterMotor.get_velocity().value),
+        return(sequence(WaitUntilCommand(lambda: self.closed_loop_error_signal.value - constants.kShooterOnTarget < self.velocity_signal.value),
                         PrintCommand('Shooter On Target')))
         
     def wait_for_shooter_on_target_auto(self):    
-        return(sequence(WaitUntilCommand(lambda: self.shooterMotor.get_closed_loop_reference().value - constants.kShooterOnTarget < self.shooterMotor.get_velocity().value).withTimeout(0.5),
+        return(sequence(WaitUntilCommand(lambda: self.closed_loop_error_signal.value - constants.kShooterOnTarget < self.velocity_signal.value).withTimeout(0.5),
                         PrintCommand('Shooter On Target')))
     
+    def periodic(self) -> None:
+        BaseStatusSignal.refresh_all(self.allSignals)
         

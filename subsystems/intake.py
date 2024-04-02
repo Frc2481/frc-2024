@@ -55,8 +55,7 @@ class IntakeSubsystem(commands2.SubsystemBase):
 
 
     def intake_off_cmd(self):
-        return commands2.cmd.runOnce(
-            lambda: self.intake_off())
+        return commands2.cmd.runOnce(self.intake_off)
         
     # def periodic(self):
     #     SmartDashboard.putNumber("intake horizontal duty cycle", self.horizontalMotor.get_duty_cycle().value)

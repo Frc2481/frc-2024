@@ -350,17 +350,18 @@ class DriveSubsystem(Subsystem):
             pose
         )
    
-    def reset_yaw(self):
+    def reset_yaw(self, offset):
         if self.shouldFlipPath():
             self.reset_pose(self.get_pose()
                             .rotateBy(self.get_pose().rotation() * -1) # Subtract out current angle of robot
-                            .rotateBy(Rotation2d.fromDegrees(180))) # Rotate 180 for the red alliance
+                            .rotateBy(Rotation2d.fromDegrees(180 + offset))) # Rotate 180 for the red alliance
         else:
             self.reset_pose(self.get_pose()
-                            .rotateBy(self.get_pose().rotation() * -1)) # Subtract out current angle of robot
+                            .rotateBy(self.get_pose().rotation() * -1)
+                            .rotateBy(Rotation2d.fromDegrees(offset))) # Subtract out current angle of robot
         
-    def reset_yaw_cmd(self):
-        return runOnce(lambda: self.reset_yaw())
+    def reset_yaw_cmd(self, offset=0):
+        return runOnce(lambda: self.reset_yaw(offset))
             
     def reset_odom_to_vision(self):
         bot_pose = self.ll_rear_table.getEntry("botpose.wpiblue").getDoubleArray([0,0,0,0,0,0])

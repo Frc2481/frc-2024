@@ -162,6 +162,8 @@ class RobotContainer(Subsystem):
         self.driver_controller.a().onTrue(self.drivetrain.field_centric_cmd())
         self.driver_controller.b().onTrue(self.drivetrain.robot_centric_cmd())
         self.driver_controller.x().onTrue(self.drivetrain.reset_yaw_cmd())
+        self.driver_controller.povLeft().onTrue(self.drivetrain.reset_yaw_cmd(1.0))
+        self.driver_controller.povRight().onTrue(self.drivetrain.reset_yaw_cmd(-1.0))
         self.driver_controller.rightBumper().whileTrue(self.vomit_cmd())        
         self.driver_controller.rightBumper().onFalse(self.intake_sequence_cmd(0.0, 0.0, 0.0).alongWith(self.shooter.shooter_off_cmd()))
         self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kTeleopFeederSpeed,

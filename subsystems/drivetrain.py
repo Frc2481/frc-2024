@@ -393,7 +393,7 @@ class DriveSubsystem(Subsystem):
         else:
             start_time = wpilib.Timer.getFPGATimestamp()
             
-            look_ahead_time = 0.2 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
+            look_ahead_time = 0.18 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
             if self.shouldFlipPath():
                 self.__cached_range_to_speaker = self.get_pose(look_ahead_time, is_blue=False).relativeTo(constants.kRedSpeakerPose).translation().norm() 
                 #5.547 original  

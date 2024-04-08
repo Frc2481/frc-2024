@@ -94,7 +94,7 @@ kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
-kShooterSpeedFeedRPS = 45
+kShooterSpeedFeedRPS = 50
 kShooterSpeedSubwooferRPS = 65
 kShooterSpeedHappyDonutRPS = 82
 kShooterSpeedMaxRPS = 82
@@ -132,7 +132,7 @@ kArmA = 0.0
 kArmS = 0.0
 kArmAcceleration =800
 kArmCruiseVelocity = 90
-kArmScorePosition = 31.0
+kArmScorePosition = 32.5
 kArmClimbPosition = 34
 kArmPickupPosition = 11.7
 kArmDownPosition = 1

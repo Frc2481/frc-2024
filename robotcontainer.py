@@ -311,6 +311,7 @@ class RobotContainer(Subsystem):
             self.arm.gripper_open_cmd(),
             WaitCommand(.2),
             self.angulator.angulator_set_pos_cmd(0),
+            WaitCommand(.3),
             self.arm.arm_stow_pos_cmd(),
             self.set_align_state_cmd(constants.kAlignStateSpeaker)))       
 

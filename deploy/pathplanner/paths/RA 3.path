@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.898384477918549,
-        "y": 6.356498332093712
+        "x": 4.744178170526884,
+        "y": 6.412626778741929
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.230132267346642,
-        "y": 6.2148230353460425
+        "x": 6.075925959954977,
+        "y": 6.27095148199426
       },
       "isLocked": false,
       "linkedName": "RA 2"
@@ -51,12 +51,12 @@
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 2.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0.1,
     "rotation": -15.422161318738661,
     "rotateFast": false
   },

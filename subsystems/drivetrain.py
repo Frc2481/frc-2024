@@ -149,11 +149,16 @@ class DriveSubsystem(Subsystem):
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
         #self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
-        self.ll_top_front_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose_wpiblue")
-        self.ll_top_back_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("botpose_wpiblue")
-        self.ll_top_left_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_wpiblue")
-        self.ll_top_right_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_wpiblue")
+        self.ll_top_front_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
+        self.ll_top_back_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
+        self.ll_top_left_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
+        self.ll_top_right_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_orb_wpiblue") #botpose_wpiblue")
         self.ll_note_table = NetworkTableInstance.getDefault().getTable("limelight-note")
+
+        self.ll_top_front_orientation_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("robot_orientation_set")
+        self.ll_top_back_orientation_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("robot_orientation_set")
+        self.ll_top_left_orientation_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("robot_orientation_set")
+        self.ll_top_right_orientation_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("robot_orientation_set")
     
         self.drive_state = True
         self.note_correction = False
@@ -161,6 +166,9 @@ class DriveSubsystem(Subsystem):
         self.__cached_range_to_speaker = 0
         self.speaker_end_time_prev = 0
         self.note_correction_gain = 0
+
+        self.yaw_status_signal = self._gyro.get_yaw()
+
         
         SmartDashboard.putNumber("Angle Override", 0)
         
@@ -185,7 +193,7 @@ class DriveSubsystem(Subsystem):
 
         start_time = wpilib.Timer.getFPGATimestamp()   
         
-        BaseStatusSignal.refresh_all(self._fl.allSignals + self._fr.allSignals + self._bl.allSignals + self._br.allSignals)  
+        BaseStatusSignal.refresh_all(self._fl.allSignals + self._fr.allSignals + self._bl.allSignals + self._br.allSignals, self.yaw_status_signal)  
 
         self._fl.update()
         self._fr.update()
@@ -193,7 +201,7 @@ class DriveSubsystem(Subsystem):
         self._br.update()
 
         self.__odometry.update(
-            Rotation2d.fromDegrees(self._gyro.get_yaw().value),
+            Rotation2d.fromDegrees(self.yaw_status_signal.value),
              [
                 self._fl.get_position(),
                 self._fr.get_position(),
@@ -211,6 +219,8 @@ class DriveSubsystem(Subsystem):
         
     def add_pose_from_limelight(self, nt_entry : NetworkTableEntry, ll_name):
         
+        bad_pose = Pose2d(-100, -100, Rotation2d())
+
         bot_pose = nt_entry.getDoubleArray([0,0,0,0,0,0,0,0,0,0])
         
         if bot_pose[7] > 0:
@@ -233,7 +243,6 @@ class DriveSubsystem(Subsystem):
             # 16 + n*7 distance to robot
             # 17 + n*7 ambiguity
             
-            
             num_targets = bot_pose[7]
             # total_latency_ms = nt_table.getNumber("cl",0) + \
             #                    nt_table.getNumber("tl",0)
@@ -242,6 +251,18 @@ class DriveSubsystem(Subsystem):
             vision_pose = Pose2d(x=bot_pose[0],
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[5]))
+            
+        #    if abs(self._gyro.get_angular_velocity_z_world()) < 720:
+        #        self.__odometry.setVisionMeasurementStdDevs((0.7, 0.7, 99999999))
+        #        self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
+        #        self.field.getObject(ll_name).setPose(vision_pose)
+        #    
+        #  else:
+        #        self.field.getObject(ll_name).setPose(bad_pose)
+            
+        #else:
+        #    self.field.getObject(ll_name).setPose(bad_pose)
+
             # try:
             single_tag_ambiguity = bot_pose[17] if len(bot_pose) >= 18 else 0
             single_tag_distance = bot_pose[15] if len(bot_pose) >= 16 else 0
@@ -257,7 +278,7 @@ class DriveSubsystem(Subsystem):
                 self.__odometry.setVisionMeasurementStdDevs((0.7, 0.7, 99999999))
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
                 self.field.getObject(ll_name).setPose(vision_pose)
-                
+               
             elif num_targets == 1 and single_tag_ambiguity < 0.3 and single_tag_distance <= 5:
                 self.__odometry.setVisionMeasurementStdDevs((2.0, 2.0, 99999999))
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
@@ -265,13 +286,23 @@ class DriveSubsystem(Subsystem):
             else: 
                 self.field.getObject(ll_name).setPose(bad_pose)
     
+    def update_orientation_limelight(self, nt_entry):
+        nt_entry.setDoubleArray("robot_orientation_set", [self.yaw_status_signal.value, 0,0,0,0,0])
+
     # Lime Light Update 
     def limelight_periodic(self):       
+        self.update_orientation_limelight(self.ll_top_front_orientation_entry)
+        self.update_orientation_limelight(self.ll_top_back_orientation_entry)
+        self.update_orientation_limelight(self.ll_top_left_orientation_entry)
+        self.update_orientation_limelight(self.ll_top_right_orientation_entry)
+
         #checks if april tag is visible
         self.add_pose_from_limelight(self.ll_top_front_entry, "ll_top_front")
         self.add_pose_from_limelight(self.ll_top_back_entry, "ll_top_back")
         self.add_pose_from_limelight(self.ll_top_left_entry, "ll_top_left")
         self.add_pose_from_limelight(self.ll_top_right_entry, "ll_top_right")
+
+
         #self.add_pose_from_limelight(self.ll_rear_table, "ll_rear")
         
      
@@ -310,7 +341,7 @@ class DriveSubsystem(Subsystem):
         #SmartDashboard.putNumber("FL Supply Voltage", self._fl.driveMotor.get_supply_voltage().value)
         #SmartDashboard.putNumber("BL Supply Voltage", self._bl.driveMotor.get_supply_voltage().value)
         
-        # SmartDashboard.putNumber("Yaw", self._gyro.get_yaw().value)
+        # SmartDashboard.putNumber("Yaw", self.yaw_status_signal.value)
         # SmartDashboard.putNumber("X_POSE", self.get_pose().x)
         # SmartDashboard.putNumber("Y_POSE", self.get_pose().y)
         
@@ -339,7 +370,7 @@ class DriveSubsystem(Subsystem):
             return self.__odometry.getEstimatedPosition()
         
         cs = self.get_robot_relative_speed()
-        cs = cs.fromRobotRelativeSpeeds(cs, Rotation2d.fromDegrees(self._gyro.get_yaw().value))
+        cs = cs.fromRobotRelativeSpeeds(cs, Rotation2d.fromDegrees(self.yaw_status_signal.value))
         if is_blue:
             twist = Twist2d(cs.vx, cs.vy, cs.omega) # meters per second
         else:
@@ -416,8 +447,8 @@ class DriveSubsystem(Subsystem):
                 x *= -1
                 y *= -1    
             
-            #yaw_comped = self._gyro.get_yaw().value + (self._gyro.get_angular_velocity_z_world().value / 5.0)
-            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self._gyro.get_yaw().value)) #  self._gyro.get_yaw().value
+            #yaw_comped = self.yaw_status_signal.value + (self._gyro.get_angular_velocity_z_world().value / 5.0)
+            chassis_speed = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, Rotation2d.fromDegrees(self.yaw_status_signal.value)) #  self.yaw_status_signal.value
         else:
             chassis_speed = ChassisSpeeds(x, y, theta)
 
@@ -668,7 +699,7 @@ class DriveSubsystem(Subsystem):
     # Wheel Circumference
     
     def finalize_calibrate_wheel_circumfrence(self):
-        distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self._gyro.get_yaw().value)
+        distance_traveled_in = constants.kDriveBaseRadiusIn * math.radians(self.yaw_status_signal.value)
         self._fl.wheel_circumference = distance_traveled_in / self._fl.driveMotor.get_position().value
         self._fr.wheel_circumference = distance_traveled_in / self._fr.driveMotor.get_position().value
         self._bl.wheel_circumference = distance_traveled_in / self._bl.driveMotor.get_position().value
@@ -698,7 +729,7 @@ class DriveSubsystem(Subsystem):
                 lambda: None,
                 lambda: self.drive(0.0, 0.0, theta=2, field_relative=False),
                 lambda interupted: self.drive(0.0, 0.0, 0.0, field_relative=False),
-                lambda: abs(self._gyro.get_yaw().value) > 360 * 10,
+                lambda: abs(self.yaw_status_signal.value) > 360 * 10,
                 self
             ),
             PrintCommand("Yaw Finished"),

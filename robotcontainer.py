@@ -282,6 +282,7 @@ class RobotContainer(Subsystem):
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
+                WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(2.0),
                 self.ignore_beam_break_cmd(True),
                 self.intake.set_intake_cmd(0, 0),
                 self.feeder.feeder_on_cmd(0),

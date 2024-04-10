@@ -149,10 +149,10 @@ class DriveSubsystem(Subsystem):
         self.__sysid = sysid.SysIdRoutine(self.__sysid_config, self.__sysid_mechanism)
         
         #self.ll_rear_table = NetworkTableInstance.getDefault().getTable("limelight-rear")
-        self.ll_top_front_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
-        self.ll_top_back_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
-        self.ll_top_left_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_orb_wpiblue") #"botpose_wpiblue")
-        self.ll_top_right_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_orb_wpiblue") #botpose_wpiblue")
+        self.ll_top_front_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("botpose_wpiblue") #"botpose_wpiblue") botpose_orb_wpiblue
+        self.ll_top_back_entry = NetworkTableInstance.getDefault().getTable("limelight-back").getEntry("botpose_wpiblue") #"botpose_wpiblue") botpose_orb_wpiblue
+        self.ll_top_left_entry = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_wpiblue") #"botpose_wpiblue") botpose_orb_wpiblue
+        self.ll_top_right_entry = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_wpiblue") #botpose_wpiblue") botpose_orb_wpiblue
         self.ll_note_table = NetworkTableInstance.getDefault().getTable("limelight-note")
 
         self.ll_top_front_orientation_entry = NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("robot_orientation_set")
@@ -252,22 +252,22 @@ class DriveSubsystem(Subsystem):
                                  y=bot_pose[1],
                                  rotation=Rotation2d.fromDegrees(bot_pose[5]))
             
-        #    if abs(self._gyro.get_angular_velocity_z_world()) < 720:
+        #     if abs(self._gyro.get_angular_velocity_z_world().value) < 720:
         #        self.__odometry.setVisionMeasurementStdDevs((0.7, 0.7, 99999999))
         #        self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
         #        self.field.getObject(ll_name).setPose(vision_pose)
-        #    
-        #  else:
+            
+        #     else:
         #        self.field.getObject(ll_name).setPose(bad_pose)
             
-        #else:
-        #    self.field.getObject(ll_name).setPose(bad_pose)
+        # else:
+        #     self.field.getObject(ll_name).setPose(bad_pose)
 
             # try:
             single_tag_ambiguity = bot_pose[17] if len(bot_pose) >= 18 else 0
             single_tag_distance = bot_pose[15] if len(bot_pose) >= 16 else 0
-            # except Exception as e:
-                # print(e)
+            # # except Exception as e:
+            #     # print(e)
             bad_pose = Pose2d(-100, -100, Rotation2d())
 
             if (vision_pose.X() == 0.0): 
@@ -278,7 +278,7 @@ class DriveSubsystem(Subsystem):
                 self.__odometry.setVisionMeasurementStdDevs((0.7, 0.7, 99999999))
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
                 self.field.getObject(ll_name).setPose(vision_pose)
-               
+                
             elif num_targets == 1 and single_tag_ambiguity < 0.3 and single_tag_distance <= 5:
                 self.__odometry.setVisionMeasurementStdDevs((2.0, 2.0, 99999999))
                 self.__odometry.addVisionMeasurement(vision_pose, capture_timestamp_sec)
@@ -286,15 +286,15 @@ class DriveSubsystem(Subsystem):
             else: 
                 self.field.getObject(ll_name).setPose(bad_pose)
     
-    def update_orientation_limelight(self, nt_entry):
-        nt_entry.setDoubleArray("robot_orientation_set", [self.yaw_status_signal.value, 0,0,0,0,0])
+    def update_orientation_limelight(self, nt_entry : NetworkTableEntry):
+        nt_entry.setDoubleArray([self.yaw_status_signal.value, 0,0,0,0,0])
 
     # Lime Light Update 
     def limelight_periodic(self):       
-        self.update_orientation_limelight(self.ll_top_front_orientation_entry)
-        self.update_orientation_limelight(self.ll_top_back_orientation_entry)
-        self.update_orientation_limelight(self.ll_top_left_orientation_entry)
-        self.update_orientation_limelight(self.ll_top_right_orientation_entry)
+        #self.update_orientation_limelight(self.ll_top_front_orientation_entry)
+        #self.update_orientation_limelight(self.ll_top_back_orientation_entry)
+        #self.update_orientation_limelight(self.ll_top_left_orientation_entry)
+        #self.update_orientation_limelight(self.ll_top_right_orientation_entry)
 
         #checks if april tag is visible
         self.add_pose_from_limelight(self.ll_top_front_entry, "ll_top_front")
@@ -424,7 +424,7 @@ class DriveSubsystem(Subsystem):
         else:
             start_time = wpilib.Timer.getFPGATimestamp()
             
-            look_ahead_time = 0.18 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1)
+            look_ahead_time = 0.25 # wpilib.Preferences.getDouble("LOOK_AHEAD_TIME", 0.1) #.18 used at comp
             if self.shouldFlipPath():
                 self.__cached_range_to_speaker = self.get_pose(look_ahead_time, is_blue=False).relativeTo(constants.kRedSpeakerPose).translation().norm() 
                 #5.547 original  
@@ -613,7 +613,7 @@ class DriveSubsystem(Subsystem):
         SmartDashboard.putNumber("Speaker Angle Error", angle_to_speaker.degrees())
         return translation_to_speaker.angle().degrees()
         
-    def get_omega_from_angle_to_speaker(self):    
+    def get_omega_from_angle_to_speaker(self, joystick: CommandXboxController):    
         
         end_time = wpilib.Timer.getFPGATimestamp()
         dt = end_time - self.speaker_end_time_prev
@@ -621,7 +621,17 @@ class DriveSubsystem(Subsystem):
             SmartDashboard.putNumber("speaker_loop", dt)
         self.speaker_end_time_prev = end_time
         
-        self.yaw_pid.setSetpoint(self.get_angle_to_speaker())
+        # When feeding across the field offset the angle to account for spin on he note causing it to go right.
+        offset = 0
+        if joystick.getHID().getYButton():
+            if self.shouldFlipPath():
+                offset = 10
+            else:
+                offset = -10
+
+        self.yaw_pid.setSetpoint(self.get_angle_to_speaker() + offset)
+
+
         pid_output = self.yaw_pid.calculate(self.get_pose().rotation().degrees())
         cs = self.get_robot_relative_speed()
         speed = (cs.vx ** 2 + cs.vy ** 2) ** 0.5
@@ -629,11 +639,11 @@ class DriveSubsystem(Subsystem):
         return ((0.5 * pid_output) *(1 - (speed / constants.kDriveMaxSpeed))) + (pid_output * 0.5)
         
     
-    def drive_speaker_aligned_cmd(self, joystick: CommandXboxController):
+    def drive_speaker_aligned_cmd(self, joystick: CommandXboxController, operator_joystick: CommandXboxController):
         return runEnd( 
             lambda: self.drive(scale_axis(-joystick.getLeftY()) * constants.kDriveMaxSpeed,
                             scale_axis(-joystick.getLeftX()) * constants.kDriveMaxSpeed,
-                                self.get_omega_from_angle_to_speaker(),
+                                self.get_omega_from_angle_to_speaker(operator_joystick),
                                 # self.get_angle_to_speaker() * SmartDashboard.getNumber("limelight angle gain", 0),
                                 #-NetworkTableInstance.getDefault().getTable("limelight-rear").getNumber('tx', 0) *
                                 #SmartDashboard.getNumber("limelight gain", 0),

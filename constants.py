@@ -94,7 +94,7 @@ kFeederBeambreakStageOnePort = 7
 kArmZero = 8
 
 #ShooterFocCurrentGains
-kShooterSpeedFeedRPS = 50
+kShooterSpeedFeedRPS = 52
 kShooterSpeedSubwooferRPS = 65
 kShooterSpeedHappyDonutRPS = 82
 kShooterSpeedMaxRPS = 82
@@ -140,7 +140,7 @@ kArmDownPosition = 1
 #angulator
 kAngulatorHappyDonutAngleDeg = 0.002
 kAngulatorSubwooferAngleDeg = 31.64 / 360
-kAngulatorFeedAngleDeg = 0.05
+kAngulatorFeedAngleDeg = 0.06
 kAngulatorGearReduction = 259.9
 kAngulatorDownPosition = 0 # 20.5/360   
 kAngulatorUpPosition =  0.112 #/360
@@ -171,5 +171,5 @@ kHorizontalIntakeMotorDutyCycle = 0.9
 kHorizontalIntakeMotorDutyCycleRaisedAuto = 0.9
 kVerticalIntakeMotorDutyCycleRaisedAuto = 0.9
 
-kRedSpeakerPose = Pose2d(16.58, 5.547, Rotation2d())
-kBlueSpeakerPose = Pose2d(-0.0381, 5.547, Rotation2d()) #5.547
+kRedSpeakerPose = Pose2d(16.45, 5.547, Rotation2d()) #16.58
+kBlueSpeakerPose = Pose2d(0.15, 5.547, Rotation2d()) #5.547 #-0.0381

@@ -172,7 +172,7 @@ class RobotContainer(Subsystem):
         self.driver_controller.rightTrigger().onTrue(self.intake_feeder_cmd(constants.kTeleopFeederSpeed,
                                                                             constants.kHorizontalIntakeMotorDutyCycle, 
                                                                             constants.kVerticalIntakeMotorDutyCycle))        
-        self.driver_controller.leftTrigger().whileTrue(self.drivetrain.drive_speaker_aligned_cmd(self.driver_controller))
+        self.driver_controller.leftTrigger().whileTrue(self.drivetrain.drive_speaker_aligned_cmd(self.driver_controller, self.operator_controller))
         self.driver_controller.leftBumper().onTrue(self.speaker_score_cmd())
         
         #Use for sysID Test
@@ -367,7 +367,7 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.07)) #0.1
+             self.feeder.feeder_on_cmd(0.15)) #0.1
         )
 
     def is_beam_break_ignored(self) -> bool:
@@ -464,7 +464,7 @@ class RobotContainer(Subsystem):
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
     def auto_barf_command(self):
-        return sequence(WaitCommand(0.15),
+        return sequence(WaitCommand(0.15), #0.125
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())         

@@ -4,41 +4,41 @@
     {
       "anchor": {
         "x": 1.5,
-        "y": 3.663
+        "y": 3.66
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.383817858544808,
-        "y": 2.220241531392155
+        "x": 3.8764172073798693,
+        "y": 2.3508439744152216
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.826340610703716,
-        "y": 0.8594968182841383
+        "x": 7.869120465513658,
+        "y": 2.2762140069734693
       },
       "prevControl": {
-        "x": 5.70485140970282,
-        "y": 1.4366268732537475
+        "x": 4.753319324820468,
+        "y": 0.9608608308125715
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mid1"
+      "linkedName": "M3P2 1"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.2,
-      "rotationDegrees": -45.68920492338533,
+      "rotationDegrees": -39.2518163795047,
       "rotateFast": false
     }
   ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0,
+      "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.2,
       "constraints": {
         "maxVelocity": 6.0,
@@ -50,7 +50,7 @@
   ],
   "eventMarkers": [
     {
-      "name": "Shoot",
+      "name": "shoot",
       "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
@@ -67,7 +67,7 @@
       }
     },
     {
-      "name": "Intake",
+      "name": "auto intake",
       "waypointRelativePos": 0.4,
       "command": {
         "type": "parallel",
@@ -87,7 +87,7 @@
       "name": "shooter off",
       "waypointRelativePos": 0.35,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -122,18 +122,18 @@
     "maxVelocity": 6.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 450.0
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0.25,
-    "rotation": -14.420773127511012,
-    "rotateFast": true
+    "rotation": 21.80140948635172,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle 3",
+  "folder": "Middle 3 Piece 2 First",
   "previewStartingState": {
     "rotation": -45.0,
-    "velocity": 0.0
+    "velocity": 0
   },
   "useDefaultConstraints": false
 }

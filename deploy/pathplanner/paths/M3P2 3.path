@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.934421687025192,
-        "y": 7.239106841850047
+        "x": 4.39882697947214,
+        "y": 4.981550326737017
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.609739764934075,
-        "y": 6.819313274990187
+        "x": 5.704851409702819,
+        "y": 4.020689495924446
       },
       "isLocked": false,
-      "linkedName": "RA1"
+      "linkedName": "M3P2 2"
     },
     {
       "anchor": {
-        "x": 4.82794929226222,
-        "y": 6.119657330223752
+        "x": 8.018380400397163,
+        "y": 4.058004479645323
       },
       "prevControl": {
-        "x": 6.003371279469831,
-        "y": 6.4181771999907635
+        "x": 7.038862077724155,
+        "y": 4.048675733715104
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RA 2"
+      "linkedName": "M3P2 3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.1,
-    "rotation": 19.13,
+    "velocity": 0.25,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 Piece Racer Amp Auto",
+  "folder": "Middle 3 Piece 2 First",
   "previewStartingState": {
-    "rotation": 9.46,
-    "velocity": 0.0
+    "rotation": 0,
+    "velocity": 0.25
   },
   "useDefaultConstraints": false
 }

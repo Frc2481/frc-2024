@@ -24,16 +24,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Middle 1"
-                }
-              }
-            ]
+            "pathName": "M3P2 1"
           }
         },
         {
@@ -43,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Middle 3"
+                  "pathName": "M3P2 2"
                 }
               },
               {
@@ -90,7 +83,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Middle 4"
+                        "pathName": "M3P2 3"
                       }
                     },
                     {
@@ -108,7 +101,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Middle 5"
+                        "pathName": "M3P2 4"
                       }
                     }
                   ]
@@ -152,7 +145,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Middle 6"
+                        "pathName": "M3P2 5"
                       }
                     },
                     {
@@ -170,7 +163,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Middle 7"
+                        "pathName": "M3P2 6"
                       }
                     }
                   ]

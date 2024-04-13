@@ -72,6 +72,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare racer 5', self.auto_shoot_fast(80, 0.041))
         NamedCommands.registerCommand('prepare racer 6', self.auto_shoot_fast(80, 0.036))
         NamedCommands.registerCommand('barf first piece', self.auto_barf_command())
+        NamedCommands.registerCommand('barf first piece two', self.auto_barf_command_two())
         NamedCommands.registerCommand('intake and shoot', self.intake_and_shoot())
         NamedCommands.registerCommand('intake and shoot off', self.intake_and_shoot_off())
         NamedCommands.registerCommand('enable auto aim', self.angulator.set_auto_aim_enable_cmd(True))
@@ -103,10 +104,14 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('RaisedIntakeOn', self.auto_intake_cmd_raised())
         
         self.chooser = SendableChooser()
-        self.chooser.setDefaultOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
-        self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
+        self.chooser.setDefaultOption("Racer 6 Piece", PathPlannerAuto("Racer 5 Piece"))
+        self.chooser.addOption("Racer 6 Piece Note 2 First", PathPlannerAuto("Racer 5 Piece Note 2 First"))
+        self.chooser.addOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
+        self.chooser.addOption("Source 4 RB Note 2 First", PathPlannerAuto("Slow Source Auto Note 2 First"))
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
-        self.chooser.addOption("Racer 5 Piece", PathPlannerAuto("Racer 5 Piece"))
+        self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
+        
+        
 
         SmartDashboard.putData("Auto", self.chooser)
         
@@ -139,7 +144,7 @@ class RobotContainer(Subsystem):
         SmartDashboard.putNumber("shooter_cmd_speed", 0)
         # DataLogManager.start()
 
-        self.auto_path = PathPlannerAuto("Red 6 piece")
+        self.auto_path = PathPlannerAuto("Racer 5 Piece")
         self.prev_alliance = None
         
         self.__prev_beam_break = True
@@ -367,7 +372,7 @@ class RobotContainer(Subsystem):
         return (
             #  InstantCommand(lambda: SmartDashboard.putNumber("beambreak one", False)).alongWith(
              InstantCommand(lambda: self.intake.horizontalMotor.set_control(VoltageOut(0))).alongWith(
-             self.feeder.feeder_on_cmd(0.15)) #0.1
+             self.feeder.feeder_on_cmd(0.15)) #0.15
         )
 
     def is_beam_break_ignored(self) -> bool:
@@ -468,6 +473,12 @@ class RobotContainer(Subsystem):
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())         
+    
+    def auto_barf_command_two(self):
+        return sequence(WaitCommand(0.05), #0.125
+                        self.shooter.shooter_on_cmd(80),
+                        WaitCommand(0.4),
+                        self.shooter.shooter_off_cmd())     
                       
     def periodic(self):
         end_time = wpilib.Timer.getFPGATimestamp()

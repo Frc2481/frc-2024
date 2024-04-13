@@ -3,48 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.55,
-        "y": 6.0
+        "x": 8.083681621908699,
+        "y": 7.229778095919829
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249567044588635,
-        "y": 6.492807167432517
+        "x": 7.038862077724155,
+        "y": 6.977901955803912
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Racer 3 Alt"
     },
     {
       "anchor": {
-        "x": 7.934421687025192,
-        "y": 7.239106841850047
+        "x": 2.8582602047521095,
+        "y": 6.054257699032017
       },
       "prevControl": {
-        "x": 5.191770383540767,
-        "y": 6.698039577897337
+        "x": 3.8764172073798693,
+        "y": 6.278246011037478
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RA1"
+      "linkedName": "RA4"
     }
   ],
-  "rotationTargets": [
+  "rotationTargets": [],
+  "constraintZones": [
     {
-      "waypointRelativePos": 0.15,
-      "rotationDegrees": -62.25121667867172,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.35,
-      "rotationDegrees": -60.97736497316325,
-      "rotateFast": true
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.35,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 720.0
+      }
     }
   ],
-  "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "intake",
-      "waypointRelativePos": 0.65,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.85,
       "command": {
         "type": "parallel",
         "data": {
@@ -52,7 +53,7 @@
             {
               "type": "named",
               "data": {
-                "name": "auto intake"
+                "name": "intake and shoot"
               }
             }
           ]
@@ -60,8 +61,8 @@
       }
     },
     {
-      "name": "Barf",
-      "waypointRelativePos": 0.1,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -69,7 +70,7 @@
             {
               "type": "named",
               "data": {
-                "name": "barf first piece two"
+                "name": "shooter on"
               }
             }
           ]
@@ -78,18 +79,18 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 3.3,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.1,
-    "rotation": 9.46,
+    "velocity": 1.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 Piece Racer Amp Auto",
+  "folder": "5 Piece Racer Amp Auto Alternate Paths For Note 2",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

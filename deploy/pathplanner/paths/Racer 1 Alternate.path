@@ -8,43 +8,60 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249567044588635,
-        "y": 6.492807167432517
+        "x": 2.6916664742420395,
+        "y": 6.651395848246243
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.934421687025192,
-        "y": 7.239106841850047
+        "x": 8.018380400397163,
+        "y": 5.671877525573233
       },
       "prevControl": {
-        "x": 5.191770383540767,
-        "y": 6.698039577897337
+        "x": 7.356039439351606,
+        "y": 6.194287297665504
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RA1"
+      "linkedName": "Racer 1 Alt"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.15,
-      "rotationDegrees": -62.25121667867172,
+      "rotationDegrees": -62.25,
       "rotateFast": false
     },
     {
       "waypointRelativePos": 0.35,
-      "rotationDegrees": -60.97736497316325,
+      "rotationDegrees": -60.98000000000002,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
+      "name": "Shoot",
+      "waypointRelativePos": 0.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "barf first piece"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "intake",
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "parallel",
         "data": {
@@ -53,23 +70,6 @@
               "type": "named",
               "data": {
                 "name": "auto intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Barf",
-      "waypointRelativePos": 0.1,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "barf first piece two"
               }
             }
           ]
@@ -85,11 +85,11 @@
   },
   "goalEndState": {
     "velocity": 0.1,
-    "rotation": 9.46,
+    "rotation": -22.166345822082274,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 Piece Racer Amp Auto",
+  "folder": "5 Piece Racer Amp Auto Alternate Paths For Note 2",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

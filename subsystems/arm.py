@@ -73,7 +73,7 @@ class ArmSubsystem(Subsystem):
             lambda: self.set_arm_position(arm_position),
             lambda: None,
             lambda interrupted: None,
-            lambda: math.fabs(self.get_error()) < 1,
+            lambda: math.fabs(self.get_error()) < 0.25,
             self
         )       
 

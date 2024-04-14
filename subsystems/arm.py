@@ -95,7 +95,7 @@ class ArmSubsystem(Subsystem):
     def arm_stow_pos_cmd (self, arm_position = constants.kArmDownPosition):
         return sequence(    
             self.gripper_open_cmd(),
-            InstantCommand (lambda:self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position)))
+            InstantCommand (lambda:self.armMotor.set_control(MotionMagicVoltage(0).with_position(arm_position)), self)
         )           
 
 

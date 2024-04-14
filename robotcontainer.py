@@ -156,6 +156,7 @@ class RobotContainer(Subsystem):
     def button_bindings_configure(self):
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
         self.operator_controller.a().onTrue(self.prepare_happy_donut_cmd())
+        self.operator_controller.b().onTrue(self.lower_note_in_arm_a_bit_cmd())
         self.operator_controller.x().onTrue(self.prepare_subwoofer_shot_cmd())
         self.operator_controller.y().onTrue(self.prepare_feed_shot_cmd())
         self.operator_controller.rightBumper().whileTrue(self.prepare_speaker_shot_cmd())
@@ -164,7 +165,7 @@ class RobotContainer(Subsystem):
             .alongWith(self.angulator.angulator_set_pos_cmd(constants.kAngulatorDownPosition)))
         self.operator_controller.rightTrigger().onTrue(self.score_amp_stow_arm_cmd())
         self.operator_controller.leftTrigger().onTrue(self.amp_handoff_cmd())
-        self.operator_controller.leftBumper().onTrue(self.shooter.shooter_off_cmd())
+        self.operator_controller.leftBumper().onTrue(self.reset_note_in_gripper_cmd())
         self.operator_controller.povUp().onTrue(self.arm.kill_the_beast_cmd())
         self.operator_controller.povDown().onTrue(self.arm.batman_grappling_hook_cmd())
         self.operator_controller.back().onTrue(self.prepare_to_climb_cmd())
@@ -287,13 +288,34 @@ class RobotContainer(Subsystem):
     def amp_handoff_cmd(self):
         return (sequence(
                 self.set_align_state_cmd(constants.kAlignStateAmp),
+                self.angulator.angulator_set_pos_cmd_amp_only(0.0),
+                self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
+                WaitUntilCommand(lambda: self.beambreak_two.get() == False), #.withTimeout(2.0),
+                self.ignore_beam_break_cmd(True),
+                self.intake.set_intake_cmd(0, 0),
+                self.feeder.feeder_on_cmd(0),
+                self.shooter.shooter_on_cmd(25),
+                self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
+                self.feeder.feeder_on_cmd(.95),
+                self.arm.gripper_close_cmd(),
+                WaitCommand(.1),
+                self.arm.arm_score_pos_cmd().withTimeout(1.0),
+                WaitCommand(0.5),
+                self.ignore_beam_break_cmd(False),
+                self.shooter.shooter_off_cmd(),
+                self.feeder.feeder_off_cmd(),
+                self.angulator.angulator_set_pos_cmd_amp_only(0)))
+    
+    def amp_handoff_fast_cmd(self):
+        return (sequence(
+                self.set_align_state_cmd(constants.kAlignStateAmp),
+                self.angulator.angulator_set_pos_cmd_amp_only(0.0),
+                self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 WaitUntilCommand(lambda: self.beambreak_two.get() == False).withTimeout(2.0),
                 self.ignore_beam_break_cmd(True),
                 self.intake.set_intake_cmd(0, 0),
                 self.feeder.feeder_on_cmd(0),
                 self.shooter.shooter_on_cmd(25),
-                self.angulator.angulator_set_pos_cmd_amp_only(0.0),
-                self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition),
                 self.angulator.angulator_amp_handoff_cmd().withTimeout(1.0),
                 self.feeder.feeder_on_cmd(.95),
                 self.arm.gripper_close_cmd(),
@@ -319,7 +341,24 @@ class RobotContainer(Subsystem):
             self.angulator.angulator_set_pos_cmd(0),
             WaitCommand(.3),
             self.arm.arm_stow_pos_cmd(),
-            self.set_align_state_cmd(constants.kAlignStateSpeaker)))       
+            self.set_align_state_cmd(constants.kAlignStateSpeaker)))
+
+    def reset_note_in_gripper_cmd(self):
+        return sequence(
+            self.angulator.angulator_set_pos_cmd(0),
+            self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition).withTimeout(0.5),
+            self.arm.gripper_open_cmd(),
+            WaitCommand(0.2),
+            self.arm.gripper_close_cmd(),
+            self.arm.arm_score_pos_cmd().withTimeout(0.5)
+        )
+    
+    def lower_note_in_arm_a_bit_cmd(self):
+        return sequence(
+            self.arm.gripper_open_cmd(),
+            WaitCommand(0.03),
+            self.arm.gripper_close_cmd(),
+        )
 
 
     def prep_first_amp_shot_auto(self):

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.038862077724155,
-        "y": 6.977901955803912
+        "x": 7.05134490769876,
+        "y": 6.872899327194004
       },
       "isLocked": false,
       "linkedName": "Racer 3 Alt"
     },
     {
       "anchor": {
-        "x": 2.8582602047521095,
-        "y": 6.054257699032017
+        "x": 2.6750115754256556,
+        "y": 6.0798724817485414
       },
       "prevControl": {
-        "x": 3.8764172073798693,
-        "y": 6.278246011037478
+        "x": 3.9820373021783615,
+        "y": 6.197357940333054
       },
       "nextControl": null,
       "isLocked": false,
@@ -80,7 +80,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },

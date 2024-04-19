@@ -348,7 +348,7 @@ class RobotContainer(Subsystem):
             self.angulator.angulator_set_pos_cmd(0),
             self.arm.arm_pickup_pos_cmd(constants.kArmPickupPosition).withTimeout(0.5),
             self.arm.gripper_open_cmd(),
-            WaitCommand(0.2),
+            WaitCommand(0.1),
             self.arm.gripper_close_cmd(),
             self.arm.arm_score_pos_cmd().withTimeout(0.5)
         )
@@ -497,7 +497,6 @@ class RobotContainer(Subsystem):
         return sequence(self.auto_intake_cmd(),
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position),
                         self.no_wait_auto_shoot_cmd())
-                            
                         
     def auto_prep_fast(self, shooter_speed, angulator_position):
         return sequence(self.auto_intake_cmd(),
@@ -508,13 +507,13 @@ class RobotContainer(Subsystem):
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
     def auto_barf_command(self):
-        return sequence(WaitCommand(0.15), #0.125
+        return sequence(WaitCommand(0.10), #0.125
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())         
     
     def auto_barf_command_two(self):
-        return sequence(WaitCommand(0.05), #0.125
+        return sequence(WaitCommand(0), #0.125
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())     

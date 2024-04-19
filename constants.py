@@ -172,4 +172,4 @@ kHorizontalIntakeMotorDutyCycleRaisedAuto = 0.9
 kVerticalIntakeMotorDutyCycleRaisedAuto = 0.9
 
 kRedSpeakerPose = Pose2d(16.45, 5.547, Rotation2d()) #16.58
-kBlueSpeakerPose = Pose2d(0.15, 5.547, Rotation2d()) #5.547 #-0.0381
+kBlueSpeakerPose = Pose2d(0.15, 5.247, Rotation2d()) #5.547 #-0.0381

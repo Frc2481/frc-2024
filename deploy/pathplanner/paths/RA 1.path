@@ -31,12 +31,12 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.15,
-      "rotationDegrees": -62.25121667867172,
+      "rotationDegrees": -35.25,
       "rotateFast": false
     },
     {
       "waypointRelativePos": 0.35,
-      "rotationDegrees": -60.97736497316325,
+      "rotationDegrees": -35.0,
       "rotateFast": true
     }
   ],
@@ -61,7 +61,7 @@
     },
     {
       "name": "Barf",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,7 +79,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.0,
-    "maxAcceleration": 3.3,
+    "maxAcceleration": 3.1,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },

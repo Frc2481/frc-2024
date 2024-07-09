@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5,
-        "y": 4.11
+        "x": 1.45,
+        "y": 7.3
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.383817858544808,
-        "y": 2.6672415313921554
+        "x": 3.2980019128681723,
+        "y": 7.885510829635729
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.826340610703716,
-        "y": 0.8594968182841383
+        "x": 7.990394162606506,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 5.70485140970282,
-        "y": 1.4366268732537475
+        "x": 6.7683284457478,
+        "y": 7.707848615697232
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mid1"
+      "linkedName": "sa1"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.2,
-      "rotationDegrees": -45.68920492338533,
+      "rotationDegrees": 35.0,
       "rotateFast": false
     }
   ],
@@ -51,7 +51,7 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
@@ -126,13 +126,13 @@
   },
   "goalEndState": {
     "velocity": 0.25,
-    "rotation": -14.420773127511012,
-    "rotateFast": true
+    "rotation": 4.513988458001303,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle 3",
+  "folder": "Slow Amp",
   "previewStartingState": {
-    "rotation": -45.0,
+    "rotation": 43.413082678129356,
     "velocity": 0.0
   },
   "useDefaultConstraints": false

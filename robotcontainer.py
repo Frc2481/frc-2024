@@ -104,15 +104,15 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('RaisedIntakeOn', self.auto_intake_cmd_raised())
         
         self.chooser = SendableChooser()
-        self.chooser.setDefaultOption("Racer 6 Piece", PathPlannerAuto("Racer 5 Piece"))
-        self.chooser.addOption("Racer 6 Piece Note 2 First", PathPlannerAuto("Racer 5 Piece Note 2 First"))
+        self.chooser.setDefaultOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
         self.chooser.addOption("Source 4 RB", PathPlannerAuto("Slow Source Auto"))
         self.chooser.addOption("Source 4 RB Note 2 First", PathPlannerAuto("Slow Source Auto Note 2 First"))
+        self.chooser.addOption("Amp 4 RB", PathPlannerAuto("Slow Amp Auto"))
+        self.chooser.addOption("Amp 4 RB Note 2 First", PathPlannerAuto("Slow Amp Auto Note 2 First"))
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
-        self.chooser.addOption("4 Close RB", PathPlannerAuto("Close 4 Piece"))
+        self.chooser.addOption("Racer 6 Piece", PathPlannerAuto("Racer 5 Piece"))
+        self.chooser.addOption("Racer 6 Piece Note 2 First", PathPlannerAuto("Racer 5 Piece Note 2 First"))
         
-        
-
         SmartDashboard.putData("Auto", self.chooser)
         
         self.beambreak_one = DigitalInput(constants.kFeederBeambreakStageOnePort)
@@ -507,13 +507,13 @@ class RobotContainer(Subsystem):
                         self.auto_prep_shoot_cmd(shooter_speed, angulator_position))
         
     def auto_barf_command(self):
-        return sequence(WaitCommand(0.10), #0.125
+        return sequence(WaitCommand(0.0), #0.125
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())         
     
     def auto_barf_command_two(self):
-        return sequence(WaitCommand(0), #0.125
+        return sequence(WaitCommand(0.0), #0.125
                         self.shooter.shooter_on_cmd(80),
                         WaitCommand(0.4),
                         self.shooter.shooter_off_cmd())     

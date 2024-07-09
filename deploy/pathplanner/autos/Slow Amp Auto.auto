@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
-      "y": 4.11
+      "x": 1.45,
+      "y": 7.3
     },
-    "rotation": -45.0
+    "rotation": 45.0
   },
   "command": {
     "type": "sequential",
@@ -24,21 +24,22 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "M3P2 1"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "M3P2 2"
+                  "pathName": "Slow Amp 1"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -49,6 +50,12 @@
                 "type": "named",
                 "data": {
                   "name": "shooter on"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Slow Amp 2"
                 }
               }
             ]
@@ -83,7 +90,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "M3P2 3"
+                        "pathName": "Slow Amp 5"
                       }
                     },
                     {
@@ -101,7 +108,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "M3P2 4"
+                        "pathName": "Slow Amp 6"
                       }
                     }
                   ]
@@ -145,7 +152,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "M3P2 5"
+                        "pathName": "amp racer 3"
                       }
                     },
                     {
@@ -163,7 +170,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "M3P2 6"
+                        "pathName": "Slow Amp 4"
                       }
                     }
                   ]

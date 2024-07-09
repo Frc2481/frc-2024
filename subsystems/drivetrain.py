@@ -625,7 +625,7 @@ class DriveSubsystem(Subsystem):
         offset = 0
         if joystick.getHID().getYButton():
             if self.shouldFlipPath():
-                offset = 10
+                offset = 20 #10
             else:
                 offset = -10
 

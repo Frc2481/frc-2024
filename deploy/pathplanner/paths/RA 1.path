@@ -8,43 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249567044588635,
-        "y": 6.492807167432517
+        "x": 4.437293454193349,
+        "y": 6.065186799425477
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.934421687025192,
-        "y": 7.239106841850047
+        "x": 7.917800164759543,
+        "y": 7.25472706759367
       },
       "prevControl": {
-        "x": 5.191770383540767,
-        "y": 6.698039577897337
+        "x": 5.259691664284939,
+        "y": 6.593871363055785
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "RA1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.15,
-      "rotationDegrees": -35.25,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.35,
-      "rotationDegrees": -35.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "intake",
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -61,7 +50,7 @@
     },
     {
       "name": "Barf",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.05,
       "command": {
         "type": "parallel",
         "data": {
@@ -79,13 +68,13 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.0,
-    "maxAcceleration": 3.1,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0.1,
-    "rotation": 9.46,
+    "rotation": 16.699244233993543,
     "rotateFast": false
   },
   "reversed": false,

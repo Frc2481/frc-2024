@@ -3,43 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6788048288717285,
-        "y": 4.203033821529138
+        "x": 8.214284064931766,
+        "y": 4.160620684877734
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1026586220978727,
-        "y": 4.571389593073078
+        "x": 7.2907382178400715,
+        "y": 5.867781190107835
       },
       "isLocked": false,
-      "linkedName": "B1p1"
+      "linkedName": "sa5"
     },
     {
       "anchor": {
-        "x": 2.8960402838848216,
-        "y": 5.553671650523586
+        "x": 4.632045627727619,
+        "y": 6.530122151153393
       },
       "prevControl": {
-        "x": 2.0743235627483387,
-        "y": 5.4781114922581615
+        "x": 6.292562403306624,
+        "y": 6.586094626734709
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B1p2"
+      "linkedName": "sa2"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.65,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake On",
-      "waypointRelativePos": 0.2,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.95,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "intake and shoot"
+                "name": "auto speaker score"
               }
             }
           ]
@@ -56,21 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.5,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 2.663000766067187,
+    "velocity": 0.5,
+    "rotation": 13.626994859891589,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Close 4 piece",
+  "folder": "Slow Amp",
   "previewStartingState": {
-    "rotation": -31.21840276434653,
-    "velocity": 0
+    "rotation": -62.650124219930355,
+    "velocity": 0.5
   },
   "useDefaultConstraints": false
 }

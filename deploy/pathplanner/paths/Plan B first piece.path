@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "intake feeder on"
+                "name": "auto intake"
               }
             }
           ]

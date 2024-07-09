@@ -169,7 +169,7 @@ class AngulatorSubsystem(Subsystem):
         #else:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
         range_m = range_cb()
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 24.5 + 5.5*(range_m/6) # was 25.5
+        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 26.5 + 5.5*(range_m/6) # was 25.5 before worlds # updated from 24.5 to 26.5 for IRI and 5.5 for the range adjust from 5.5
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         # SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)

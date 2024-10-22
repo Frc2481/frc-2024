@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6705319061054142,
+        "y": 3.0318513684150696
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.892549606208337,
+        "y": 0.9105123040299752
+      },
+      "isLocked": false,
+      "linkedName": "Mid3"
+    },
+    {
+      "anchor": {
+        "x": 8.182142446574698,
+        "y": 2.393766218659451
+      },
+      "prevControl": {
+        "x": 7.0807162723448895,
+        "y": 1.967881431290592
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "IRI 1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.85,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.25,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.5,
+    "rotation": 24.443954780416632,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Middle 3",
+  "previewStartingState": {
+    "rotation": -39.28940686250035,
+    "velocity": 0.25
+  },
+  "useDefaultConstraints": false
+}

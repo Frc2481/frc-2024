@@ -418,6 +418,8 @@ class DriveSubsystem(Subsystem):
         return runOnce (self.reset_odom_to_vision)
     
     def get_range_to_speaker(self, cached=True):
+        # print(self.__cached_range_to_speaker)
+
         if cached:
             return self.__cached_range_to_speaker
     
@@ -627,7 +629,7 @@ class DriveSubsystem(Subsystem):
             if self.shouldFlipPath():
                 offset = 20 #10
             else:
-                offset = -10
+                offset = -5
 
         self.yaw_pid.setSetpoint(self.get_angle_to_speaker() + offset)
 

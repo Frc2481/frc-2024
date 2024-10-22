@@ -55,6 +55,7 @@ class AngulatorSubsystem(Subsystem):
         super().__init__()
         self.__loggerState = None
         self.setpoint = 0
+        self.firstshot = True
         
         self.auto_aim_enable = False
         self.angulatorMotor = TalonFXExtended(constants.kAngulatorMotorCANID, "2481")
@@ -107,6 +108,7 @@ class AngulatorSubsystem(Subsystem):
 
 
     def set_angulator_position(self, position):
+        # SmartDashboard.putNumber("Angulator Setpoint", position)
         position += self.encoder_offset
         self.setpoint = position
         if position == 0:
@@ -162,6 +164,7 @@ class AngulatorSubsystem(Subsystem):
         return self.angulator_set_pos_cmd(0.133)
 
 
+
     def set_pos_from_range(self, range_cb):
         HEIGHT_OF_TARGET = 2.03 #2.044
         #if range_cb() < 3.6:
@@ -169,7 +172,12 @@ class AngulatorSubsystem(Subsystem):
         #else:
         #    HEIGHT_OF_TARGET = HEIGHT_OF_TARGET + (3.6*0.025-1*0.025) - ((range_cb()-3.6)*0.025)
         range_m = range_cb()
-        angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 26.5 + 5.5*(range_m/6) # was 25.5 before worlds # updated from 24.5 to 26.5 for IRI and 5.5 for the range adjust from 5.5
+        
+        if wpilib.DriverStation.isAutonomous() and self.firstshot == False:
+            angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 24.5 + 5.5*(range_m/6) # was 25.5 before worlds # updated from 24.5 to 26.5 for IRI and 5.5 for the range adjust from 5.5
+        else:
+            angulator_angle = math.degrees(math.atan(HEIGHT_OF_TARGET/range_m)) - 26.5 + 5.5*(range_m/6) # was 25.5 before worlds # updated from 24.5 to 26.5 for IRI and 5.5 for the range adjust from 5.5
+        
          # TODO: Put this in constant
         angulator_rotation = angulator_angle / 360.0
         # SmartDashboard.putNumber("Angulator Rotation for Speaker", angulator_rotation)
@@ -190,10 +198,15 @@ class AngulatorSubsystem(Subsystem):
         
     def set_auto_aim_enable(self, enable):
         self.auto_aim_enable = enable
+
+    def set_first_shot(self, enable):
+        self.firstshot = enable
         
     def set_auto_aim_enable_cmd(self, enable):
         return InstantCommand(lambda: self.set_auto_aim_enable(enable))
 
+    def set_first_shot_cmd(self, enable):
+        return InstantCommand(lambda: self.set_first_shot(enable))
 
     def angulator_off_cmd (self):
         return runOnce(

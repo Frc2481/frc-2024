@@ -64,6 +64,7 @@ class RobotContainer(Subsystem):
         NamedCommands.registerCommand('prepare slow front auto fifth', self.auto_intake_cmd())
         NamedCommands.registerCommand('prepare slow front auto sixth', self.auto_intake_cmd())
         NamedCommands.registerCommand('auto intake', self.auto_intake_cmd())
+        NamedCommands.registerCommand('first shot done', self.angulator.set_first_shot_cmd(False))
 
         NamedCommands.registerCommand('prepare racer 1', self.auto_prep_fast(65, 0.082))
         NamedCommands.registerCommand('prepare racer 2', self.auto_prep_fast(80, 0.002))
@@ -112,6 +113,7 @@ class RobotContainer(Subsystem):
         self.chooser.addOption("Slow 6 Piece RB that works", PathPlannerAuto("Slow 6 piece"))
         self.chooser.addOption("Racer 6 Piece", PathPlannerAuto("Racer 5 Piece"))
         self.chooser.addOption("Racer 6 Piece Note 2 First", PathPlannerAuto("Racer 5 Piece Note 2 First"))
+        self.chooser.addOption("Source 3 RB IRI", PathPlannerAuto("IRI Source Auto"))
         
         SmartDashboard.putData("Auto", self.chooser)
         
@@ -435,7 +437,7 @@ class RobotContainer(Subsystem):
         return sequence(
                         # self.drivetrain.set_correct_path_to_note_cmd(True),
                         self.ignore_beam_break_cmd(False),
-                        self.angulator.angulator_set_pos_cmd(0),
+                        # self.angulator.angulator_set_pos_cmd(0),
                         self.intake.set_intake_cmd(constants.kHorizontalIntakeMotorDutyCycle, constants.kVerticalIntakeMotorDutyCycle),
                         self.feeder.feeder_on_cmd(constants.kTeleopFeederSpeed),
                         #beambreak trigger will turn off intake

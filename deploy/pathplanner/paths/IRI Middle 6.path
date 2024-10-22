@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.51209546784031,
+        "y": 3.0693076055203994
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.525407548131734,
+        "y": 1.5860536908909244
+      },
+      "isLocked": false,
+      "linkedName": "IRI 2"
+    },
+    {
+      "anchor": {
+        "x": 7.183516048606338,
+        "y": 0.822398210091591
+      },
+      "prevControl": {
+        "x": 5.685576451653799,
+        "y": 0.9105123040299752
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -2.4895529219992105,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Middle 3",
+  "previewStartingState": {
+    "rotation": -8.130102354156094,
+    "velocity": 0.5
+  },
+  "useDefaultConstraints": false
+}
